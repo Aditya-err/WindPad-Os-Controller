@@ -39,7 +39,12 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /android/.gradle
+/android/.kotlin
+/android/build
+/android/app/build
 /android/captures
+/android/local.properties
+/android/*.iml
 
 # Environment secrets
 .env
