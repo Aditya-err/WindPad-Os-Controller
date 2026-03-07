@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Premium Gradient Background -->
+    <linearGradient id="bgBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A90E2"/>
+      <stop offset="100%" stop-color="#1A44BB"/>
+    </linearGradient>
+
+    <!-- Glassmorphism Keyboard Fill -->
+    <linearGradient id="kbFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <!-- Key Shine -->
+    <linearGradient id="keyFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.1"/>
+    </linearGradient>
+
+    <!-- 3D Effects -->
+    <filter id="badgeDrop" x="-20%" y="-10%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+    </filter>
+    <filter id="kbDrop" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="15" stdDeviation="20" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="cursorShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="5" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <!-- Cursor Clip -->
+    <clipPath id="cursorClip">
+      <polygon points="256,110 256,328 290,290 312,338 334,328 312,276 368,276"/>
+    </clipPath>
+  </defs>
+
+  <!-- 1. Background -->
+  <rect width="512" height="512" rx="108" fill="url(#bgBlue)"/>
+  <rect width="512" height="250" rx="108" fill="white" opacity="0.08"/>
+
+  <!-- 2. Keyboard (Glass) -->
+  <rect x="40" y="280" width="432" height="200" rx="42" fill="url(#kbFill)" filter="url(#kbDrop)" stroke="white" stroke-opacity="0.2" stroke-width="1.5"/>
+  
+  <!-- Keys (Systematic alignment) -->
+  <!-- Row 1: 8 keys -->
+  <g opacity="0.8">
+    <rect x="58" y="305" width="40" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="108" y="305" width="40" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="158" y="305" width="40" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="208" y="305" width="40" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="258" y="305" width="40" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="308" y="305" width="40" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="358" y="305" width="40" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="408" y="305" width="46" height="38" rx="10" fill="url(#keyFill)"/>
+  </g>
+  <!-- Row 2: 7 keys -->
+  <g opacity="0.8">
+    <rect x="70" y="355" width="45" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="125" y="355" width="45" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="180" y="355" width="45" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="235" y="355" width="45" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="290" y="355" width="45" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="345" y="355" width="45" height="38" rx="10" fill="url(#keyFill)"/>
+    <rect x="400" y="355" width="42" height="38" rx="10" fill="url(#keyFill)"/>
+  </g>
+  <!-- Spacebar -->
+  <rect x="115" y="410" width="282" height="42" rx="21" fill="url(#keyFill)"/>
+
+  <!-- 3. Shield Badge (Refined Curves) -->
+  <path d="M 176,30 
+           Q 176,12 200,12 
+           L 312,12 
+           Q 336,12 336,30 
+           L 336,250 
+           Q 336,275 315,288 
+           L 268,318 
+           Q 256,325 244,318 
+           L 197,288 
+           Q 176,275 176,250 
+           Z" fill="white" filter="url(#badgeDrop)"/>
+  
+  <!-- Content Shadow -->
+  <polygon points="256,110 256,328 290,290 312,338 334,328 312,276 368,276" fill="black" opacity="0.1" transform="translate(4,6)"/>
+
+  <!-- 4. Google Colors Cursor (Refined Segmentation to match reference) -->
+  <g clip-path="url(#cursorClip)">
+    <!-- RED (Top-Left quadrant focus) -->
+    <path d="M 256,110 L 256,350 L 500,200 Z" fill="#EA4335"/>
+    <!-- YELLOW (Top-Right quadrant focus) -->
+    <path d="M 256,110 L 500,110 L 500,300 Z" fill="#FBBC05"/>
+    <!-- GREEN (Bottom-Right quadrant focus) -->
+    <path d="M 500,300 L 256,350 L 500,500 Z" fill="#34A853"/>
+    <!-- BLUE (Tail focus) -->
+    <path d="M 256,300 L 400,350 L 256,400 Z" fill="#4285F4"/>
+  </g>
+
+  <!-- Outline for sharpness -->
+  <polygon points="256,110 256,328 290,290 312,338 334,328 312,276 368,276" fill="none" stroke="white" stroke-width="8" stroke-linejoin="round" filter="url(#cursorShadow)"/>
+  <!-- Inner colors again for clean lines inside stroke -->
+  <g clip-path="url(#cursorClip)">
+    <path d="M 256,110 L 256,350 L 500,200 Z" fill="#EA4335"/>
+    <path d="M 256,110 L 500,110 L 500,300 Z" fill="#FBBC05"/>
+    <path d="M 500,300 L 256,350 L 500,500 Z" fill="#34A853"/>
+    <path d="M 256,300 L 400,350 L 256,400 Z" fill="#4285F4"/>
+  </g>
+
+</svg>
