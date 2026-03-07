@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
@@ -13,47 +14,57 @@ class KeyboardSection extends StatefulWidget {
 
 class _KeyboardSectionState extends State<KeyboardSection> {
   final TextEditingController _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _kbFocus = FocusNode(
+    skipTraversal: true,
+    onKeyEvent: (node, event) => KeyEventResult.ignored,
+  );
   bool _isFocused = false;
-  String _previousText = " ";
+  String _previousText = "";
   late final KeyboardVisibilityController _kbController;
+  Timer? _previewTimer;
 
   @override
   void initState() {
     super.initState();
-    _controller.text = " ";
-
-    // Keyboard must open FIRST, then state updates and trackpad locks AFTER keyboard is visible
     _kbController = KeyboardVisibilityController();
     _kbController.onChange.listen((visible) {
       if (!mounted) return;
       
       setState(() {
         _isFocused = visible;
-        if (_isFocused) {
-          _controller.value = const TextEditingValue(text: " ", selection: TextSelection.collapsed(offset: 1));
-          _previousText = " ";
-        } else {
-          FocusScope.of(context).unfocus();
+        if (!_isFocused) {
+          _kbFocus.unfocus();
         }
       });
       
       final btService = Provider.of<BluetoothHidService>(context, listen: false);
       btService.setTrackpadLocked(visible);
+
+      if (visible) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Scrollable.ensureVisible(
+            context,
+            alignment: 1.0, 
+            duration: const Duration(milliseconds: 250),
+          );
+        });
+      }
     });
   }
 
-  Future<void> _openKeyboard() async {
-    _focusNode.unfocus();
-    await Future.delayed(const Duration(milliseconds: 50));
-    _focusNode.requestFocus();
-    await Future.delayed(const Duration(milliseconds: 50));
-    SystemChannels.textInput.invokeMethod('TextInput.show');
+  void _openKeyboard() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _kbFocus.requestFocus();
+      SystemChannels.textInput.invokeMethod('TextInput.show');
+    });
   }
 
   void _handleTextChanged(String text, BluetoothHidService btService) {
     if (text.length < _previousText.length) {
-      btService.sendKey(0, [0x2A]);
+      final diff = _previousText.length - text.length;
+      for (int i = 0; i < diff; i++) {
+        btService.sendKey(0, [0x2A]);
+      }
     } else if (text.length > _previousText.length) {
       final newChars = text.substring(_previousText.length);
       for (int i = 0; i < newChars.length; i++) {
@@ -65,17 +76,24 @@ class _KeyboardSectionState extends State<KeyboardSection> {
         }
       }
     }
-    Future.microtask(() {
-      if (!mounted) return;
-      _controller.value = const TextEditingValue(text: " ", selection: TextSelection.collapsed(offset: 1));
-      _previousText = " ";
+    _previousText = text;
+
+    _previewTimer?.cancel();
+    _previewTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _controller.clear();
+          _previousText = "";
+        });
+      }
     });
   }
 
   @override
   void dispose() {
+    _previewTimer?.cancel();
     _controller.dispose();
-    _focusNode.dispose();
+    _kbFocus.dispose();
     super.dispose();
   }
 
@@ -103,43 +121,40 @@ class _KeyboardSectionState extends State<KeyboardSection> {
             border: Border.all(color: _isFocused ? cs.primary : Colors.transparent, width: 2.0),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: _openKeyboard,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    enabled: isConn,
-                    textInputAction: TextInputAction.newline,
-                    keyboardType: TextInputType.multiline,
-                    enableSuggestions: false,
-                    autocorrect: false,
-                    showCursor: true,
-                    onTap: _openKeyboard,
-                    onChanged: (text) => _handleTextChanged(text, btService),
-                    decoration: InputDecoration(
-                      hintText: isConn ? "👀 See on your screen" : "Connect to type",
-                      hintStyle: TextStyle(color: _isFocused ? cs.primary.withValues(alpha: 0.7) : cs.onSurfaceVariant, fontSize: 14),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                      isDense: true,
-                    ),
-                    style: TextStyle(color: cs.onSurface.withValues(alpha: 0.01), fontSize: 16, height: 1.5),
-                    cursorColor: cs.primary,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  restorationId: 'windpad_kb',
+                  controller: _controller,
+                  focusNode: _kbFocus,
+                  enabled: isConn,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  showCursor: true,
+                  onTap: _openKeyboard,
+                  onChanged: (text) => _handleTextChanged(text, btService),
+                  decoration: InputDecoration(
+                    hintText: isConn ? "👀 See on your screen" : "Connect to type",
+                    hintStyle: TextStyle(color: _isFocused ? cs.primary.withValues(alpha: 0.7) : cs.onSurfaceVariant, fontSize: 14),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    isDense: true,
                   ),
+                  style: TextStyle(color: cs.onSurface, fontSize: 16, height: 1.5),
+                  cursorColor: cs.primary,
                 ),
-                if (_isFocused)
-                  IconButton(
-                    icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary),
-                    onPressed: () => btService.sendEmoji(),
-                    tooltip: "Emoji",
-                  ),
-              ],
-            ),
+              ),
+              if (_isFocused)
+                IconButton(
+                  icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary),
+                  onPressed: () => btService.sendEmoji(),
+                  tooltip: "Emoji",
+                ),
+            ],
           ),
         ),
       ],

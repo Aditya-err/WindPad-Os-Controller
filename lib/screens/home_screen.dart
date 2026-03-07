@@ -64,9 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // ═══ SCROLLABLE CONTENT ═══
               Expanded(
-                child: ListView(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
+                  child: Column(
+                    children: [
                     if (!isConn)
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
@@ -108,8 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Keyboard Input
                     const KeyboardSection(),
 
-                    const SizedBox(height: 24),
-                  ],
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               ),
             ],
