@@ -37,6 +37,24 @@ class PlatformChannel {
     try { await _ch.invokeMethod('initHid'); } on PlatformException catch (_) {}
   }
 
+  /// Get list of bonded Bluetooth devices [{name, address}]
+  static Future<List<Map<String, String>>> getBondedDevices() async {
+    try {
+      final result = await _ch.invokeMethod('getBondedDevices');
+      if (result is List) {
+        return result.map((e) => Map<String, String>.from(e as Map)).toList();
+      }
+    } on PlatformException catch (_) {}
+    return [];
+  }
+
+  /// Connect to a specific device by MAC address
+  static Future<void> connectToDevice(String macAddress) async {
+    try {
+      await _ch.invokeMethod('connectToDevice', {'mac': macAddress});
+    } on PlatformException catch (_) {}
+  }
+
   static void setMethodCallHandler(Future<dynamic> Function(MethodCall call) handler) {
     _ch.setMethodCallHandler(handler);
   }

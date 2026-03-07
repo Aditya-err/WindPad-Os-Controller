@@ -8,6 +8,7 @@ import '../widgets/touchpad_widget.dart';
 import '../widgets/quick_keys_widget.dart';
 import '../widgets/keyboard_section.dart';
 import '../widgets/function_keys_sheet.dart';
+import '../widgets/device_picker_sheet.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -44,19 +45,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Spacer(),
                     StatusPill(state: btService.state, deviceName: btService.connectedDeviceName),
                     const SizedBox(width: 8),
-                    // DPI badge
                     GestureDetector(
                       onTap: () => btService.cycleDpi(),
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: cs.primaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          "${btService.dpi} DPI",
-                          style: TextStyle(color: cs.onPrimaryContainer, fontSize: 11, fontWeight: FontWeight.w600),
-                        ),
+                        decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(8)),
+                        child: Text("${btService.dpi} DPI", style: TextStyle(color: cs.onPrimaryContainer, fontSize: 11, fontWeight: FontWeight.w600)),
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -73,45 +67,45 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ListView(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
-                    // Connection banner
                     if (!isConn)
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-                        decoration: BoxDecoration(
-                          color: cs.primaryContainer.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        decoration: BoxDecoration(color: cs.primaryContainer.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(12)),
                         child: Row(
                           children: [
                             Icon(Icons.info_outline, size: 16, color: cs.primary),
                             const SizedBox(width: 8),
-                            Text("Ready to connect. Ensure Bluetooth is on.", style: TextStyle(fontSize: 12, color: cs.onPrimaryContainer, fontWeight: FontWeight.w500)),
+                            Expanded(child: Text("Ready to connect. Ensure Bluetooth is on.", style: TextStyle(fontSize: 12, color: cs.onPrimaryContainer, fontWeight: FontWeight.w500))),
                           ],
                         ),
                       ).animate().fadeIn(),
 
                     const SizedBox(height: 12),
 
-                    // ── Trackpad ──
-                    const AspectRatio(
-                      aspectRatio: 1.2,
-                      child: TouchpadWidget(),
-                    ),
+                    // Trackpad
+                    const AspectRatio(aspectRatio: 1.2, child: TouchpadWidget()),
 
-                    const SizedBox(height: 16),
-
-                    // ── Quick Keys + Fn Button Row ──
-                    if (btService.quickKeysVisible) ...[
-                      const QuickKeysWidget(),
-                      const SizedBox(height: 12),
-                    ],
-
-                    // ── Function Keys Button ──
-                    _buildFnButton(context, isConn, btService, cs),
+                    // Trackpad lock indicator
+                    if (btService.trackpadLocked)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Center(child: Text("🔒 Trackpad locked (keyboard open)", style: TextStyle(fontSize: 11, color: cs.outline))),
+                      ),
 
                     const SizedBox(height: 12),
 
-                    // ── Keyboard Input (at bottom) ──
+                    // Quick Keys
+                    if (btService.quickKeysVisible) ...[
+                      const QuickKeysWidget(),
+                      const SizedBox(height: 8),
+                    ],
+
+                    // Special Keys Bar: ⊞ Windows button opens full sheet
+                    _buildSpecialKeysBar(context, isConn, btService, cs),
+
+                    const SizedBox(height: 12),
+
+                    // Keyboard Input
                     const KeyboardSection(),
 
                     const SizedBox(height: 24),
@@ -123,7 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         floatingActionButton: !isConn
             ? FloatingActionButton.extended(
-                onPressed: btService.state == BluetoothState.scanning ? null : () => btService.connect(),
+                onPressed: btService.state == BluetoothState.scanning
+                    ? null
+                    : () => _showDevicePicker(context, btService, cs),
                 icon: btService.state == BluetoothState.scanning
                     ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.bluetooth_searching),
@@ -134,43 +130,86 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFnButton(BuildContext context, bool isConn, BluetoothHidService btService, ColorScheme cs) {
-    return Material(
-      color: cs.secondaryContainer,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: isConn ? () => _showFunctionKeysSheet(context, btService, cs) : null,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.keyboard_command_key, size: 18, color: isConn ? cs.onSecondaryContainer : cs.outline),
-              const SizedBox(width: 8),
-              Text(
-                "Function Keys (F1–F12)",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: isConn ? cs.onSecondaryContainer : cs.outline,
-                ),
+  Widget _buildSpecialKeysBar(BuildContext context, bool isConn, BluetoothHidService btService, ColorScheme cs) {
+    return Row(
+      children: [
+        // ⊞ Windows / Special Keys button
+        Material(
+          color: cs.secondaryContainer,
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: isConn ? () => _showFunctionKeysSheet(context, btService) : null,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+              child: Row(
+                children: [
+                  Text("⊞", style: TextStyle(fontSize: 18, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                  const SizedBox(width: 6),
+                  Text("Special Keys", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                ],
               ),
-            ],
+            ),
           ),
+        ),
+        const SizedBox(width: 8),
+        // Quick special actions
+        _buildMiniKey("Esc", 0x29, 0, isConn, btService, cs),
+        const SizedBox(width: 4),
+        _buildMiniKey("Tab", 0x2B, 0, isConn, btService, cs),
+        const SizedBox(width: 4),
+        _buildMiniKey("Del", 0x4C, 0, isConn, btService, cs),
+      ],
+    );
+  }
+
+  Widget _buildMiniKey(String label, int hid, int mod, bool isConn, BluetoothHidService btService, ColorScheme cs) {
+    return Material(
+      color: cs.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        onTap: isConn ? () => btService.sendKey(mod, [hid]) : null,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isConn ? cs.onSurface : cs.outline)),
         ),
       ),
     );
   }
 
-  void _showFunctionKeysSheet(BuildContext context, BluetoothHidService btService, ColorScheme cs) {
+  void _showFunctionKeysSheet(BuildContext context, BluetoothHidService btService) {
+    final cs = Theme.of(context).colorScheme;
     showModalBottomSheet(
       context: context,
       backgroundColor: cs.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        maxChildSize: 0.9,
+        minChildSize: 0.4,
+        expand: false,
+        builder: (_, scrollController) => SingleChildScrollView(
+          controller: scrollController,
+          child: FunctionKeysSheet(btService: btService),
+        ),
       ),
-      builder: (_) => FunctionKeysSheet(btService: btService),
+    );
+  }
+
+  void _showDevicePicker(BuildContext context, BluetoothHidService btService, ColorScheme cs) {
+    btService.refreshBondedDevices();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cs.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (_) => ChangeNotifierProvider.value(
+        value: btService,
+        child: Consumer<BluetoothHidService>(
+          builder: (_, bt, __) => DevicePickerSheet(btService: bt),
+        ),
+      ),
     );
   }
 }

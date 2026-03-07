@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../theme/app_theme.dart';
 import '../services/bluetooth_hid_service.dart';
 
@@ -21,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           _sectionHeader("WINDPAD SETTINGS", cs),
 
-          // ── Theme toggle ──
+          // Theme toggle
           ListTile(
             leading: const Icon(Icons.palette_outlined),
             title: const Text("Theme"),
@@ -39,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
 
-          // ── Trackpad surface color ──
+          // Trackpad surface color
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
@@ -69,21 +70,11 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
 
-          // ── Spreadsheet Mode ──
-          SwitchListTile(
-            title: const Text("Spreadsheet Mode"),
-            subtitle: const Text("Enter → Tab, Shift+Enter → Down"),
-            value: btService.isSpreadsheetMode,
-            onChanged: (_) => btService.toggleSpreadsheetMode(),
-          ),
+          // Spreadsheet Mode
+          SwitchListTile(title: const Text("Spreadsheet Mode"), subtitle: const Text("Enter → Tab, Shift+Enter → Down"), value: btService.isSpreadsheetMode, onChanged: (_) => btService.toggleSpreadsheetMode()),
 
-          // ── Touch Sound ──
-          SwitchListTile(
-            title: const Text("Touch Sound"),
-            subtitle: const Text("Soft click on each tap"),
-            value: btService.touchSoundEnabled,
-            onChanged: (v) => btService.setTouchSoundEnabled(v),
-          ),
+          // Touch Sound
+          SwitchListTile(title: const Text("Touch Sound"), subtitle: const Text("Soft click on each tap"), value: btService.touchSoundEnabled, onChanged: (v) => btService.setTouchSoundEnabled(v)),
           if (btService.touchSoundEnabled)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -96,10 +87,27 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
 
+          // Emoji OS toggle
+          ListTile(
+            leading: const Icon(Icons.emoji_emotions_outlined),
+            title: const Text("Emoji shortcut OS"),
+            subtitle: Text(btService.useWindowsEmoji ? "Windows (Win + .)" : "macOS (Ctrl+Cmd+Space)"),
+            trailing: SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: true, label: Text("Win", style: TextStyle(fontSize: 12))),
+                ButtonSegment(value: false, label: Text("Mac", style: TextStyle(fontSize: 12))),
+              ],
+              selected: {btService.useWindowsEmoji},
+              showSelectedIcon: false,
+              onSelectionChanged: (val) => btService.setUseWindowsEmoji(val.first),
+              style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact, padding: EdgeInsets.zero),
+            ),
+          ),
+
           const Divider(height: 32),
           _sectionHeader("TRACKPAD", cs),
 
-          // ── Pointer Speed ──
+          // Pointer Speed
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Column(
@@ -157,7 +165,7 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.star_rate_outlined),
             title: const Text("Rate us"),
-            onTap: () => _launchUrl('https://play.google.com/store/apps/details?id=com.windpad.app'),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _RatingScreen())),
           ),
           ListTile(
             leading: const Icon(Icons.info_outline),
@@ -170,7 +178,18 @@ class SettingsScreen extends StatelessWidget {
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _HelpFeedbackScreen())),
           ),
 
-          const SizedBox(height: 48),
+          // Footer
+          const SizedBox(height: 32),
+          Center(
+            child: Column(
+              children: [
+                Text("🇮🇳  Made in India", style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 4),
+                Text("Developed by Aditya 🎓", style: TextStyle(fontSize: 12, color: cs.outline)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
         ],
       ),
     );
@@ -219,11 +238,6 @@ class SettingsScreen extends StatelessWidget {
     });
   }
 
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
   void _showAbout(BuildContext context) async {
     final info = await PackageInfo.fromPlatform();
     if (!context.mounted) return;
@@ -241,6 +255,116 @@ class SettingsScreen extends StatelessWidget {
         Text('Package: ${info.packageName}', style: const TextStyle(fontSize: 12)),
       ],
     );
+  }
+}
+
+// ═══════════════════════════════
+// In-App Rating Screen
+// ═══════════════════════════════
+class _RatingScreen extends StatefulWidget {
+  const _RatingScreen();
+
+  @override
+  State<_RatingScreen> createState() => _RatingScreenState();
+}
+
+class _RatingScreenState extends State<_RatingScreen> {
+  double _rating = 0;
+  final _feedbackController = TextEditingController();
+  bool _submitted = false;
+
+  @override
+  void dispose() {
+    _feedbackController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Rate Windpad')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: _submitted ? _buildThankYou(cs) : _buildForm(cs),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForm(ColorScheme cs) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.star_rounded, size: 64, color: cs.primary),
+        const SizedBox(height: 16),
+        Text("How's your experience?", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: cs.onSurface)),
+        const SizedBox(height: 8),
+        Text("Your feedback helps us improve", style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant)),
+        const SizedBox(height: 24),
+        RatingBar.builder(
+          initialRating: _rating,
+          minRating: 1,
+          direction: Axis.horizontal,
+          allowHalfRating: false,
+          itemCount: 5,
+          itemSize: 48,
+          unratedColor: cs.outlineVariant,
+          itemBuilder: (context, _) => Icon(Icons.star_rounded, color: cs.primary),
+          onRatingUpdate: (rating) => setState(() => _rating = rating),
+        ),
+        const SizedBox(height: 24),
+        TextField(
+          controller: _feedbackController,
+          maxLines: 4,
+          decoration: InputDecoration(
+            hintText: "Tell us what you think...",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            filled: true,
+            fillColor: cs.surfaceContainerHighest,
+          ),
+        ),
+        const SizedBox(height: 24),
+        FilledButton.icon(
+          onPressed: _rating > 0 ? _submitRating : null,
+          icon: const Icon(Icons.send),
+          label: const Text("Submit"),
+          style: FilledButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildThankYou(ColorScheme cs) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.favorite, size: 64, color: cs.primary),
+        const SizedBox(height: 16),
+        Text("Thank you! 🎉", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: cs.onSurface)),
+        const SizedBox(height: 8),
+        Text("We appreciate your feedback", style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant)),
+        const SizedBox(height: 24),
+        FilledButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Go Back"),
+        ),
+      ],
+    );
+  }
+
+  void _submitRating() async {
+    setState(() => _submitted = true);
+    // Send email with rating
+    final body = "Rating: ${_rating.toInt()}/5\n\nFeedback: ${_feedbackController.text}";
+    final uri = Uri(
+      scheme: 'mailto',
+      path: 'gadityaprasadachary@gmail.com',
+      queryParameters: {'subject': 'Windpad Rating', 'body': body},
+    );
+    if (await canLaunchUrl(uri)) await launchUrl(uri);
   }
 }
 
@@ -271,7 +395,7 @@ class _PrivacyPolicyScreen extends StatelessWidget {
               "• Does NOT use analytics, tracking, or advertising SDKs\n\n"
               "Bluetooth permissions are required solely to establish a Bluetooth HID connection between your phone and your computer. "
               "Location permission (Android ≤ 11) is required by Android to discover Bluetooth devices and is not used for actual location tracking.\n\n"
-              "If you have questions about this policy, contact us at windpad.app@gmail.com.",
+              "If you have questions about this policy, contact us at gadityaprasadachary@gmail.com.",
               style: TextStyle(fontSize: 15, height: 1.6),
             ),
           ],
@@ -288,12 +412,14 @@ class _HelpFeedbackScreen extends StatelessWidget {
   const _HelpFeedbackScreen();
 
   static const _faqs = [
-    {'q': 'How do I connect my phone to a computer?', 'a': 'Tap "Connect" on the home screen, then pair from your computer\'s Bluetooth settings. Ensure your phone is visible.'},
+    {'q': 'How do I connect my phone to a computer?', 'a': 'Tap "Connect" on the home screen, select your paired device from the list, and it will connect automatically. Ensure your phone is visible in Bluetooth settings.'},
     {'q': 'Why does Bluetooth disconnect in the background?', 'a': 'Go to Battery settings and disable battery optimization for Windpad. The app uses a foreground service to stay alive.'},
     {'q': 'What is Spreadsheet Mode?', 'a': 'When enabled, the Enter key sends Tab (to move right in Excel/Sheets), and Shift+Enter sends Down arrow.'},
     {'q': 'How do I change the cursor speed?', 'a': 'Tap the DPI badge in the top bar, or adjust the Pointer Speed slider in Settings > Trackpad.'},
     {'q': 'Does this work with macOS?', 'a': 'Yes! Windpad works with Windows, macOS, Linux, and ChromeOS via standard Bluetooth HID.'},
     {'q': 'Can I use this app without internet?', 'a': 'Absolutely. Windpad works entirely offline via Bluetooth.'},
+    {'q': 'How do I open the emoji picker?', 'a': 'Tap the Emoji button in Quick Keys. Set your OS (Win/Mac) in Settings for the correct shortcut.'},
+    {'q': 'What are sticky modifier keys?', 'a': 'In the Special Keys sheet, tap Ctrl/Shift/Alt/Win to activate them. The modifier sticks until you press the next key, then auto-releases.'},
   ];
 
   @override
@@ -316,7 +442,7 @@ class _HelpFeedbackScreen extends StatelessWidget {
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () async {
-              final uri = Uri(scheme: 'mailto', path: 'windpad.app@gmail.com', queryParameters: {'subject': 'Windpad Feedback'});
+              final uri = Uri(scheme: 'mailto', path: 'gadityaprasadachary@gmail.com', queryParameters: {'subject': 'Windpad Feedback'});
               if (await canLaunchUrl(uri)) await launchUrl(uri);
             },
             icon: const Icon(Icons.email_outlined),

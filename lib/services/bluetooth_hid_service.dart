@@ -23,6 +23,12 @@ class BluetoothHidService extends ChangeNotifier {
   bool _quickKeysVisible = true;
   bool _hapticFeedback = true;
   int _trackpadColorIndex = 0;
+  bool _trackpadLocked = false;
+  bool _useWindowsEmoji = true; // true=Windows, false=macOS
+
+  // Bonded devices
+  List<Map<String, String>> _bondedDevices = [];
+  String? _lastConnectedMac;
 
   BluetoothState get state => _state;
   String get connectedDeviceName => _connectedDeviceName;
@@ -39,15 +45,19 @@ class BluetoothHidService extends ChangeNotifier {
   bool get quickKeysVisible => _quickKeysVisible;
   bool get hapticFeedback => _hapticFeedback;
   int get trackpadColorIndex => _trackpadColorIndex;
+  bool get trackpadLocked => _trackpadLocked;
+  bool get useWindowsEmoji => _useWindowsEmoji;
   double get movementScale => _dpi / 800.0;
+  List<Map<String, String>> get bondedDevices => _bondedDevices;
+  String? get lastConnectedMac => _lastConnectedMac;
 
   static const List<Color> trackpadColors = [
-    Color(0xFFE8F1FF), // Default light blue
-    Color(0xFFE8F5E9), // Green
-    Color(0xFFFFF3E0), // Orange
-    Color(0xFFF3E5F5), // Purple
-    Color(0xFFECEFF1), // Grey
-    Color(0xFFFFEBEE), // Red
+    Color(0xFFE8F1FF),
+    Color(0xFFE8F5E9),
+    Color(0xFFFFF3E0),
+    Color(0xFFF3E5F5),
+    Color(0xFFECEFF1),
+    Color(0xFFFFEBEE),
   ];
 
   Color get trackpadColor => trackpadColors[_trackpadColorIndex.clamp(0, trackpadColors.length - 1)];
@@ -61,6 +71,8 @@ class BluetoothHidService extends ChangeNotifier {
     PlatformChannel.setMethodCallHandler(_handleMethodCall);
     await _requestPermissions();
     await PlatformChannel.initHid();
+    // Auto-connect to last device
+    await _autoConnect();
   }
 
   Future<void> _requestPermissions() async {
@@ -87,6 +99,8 @@ class BluetoothHidService extends ChangeNotifier {
     _quickKeysVisible = prefs.getBool('quickKeys') ?? true;
     _hapticFeedback = prefs.getBool('haptic') ?? true;
     _trackpadColorIndex = prefs.getInt('trackpadColor') ?? 0;
+    _useWindowsEmoji = prefs.getBool('useWindowsEmoji') ?? true;
+    _lastConnectedMac = prefs.getString('lastMac');
     notifyListeners();
   }
 
@@ -102,6 +116,28 @@ class BluetoothHidService extends ChangeNotifier {
     await prefs.setBool('quickKeys', _quickKeysVisible);
     await prefs.setBool('haptic', _hapticFeedback);
     await prefs.setInt('trackpadColor', _trackpadColorIndex);
+    await prefs.setBool('useWindowsEmoji', _useWindowsEmoji);
+  }
+
+  Future<void> _saveLastMac(String mac) async {
+    _lastConnectedMac = mac;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('lastMac', mac);
+  }
+
+  // ── Auto-connect ──
+  Future<void> _autoConnect() async {
+    await refreshBondedDevices();
+    if (_lastConnectedMac != null && _lastConnectedMac!.isNotEmpty && _state == BluetoothState.disconnected) {
+      _state = BluetoothState.scanning;
+      notifyListeners();
+      await PlatformChannel.connectToDevice(_lastConnectedMac!);
+    }
+  }
+
+  Future<void> refreshBondedDevices() async {
+    _bondedDevices = await PlatformChannel.getBondedDevices();
+    notifyListeners();
   }
 
   // ── Setters ──
@@ -113,6 +149,9 @@ class BluetoothHidService extends ChangeNotifier {
   void setThreeFingerSwipe(bool v) { _threeFingerSwipe = v; _saveSettings(); notifyListeners(); }
   void setQuickKeysVisible(bool v) { _quickKeysVisible = v; _saveSettings(); notifyListeners(); }
   void setHapticFeedback(bool v) { _hapticFeedback = v; _saveSettings(); notifyListeners(); }
+  void setUseWindowsEmoji(bool v) { _useWindowsEmoji = v; _saveSettings(); notifyListeners(); }
+
+  void setTrackpadLocked(bool v) { _trackpadLocked = v; notifyListeners(); }
 
   void setTrackpadColorIndex(int idx) {
     _trackpadColorIndex = idx.clamp(0, trackpadColors.length - 1);
@@ -121,11 +160,7 @@ class BluetoothHidService extends ChangeNotifier {
   }
 
   void setDpi(int value) {
-    if (_dpiSteps.contains(value)) {
-      _dpi = value;
-      _saveSettings();
-      notifyListeners();
-    }
+    if (_dpiSteps.contains(value)) { _dpi = value; _saveSettings(); notifyListeners(); }
   }
 
   void cycleDpi() {
@@ -155,7 +190,6 @@ class BluetoothHidService extends ChangeNotifier {
   // ── Connection ──
   Future<void> connect() async {
     if (_state != BluetoothState.disconnected) return;
-    // Re-check permissions before connecting
     final status = await Permission.bluetoothConnect.status;
     if (status.isDenied) {
       await _requestPermissions();
@@ -165,6 +199,20 @@ class BluetoothHidService extends ChangeNotifier {
     _state = BluetoothState.scanning;
     notifyListeners();
     await PlatformChannel.startAdvertising();
+  }
+
+  Future<void> connectToDevice(String mac, String name) async {
+    if (_state == BluetoothState.connected) return;
+    final status = await Permission.bluetoothConnect.status;
+    if (status.isDenied) {
+      await _requestPermissions();
+      final newStatus = await Permission.bluetoothConnect.status;
+      if (newStatus.isDenied) return;
+    }
+    _state = BluetoothState.scanning;
+    notifyListeners();
+    await _saveLastMac(mac);
+    await PlatformChannel.connectToDevice(mac);
   }
 
   Future<void> disconnect() async {
@@ -181,7 +229,7 @@ class BluetoothHidService extends ChangeNotifier {
   int _activeButtons = 0;
 
   Future<void> sendMouseMove(int dx, int dy) async {
-    if (_state != BluetoothState.connected) return;
+    if (_state != BluetoothState.connected || _trackpadLocked) return;
     await PlatformChannel.sendMouseReport(buttons: _activeButtons, dx: dx, dy: dy, scroll: 0);
   }
 
@@ -205,7 +253,7 @@ class BluetoothHidService extends ChangeNotifier {
   }
 
   Future<void> sendScroll(int scroll) async {
-    if (_state != BluetoothState.connected) return;
+    if (_state != BluetoothState.connected || _trackpadLocked) return;
     await PlatformChannel.sendMouseReport(buttons: 0, dx: 0, dy: 0, scroll: scroll);
   }
 
@@ -227,9 +275,45 @@ class BluetoothHidService extends ChangeNotifier {
 
   Future<void> sendShiftEnter() async {
     if (_isSpreadsheetMode) {
-      await sendKey(0, [0x28]); // Down in Excel
+      await sendKey(0, [0x28]); // Enter (down in spreadsheet)
     } else {
       await sendKey(0x02, [0x28]); // Shift+Enter
+    }
+  }
+
+  Future<void> sendEmoji() async {
+    if (_useWindowsEmoji) {
+      // Windows: Win+. (GUI key 0xE3 + period 0x37)
+      await sendKey(0x08, [0x37]);
+    } else {
+      // macOS: Ctrl+Cmd+Space (0x01|0x08 + Space 0x2C)
+      await sendKey(0x01 | 0x08, [0x2C]);
+    }
+  }
+
+  /// Paste clipboard text char-by-char preserving formatting
+  Future<void> pasteClipboard() async {
+    if (_state != BluetoothState.connected) return;
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data == null || data.text == null || data.text!.isEmpty) return;
+    final text = data.text!;
+    for (int i = 0; i < text.length; i++) {
+      final char = text[i];
+      if (char == '\n') {
+        await PlatformChannel.sendKeyReport(modifier: 0, keys: [0x28]);
+        await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+      } else if (char == '\t') {
+        await PlatformChannel.sendKeyReport(modifier: 0, keys: [0x2B]);
+        await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+      } else {
+        final keycode = _mapCharCodeToHid(char);
+        final modifier = _getModifierForChar(char);
+        if (keycode != 0) {
+          await PlatformChannel.sendKeyReport(modifier: modifier, keys: [keycode]);
+          await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+        }
+      }
+      await Future.delayed(const Duration(milliseconds: 8));
     }
   }
 
@@ -268,6 +352,14 @@ class BluetoothHidService extends ChangeNotifier {
       case 'onConnected':
         _state = BluetoothState.connected;
         _connectedDeviceName = call.arguments as String? ?? "Unknown Device";
+        // Try to save the MAC of connected device
+        final connDevice = _bondedDevices.firstWhere(
+          (d) => d['name'] == _connectedDeviceName,
+          orElse: () => {},
+        );
+        if (connDevice.isNotEmpty && connDevice['address'] != null) {
+          _saveLastMac(connDevice['address']!);
+        }
         notifyListeners();
         break;
       case 'onDisconnected':

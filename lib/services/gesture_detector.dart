@@ -12,10 +12,9 @@ enum GestureType {
 
 class WindpadGestureDetector {
   final BluetoothHidService btService;
-  
-  // Settings constants
-  static const int kTapMaxMs = 220;
-  static const double kTapMaxDist = 12.0;
+
+  static const int kTapMaxMs = 200;
+  static const double kTapMaxDist = 10.0;
   static const double kPinchThreshold = 14.0;
   static const double kSwipeThreshold = 10.0;
 
@@ -23,6 +22,10 @@ class WindpadGestureDetector {
   Offset? _touchStartPos;
   int _fingerCount = 0;
   double? _initialPinchDist;
+
+  // Smooth cursor — low-pass filter state
+  double _smoothX = 0.0;
+  double _smoothY = 0.0;
 
   WindpadGestureDetector(this.btService);
 
@@ -34,34 +37,45 @@ class WindpadGestureDetector {
     if (_fingerCount == 1) {
       _touchStartTime = DateTime.now();
       _touchStartPos = event.position;
-    } else if (_fingerCount == 2) {
-      // Potentially starting pinch/scroll, but let's wait for movement
+      _smoothX = 0.0;
+      _smoothY = 0.0;
     }
   }
 
   void handlePointerMove(PointerMoveEvent event) {
     if (_touchStartPos == null) return;
+    if (btService.trackpadLocked) return;
 
     final delta = event.localDelta;
 
     if (_fingerCount == 1) {
-      final scaledDx = delta.dx * btService.movementScale * 2.5;
-      final scaledDy = delta.dy * btService.movementScale * 2.5;
+      final rawDx = delta.dx * btService.movementScale * 2.5;
+      final rawDy = delta.dy * btService.movementScale * 2.5;
 
-      // Check for drag priming (Double-Tap-To-Drag)
+      // Low-pass filter for smooth cursor
+      _smoothX = _smoothX * 0.35 + rawDx * 0.65;
+      _smoothY = _smoothY * 0.35 + rawDy * 0.65;
+
+      // Pointer acceleration curve
+      final speed = (_smoothX * _smoothX + _smoothY * _smoothY);
+      final accel = speed > 100 ? 1.3 : (speed > 25 ? 1.1 : 1.0);
+      final outX = (_smoothX * accel).toInt();
+      final outY = (_smoothY * accel).toInt();
+
+      // Double-Tap-To-Drag
       if (!_isDragging && _lastTapTime != null && _touchStartTime != null) {
         if (DateTime.now().difference(_lastTapTime!).inMilliseconds < 450) {
           final travelDist = (event.position - _touchStartPos!).distance;
-          if (travelDist > 8.0) { // Require definitive movement to lock drag
+          if (travelDist > 8.0) {
             _isDragging = true;
             btService.sendMouseButtonDown(1);
           }
         } else {
-          _lastTapTime = null; // Expired
+          _lastTapTime = null;
         }
       }
 
-      btService.sendMouseMove(scaledDx.toInt(), scaledDy.toInt());
+      btService.sendMouseMove(outX, outY);
       btService.setActiveGesture(_isDragging ? "dragHold" : "drag");
     } else if (_fingerCount == 2) {
       if (_initialPinchDist == null) {
@@ -69,7 +83,7 @@ class WindpadGestureDetector {
       } else {
         final currentDist = (event.position - _touchStartPos!).distance;
         final distDelta = currentDist - _initialPinchDist!;
-        
+
         if (distDelta.abs() > kPinchThreshold) {
           final zoomIn = distDelta > 0;
           _handlePinch(zoomIn);
@@ -78,7 +92,10 @@ class WindpadGestureDetector {
           btService.setPinchPop(zoomIn ? "🔍 Zoom In" : "🔎 Zoom Out");
         } else {
           final scrollY = delta.dy.toInt();
-          btService.sendScroll(-scrollY);
+          final scrollX = delta.dx.toInt();
+          if (scrollY.abs() >= scrollX.abs()) {
+            btService.sendScroll(-scrollY);
+          }
           btService.setActiveGesture("scroll");
         }
       }
@@ -99,18 +116,17 @@ class WindpadGestureDetector {
       final duration = DateTime.now().difference(_touchStartTime!).inMilliseconds;
       final totalDist = (event.position - _touchStartPos!).distance;
 
-      // Increase tap leniency distance 12 -> 24 pixels so slight shakes don't ruin a tap
       if (duration < kTapMaxMs && totalDist < 24.0) {
         if (_fingerCount == 1) {
-          btService.sendMouseClick(1); // Left Click
+          btService.sendMouseClick(1);
           btService.setActiveGesture("singleTap");
-          _lastTapTime = DateTime.now(); // Prime for potential drag/double tap
+          _lastTapTime = DateTime.now();
         } else if (_fingerCount == 2) {
-          btService.sendMouseClick(2); // Right Click
+          btService.sendMouseClick(2);
           btService.setActiveGesture("twoTap");
           _lastTapTime = null;
         } else if (_fingerCount == 3) {
-          btService.sendMouseClick(3); // Middle Click (optional, usually 3 or 4 mask)
+          btService.sendMouseClick(4); // Middle click
           _lastTapTime = null;
         }
         Future.delayed(const Duration(milliseconds: 700), () {
@@ -126,6 +142,8 @@ class WindpadGestureDetector {
       _touchStartPos = null;
       _initialPinchDist = null;
       _isDragging = false;
+      _smoothX = 0.0;
+      _smoothY = 0.0;
     }
   }
 
@@ -141,37 +159,28 @@ class WindpadGestureDetector {
       _touchStartPos = null;
       _initialPinchDist = null;
       _isDragging = false;
+      _smoothX = 0.0;
+      _smoothY = 0.0;
     }
   }
 
   void _handlePinch(bool zoomIn) {
-    // Zoom in: Ctrl + Scroll Up, Zoom out: Ctrl + Scroll Down
-    // HID modifier for Ctrl is 0x01
-    // But most OSes use Ctrl+Wheel. We can send Ctrl key + Scroll report.
-    btService.sendKey(0x01, []); // Ctrl down (empty keys just modifier)
+    btService.sendKey(0x01, []);
     btService.sendScroll(zoomIn ? 1 : -1);
   }
 
   void _handleThreeFingerSwipe(Offset delta) {
     if (delta.dx.abs() > delta.dy.abs()) {
       if (delta.dx > 0) {
-        // Right swipe: Next Space
-        // macOS: Ctrl+Right (modifier 0x01, key 0x4F)
-        btService.sendKey(0x01, [0x4F]);
+        btService.sendKey(0x01, [0x4F]); // Ctrl+Right
       } else {
-        // Left swipe: Prev Space
-        // macOS: Ctrl+Left (modifier 0x01, key 0x50)
-        btService.sendKey(0x01, [0x50]);
+        btService.sendKey(0x01, [0x50]); // Ctrl+Left
       }
     } else {
       if (delta.dy > 0) {
-        // Down swipe: Show Desktop / Exposé
-        // macOS: Ctrl+Down (modifier 0x01, key 0x51)
-        btService.sendKey(0x01, [0x51]);
+        btService.sendKey(0x01, [0x51]); // Ctrl+Down (show desktop)
       } else {
-        // Up swipe: Mission Control
-        // macOS: Ctrl+Up (modifier 0x01, key 0x52)
-        btService.sendKey(0x01, [0x52]);
+        btService.sendKey(0x01, [0x52]); // Ctrl+Up (mission control)
       }
     }
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import '../services/bluetooth_hid_service.dart';
 
 class KeyboardSection extends StatefulWidget {
@@ -14,6 +15,7 @@ class _KeyboardSectionState extends State<KeyboardSection> {
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
   String _previousText = " ";
+  late final KeyboardVisibilityController _kbController;
 
   @override
   void initState() {
@@ -27,6 +29,14 @@ class _KeyboardSectionState extends State<KeyboardSection> {
           _previousText = " ";
         }
       });
+    });
+
+    // Lock trackpad when keyboard is visible
+    _kbController = KeyboardVisibilityController();
+    _kbController.onChange.listen((visible) {
+      if (!mounted) return;
+      final btService = Provider.of<BluetoothHidService>(context, listen: false);
+      btService.setTrackpadLocked(visible);
     });
   }
 
@@ -95,12 +105,12 @@ class _KeyboardSectionState extends State<KeyboardSection> {
             cursorColor: cs.primary,
           ),
         ),
-        const SizedBox(height: 6),
-        Padding(
-          padding: const EdgeInsets.only(left: 16),
+        const SizedBox(height: 8),
+        // Static hint text
+        Center(
           child: Text(
-            "Opens your default phone keyboard (Gboard, Samsung, etc.)",
-            style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
+            "👀 See on your screen",
+            style: TextStyle(color: cs.onSurfaceVariant.withValues(alpha: 0.5), fontSize: 12, fontWeight: FontWeight.w400),
           ),
         ),
       ],

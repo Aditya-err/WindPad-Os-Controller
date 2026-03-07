@@ -12,12 +12,13 @@ class QuickKeysWidget extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     final List<Map<String, dynamic>> quickKeys = [
-      {"label": "Copy", "icon": Icons.content_copy, "k": "C", "m": 0x01},
-      {"label": "Paste", "icon": Icons.content_paste, "k": "V", "m": 0x01},
-      {"label": "Undo", "icon": Icons.undo, "k": "Z", "m": 0x01},
-      {"label": "Cut", "icon": Icons.content_cut, "k": "X", "m": 0x01},
-      {"label": "All", "icon": Icons.select_all, "k": "A", "m": 0x01},
-      {"label": "Enter", "icon": Icons.keyboard_return, "k": "Enter", "m": 0x00},
+      {"label": "Copy", "icon": Icons.content_copy, "action": "copy"},
+      {"label": "Paste", "icon": Icons.content_paste, "action": "paste"},
+      {"label": "Cut", "icon": Icons.content_cut, "action": "cut"},
+      {"label": "Undo", "icon": Icons.undo, "action": "undo"},
+      {"label": "All", "icon": Icons.select_all, "action": "selectAll"},
+      {"label": "Enter", "icon": Icons.keyboard_return, "action": "enter"},
+      {"label": "Emoji", "icon": Icons.emoji_emotions_outlined, "action": "emoji"},
     ];
 
     return GridView.builder(
@@ -25,46 +26,65 @@ class QuickKeysWidget extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3, mainAxisSpacing: 8, crossAxisSpacing: 8, childAspectRatio: 1.8,
+        crossAxisCount: 4, mainAxisSpacing: 6, crossAxisSpacing: 6, childAspectRatio: 2.2,
       ),
       itemCount: quickKeys.length,
       itemBuilder: (context, index) {
         final key = quickKeys[index];
-        return _buildKey(key["label"], key["icon"], key["k"], key["m"], isConn, btService, context, cs);
+        return _buildKey(key["label"], key["icon"], key["action"], isConn, btService, context, cs);
       },
     );
   }
 
-  Widget _buildKey(String label, IconData icon, String k, int modifier, bool isConn, BluetoothHidService btService, BuildContext context, ColorScheme cs) {
+  Widget _buildKey(String label, IconData icon, String action, bool isConn, BluetoothHidService btService, BuildContext context, ColorScheme cs) {
     return Material(
       color: cs.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: isConn ? () {
-          if (k == "Enter") {
-            btService.sendEnter();
-          } else {
-            int keycode = 0x04 + (k.codeUnitAt(0) - 'A'.codeUnitAt(0));
-            btService.sendKey(modifier, [keycode]);
-          }
-        } : null,
-        onLongPress: isConn && k == "Enter" ? () {
+        onTap: isConn ? () => _handleAction(action, btService) : null,
+        onLongPress: isConn && action == "enter" ? () {
           btService.sendShiftEnter();
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shift + Enter sent'), duration: Duration(milliseconds: 500)));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shift+Enter sent'), duration: Duration(milliseconds: 500)));
         } : null,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Opacity(
           opacity: isConn ? 1.0 : 0.5,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 20, color: cs.onSurface),
-              const SizedBox(height: 4),
-              Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: cs.onSurface)),
+              Icon(icon, size: 16, color: cs.onSurface),
+              const SizedBox(height: 2),
+              Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: cs.onSurface)),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _handleAction(String action, BluetoothHidService btService) {
+    switch (action) {
+      case "copy":
+        btService.sendKey(0x01, [0x06]); // Ctrl+C
+        break;
+      case "paste":
+        btService.pasteClipboard(); // Paste from clipboard char-by-char
+        break;
+      case "cut":
+        btService.sendKey(0x01, [0x1B]); // Ctrl+X
+        break;
+      case "undo":
+        btService.sendKey(0x01, [0x1D]); // Ctrl+Z
+        break;
+      case "selectAll":
+        btService.sendKey(0x01, [0x04]); // Ctrl+A
+        break;
+      case "enter":
+        btService.sendEnter();
+        break;
+      case "emoji":
+        btService.sendEmoji();
+        break;
+    }
   }
 }
