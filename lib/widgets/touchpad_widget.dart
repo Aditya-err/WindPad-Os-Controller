@@ -199,17 +199,23 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
       child: Material(
         color: isConn ? bg : cs.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(16),
-        elevation: isConn ? 1 : 0,
+        elevation: isConn ? 3 : 0,
+        shadowColor: cs.shadow.withValues(alpha: 0.5),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
+        ),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
             child: Column(
               children: [
-                Text(icon, style: TextStyle(fontSize: 16, color: isConn ? txt : cs.outline)),
-                const SizedBox(height: 3),
-                Text(label, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w500, letterSpacing: 0.4, color: isConn ? txt : cs.outline)),
+                Text(icon, style: TextStyle(fontSize: 18, color: isConn ? txt : cs.outline)),
+                const SizedBox(height: 4),
+                Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 0.5, color: isConn ? txt : cs.outline)),
               ],
             ),
           ),
@@ -223,7 +229,13 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
       child: Material(
         color: isConn ? cs.secondaryContainer : cs.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(16),
-        elevation: isConn ? 1 : 0,
+        elevation: isConn ? 3 : 0,
+        shadowColor: cs.shadow.withValues(alpha: 0.5),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -231,17 +243,17 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
               onTap: () => isConn ? btService.sendScroll(1) : null,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Icon(Icons.arrow_drop_up, size: 24, color: isConn ? cs.onSecondaryContainer : cs.outline),
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Icon(Icons.arrow_drop_up, size: 28, color: isConn ? cs.onSecondaryContainer : cs.outline),
               ),
             ),
-            Container(height: 1, color: isConn ? cs.onSecondaryContainer.withValues(alpha: 0.1) : cs.outlineVariant),
+            Container(height: 1, color: isConn ? cs.onSecondaryContainer.withValues(alpha: 0.15) : cs.outlineVariant),
             InkWell(
               onTap: () => isConn ? btService.sendScroll(-1) : null,
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Icon(Icons.arrow_drop_down, size: 24, color: isConn ? cs.onSecondaryContainer : cs.outline),
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Icon(Icons.arrow_drop_down, size: 28, color: isConn ? cs.onSecondaryContainer : cs.outline),
               ),
             ),
           ],

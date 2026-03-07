@@ -74,8 +74,36 @@ class MainActivity: FlutterActivity() {
                         result.error("BLUETOOTH_NULL", "Adapter is null", null)
                     }
                 }
-                "getPaired" -> {
-                    result.success(listOf<String>())
+                "getBondedDevices" -> {
+                    val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
+                    val resultList = mutableListOf<Map<String, String>>()
+                    if (adapter != null) {
+                        try {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                                if (androidx.core.content.ContextCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.BLUETOOTH_CONNECT) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                                    for (device in adapter.bondedDevices) {
+                                        resultList.add(mapOf("name" to (device.name ?: "Unknown"), "address" to device.address))
+                                    }
+                                }
+                            } else {
+                                for (device in adapter.bondedDevices) {
+                                    resultList.add(mapOf("name" to (device.name ?: "Unknown"), "address" to device.address))
+                                }
+                            }
+                        } catch (e: SecurityException) {
+                            // Ignored
+                        }
+                    }
+                    result.success(resultList)
+                }
+                "connectToDevice" -> {
+                    val mac = call.argument<String>("mac")
+                    if (mac != null) {
+                        btHidService?.reconnectLastDevice(mac)
+                        result.success(true)
+                    } else {
+                        result.success(false)
+                    }
                 }
                 "moveToBackground" -> {
                     moveTaskToBack(true)

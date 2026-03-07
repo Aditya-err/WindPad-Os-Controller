@@ -18,7 +18,6 @@ class QuickKeysWidget extends StatelessWidget {
       {"label": "Undo", "icon": Icons.undo, "action": "undo"},
       {"label": "All", "icon": Icons.select_all, "action": "selectAll"},
       {"label": "Enter", "icon": Icons.keyboard_return, "action": "enter"},
-      {"label": "Emoji", "icon": Icons.emoji_emotions_outlined, "action": "emoji"},
     ];
 
     return GridView.builder(
@@ -26,7 +25,7 @@ class QuickKeysWidget extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4, mainAxisSpacing: 6, crossAxisSpacing: 6, childAspectRatio: 2.2,
+        crossAxisCount: 3, mainAxisSpacing: 6, crossAxisSpacing: 6, childAspectRatio: 2.8,
       ),
       itemCount: quickKeys.length,
       itemBuilder: (context, index) {
@@ -81,9 +80,6 @@ class QuickKeysWidget extends StatelessWidget {
         break;
       case "enter":
         btService.sendEnter();
-        break;
-      case "emoji":
-        btService.sendEmoji();
         break;
     }
   }

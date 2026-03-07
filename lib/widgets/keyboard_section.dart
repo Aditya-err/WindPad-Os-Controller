@@ -74,46 +74,56 @@ class _KeyboardSectionState extends State<KeyboardSection> {
     final isConn = btService.state == BluetoothState.connected;
     final cs = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            color: cs.surfaceContainerHighest,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
-            border: Border(bottom: BorderSide(color: _isFocused ? cs.primary : cs.outlineVariant, width: _isFocused ? 2.0 : 1.0)),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest,
+        borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
+        border: Border(bottom: BorderSide(color: _isFocused ? cs.primary : cs.outlineVariant, width: _isFocused ? 2.0 : 1.0)),
+      ),
+      padding: const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  enabled: isConn,
+                  textInputAction: TextInputAction.newline,
+                  keyboardType: TextInputType.multiline,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  onChanged: (text) => _handleTextChanged(text, btService),
+                  decoration: InputDecoration(
+                    labelText: isConn ? "Type anywhere..." : "Connect to type",
+                    labelStyle: TextStyle(color: _isFocused ? cs.primary : cs.onSurfaceVariant, fontSize: 14),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                    isDense: true,
+                  ),
+                  style: TextStyle(color: cs.onSurface, fontSize: 16, height: 1.5),
+                  cursorColor: cs.primary,
+                ),
+              ),
+              if (_isFocused)
+                IconButton(
+                  icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary),
+                  onPressed: () => btService.sendEmoji(),
+                  tooltip: "Emoji",
+                ),
+            ],
           ),
-          padding: const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 4),
-          child: TextField(
-            controller: _controller,
-            focusNode: _focusNode,
-            enabled: isConn,
-            textInputAction: TextInputAction.newline,
-            keyboardType: TextInputType.multiline,
-            enableSuggestions: false,
-            autocorrect: false,
-            onChanged: (text) => _handleTextChanged(text, btService),
-            decoration: InputDecoration(
-              labelText: isConn ? "Type anywhere..." : "Connect to type",
-              labelStyle: TextStyle(color: _isFocused ? cs.primary : cs.onSurfaceVariant, fontSize: 14),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              isDense: true,
-            ),
-            style: TextStyle(color: cs.onSurface, fontSize: 16, height: 1.5),
-            cursorColor: cs.primary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        // Static hint text
-        Center(
-          child: Text(
+          const SizedBox(height: 2),
+          Text(
             "👀 See on your screen",
-            style: TextStyle(color: cs.onSurfaceVariant.withValues(alpha: 0.5), fontSize: 12, fontWeight: FontWeight.w400),
+            style: TextStyle(color: cs.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 11, fontWeight: FontWeight.w500),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -53,13 +53,26 @@ class DevicePickerSheet extends StatelessWidget {
                 },
               );
             }),
-          const SizedBox(height: 8),
-          TextButton.icon(
-            onPressed: () async {
-              await btService.refreshBondedDevices();
-            },
-            icon: const Icon(Icons.refresh, size: 18),
-            label: const Text("Refresh"),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextButton.icon(
+                onPressed: () async {
+                  await btService.refreshBondedDevices();
+                },
+                icon: const Icon(Icons.refresh, size: 18),
+                label: const Text("Refresh"),
+              ),
+              FilledButton.icon(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await btService.connect();
+                },
+                icon: const Icon(Icons.bluetooth_searching, size: 18),
+                label: const Text("Pair New Device"),
+              ),
+            ],
           ),
         ],
       ),

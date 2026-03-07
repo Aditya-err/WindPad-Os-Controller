@@ -131,6 +131,7 @@ class BluetoothHidService extends ChangeNotifier {
     if (_lastConnectedMac != null && _lastConnectedMac!.isNotEmpty && _state == BluetoothState.disconnected) {
       _state = BluetoothState.scanning;
       notifyListeners();
+      await Future.delayed(const Duration(milliseconds: 1500)); // Wait for HID service registration
       await PlatformChannel.connectToDevice(_lastConnectedMac!);
     }
   }
