@@ -73,20 +73,6 @@ class SettingsScreen extends StatelessWidget {
           // Spreadsheet Mode
           SwitchListTile(title: const Text("Spreadsheet Mode"), subtitle: const Text("Enter → Tab, Shift+Enter → Down"), value: btService.isSpreadsheetMode, onChanged: (_) => btService.toggleSpreadsheetMode()),
 
-          // Touch Sound
-          SwitchListTile(title: const Text("Touch Sound"), subtitle: const Text("Soft click on each tap"), value: btService.touchSoundEnabled, onChanged: (v) => btService.setTouchSoundEnabled(v)),
-          if (btService.touchSoundEnabled)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  const Icon(Icons.volume_down, size: 16),
-                  Expanded(child: Slider(value: btService.touchSoundVolume, min: 0, max: 100, onChanged: (v) => btService.setTouchSoundVolume(v))),
-                  const Icon(Icons.volume_up, size: 16),
-                ],
-              ),
-            ),
-
           // Emoji OS toggle
           ListTile(
             leading: const Icon(Icons.emoji_emotions_outlined),

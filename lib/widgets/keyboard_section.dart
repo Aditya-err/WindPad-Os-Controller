@@ -86,40 +86,49 @@ class _KeyboardSectionState extends State<KeyboardSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  focusNode: _focusNode,
-                  enabled: isConn,
-                  textInputAction: TextInputAction.newline,
-                  keyboardType: TextInputType.multiline,
-                  enableSuggestions: false,
-                  onTap: () {
-                    // Force software keyboard to appear even if HID is connected
-                    SystemChannels.textInput.invokeMethod('TextInput.show');
-                  },
-                  onChanged: (text) => _handleTextChanged(text, btService),
-                  decoration: InputDecoration(
-                    labelText: isConn ? "Type anywhere..." : "Connect to type",
-                    labelStyle: TextStyle(color: _isFocused ? cs.primary : cs.onSurfaceVariant, fontSize: 14),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
-                    isDense: true,
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              FocusScope.of(context).requestFocus(_focusNode);
+              SystemChannels.textInput.invokeMethod('TextInput.show');
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    enabled: isConn,
+                    textInputAction: TextInputAction.newline,
+                    keyboardType: TextInputType.multiline,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    showCursor: true,
+                    onTap: () {
+                      FocusScope.of(context).requestFocus(_focusNode);
+                      SystemChannels.textInput.invokeMethod('TextInput.show');
+                    },
+                    onChanged: (text) => _handleTextChanged(text, btService),
+                    decoration: InputDecoration(
+                      hintText: isConn ? "Type anywhere..." : "Connect to type",
+                      hintStyle: TextStyle(color: _isFocused ? cs.primary.withValues(alpha: 0.7) : cs.onSurfaceVariant, fontSize: 14),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                      isDense: true,
+                    ),
+                    style: TextStyle(color: cs.onSurface.withValues(alpha: 0.01), fontSize: 16, height: 1.5),
+                    cursorColor: cs.primary,
                   ),
-                  style: TextStyle(color: cs.onSurface, fontSize: 16, height: 1.5),
-                  cursorColor: cs.primary,
                 ),
-              ),
-              if (_isFocused)
-                IconButton(
-                  icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary),
-                  onPressed: () => btService.sendEmoji(),
-                  tooltip: "Emoji",
-                ),
-            ],
+                if (_isFocused)
+                  IconButton(
+                    icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary),
+                    onPressed: () => btService.sendEmoji(),
+                    tooltip: "Emoji",
+                  ),
+              ],
+            ),
           ),
           const SizedBox(height: 2),
           Text(
