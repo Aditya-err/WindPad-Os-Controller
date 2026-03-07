@@ -15,6 +15,12 @@ class PlatformChannel {
     } on PlatformException catch (_) {}
   }
 
+  static Future<void> sendMediaReport({required List<int> keys}) async {
+    try {
+      await _ch.invokeMethod('sendMedia', {'keys': keys});
+    } on PlatformException catch (_) {}
+  }
+
   static Future<void> startAdvertising() async {
     try { await _ch.invokeMethod('startAdvert'); } on PlatformException catch (_) {}
   }

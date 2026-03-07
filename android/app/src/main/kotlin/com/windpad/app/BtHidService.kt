@@ -67,7 +67,7 @@ class BtHidService(private val context: Context) {
                 "Bluetooth Touchpad & Keyboard",
                 "Windpad Inc",
                 BluetoothHidDevice.SUBCLASS1_COMBO,
-                HidReportDescriptor.MOUSE_DESCRIPTOR + HidReportDescriptor.KEYBOARD_DESCRIPTOR
+                HidReportDescriptor.MOUSE_DESCRIPTOR + HidReportDescriptor.KEYBOARD_DESCRIPTOR + HidReportDescriptor.CONSUMER_DESCRIPTOR
             )
             val qosOut = BluetoothHidDeviceAppQosSettings(
                 BluetoothHidDeviceAppQosSettings.SERVICE_BEST_EFFORT,
@@ -97,6 +97,20 @@ class BtHidService(private val context: Context) {
         }
         hostDevice?.let { device ->
             hidDevice?.sendReport(device, 2, report)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun sendMediaReport(keys: ByteArray) {
+        val report = ByteArray(2)
+        if (keys.isNotEmpty()) {
+            report[0] = keys[0]
+            if (keys.size > 1) {
+                report[1] = keys[1]
+            }
+        }
+        hostDevice?.let { device ->
+            hidDevice?.sendReport(device, 3, report)
         }
     }
 

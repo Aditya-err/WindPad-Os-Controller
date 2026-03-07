@@ -59,6 +59,11 @@ class MainActivity: FlutterActivity() {
                     btHidService?.sendKeyboardReport(mod, keys)
                     result.success(null)
                 }
+                "sendMedia" -> {
+                    val keys = call.argument<List<Int>>("keys")?.map { it.toByte() }?.toByteArray() ?: byteArrayOf()
+                    btHidService?.sendMediaReport(keys)
+                    result.success(null)
+                }
                 "initHid" -> {
                     btHidService?.initProfile()
                     result.success(true)

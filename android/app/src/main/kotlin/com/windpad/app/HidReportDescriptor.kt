@@ -58,4 +58,19 @@ object HidReportDescriptor {
         0x81.toByte(), 0x00,  //   Input (Data, Array)
         0xC0.toByte()         // End Collection
     )
+
+    val CONSUMER_DESCRIPTOR = byteArrayOf(
+        0x05.toByte(), 0x0C,        // Usage Page (Consumer)
+        0x09.toByte(), 0x01,        // Usage (Consumer Control)
+        0xA1.toByte(), 0x01,        // Collection (Application)
+        0x85.toByte(), 0x03,        //   Report ID (3)
+        0x15.toByte(), 0x00,        //   Logical Minimum (0)
+        0x26.toByte(), 0xFF.toByte(), 0x03, //   Logical Maximum (1023)
+        0x19.toByte(), 0x00,        //   Usage Minimum (0)
+        0x2A.toByte(), 0xFF.toByte(), 0x03, //   Usage Maximum (1023)
+        0x75.toByte(), 0x10,        //   Report Size (16)
+        0x95.toByte(), 0x01,        //   Report Count (1)
+        0x81.toByte(), 0x00,        //   Input (Data, Array, Absolute)
+        0xC0.toByte()               // End Collection
+    )
 }

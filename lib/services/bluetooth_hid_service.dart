@@ -260,10 +260,16 @@ class BluetoothHidService extends ChangeNotifier {
 
   Future<void> sendKey(int modifier, List<int> keys) async {
     if (_state != BluetoothState.connected) return;
-    if (_touchSoundEnabled) SystemSound.play(SystemSoundType.click);
     if (_hapticFeedback) HapticFeedback.lightImpact();
     await PlatformChannel.sendKeyReport(modifier: modifier, keys: keys);
     await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+  }
+
+  Future<void> sendMedia(int hid) async {
+    if (_state != BluetoothState.connected) return;
+    if (_hapticFeedback) HapticFeedback.lightImpact();
+    await PlatformChannel.sendMediaReport(keys: [hid & 0xFF, (hid >> 8) & 0xFF]);
+    await PlatformChannel.sendMediaReport(keys: [0, 0]);
   }
 
   Future<void> sendEnter() async {

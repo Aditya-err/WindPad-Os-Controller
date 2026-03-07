@@ -196,22 +196,23 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
 
   Widget _buildClickBtn(String label, String icon, Color bg, Color txt, VoidCallback? onTap, bool isConn, ColorScheme cs) {
     return Expanded(
-      child: Material(
-        color: isConn ? bg : cs.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(16),
-        elevation: isConn ? 3 : 0,
-        shadowColor: cs.shadow.withValues(alpha: 0.5),
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
+      child: SizedBox(
+        height: 76,
+        child: Material(
+          color: isConn ? bg : cs.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
+          elevation: isConn ? 3 : 0,
+          shadowColor: cs.shadow.withValues(alpha: 0.5),
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(icon, style: TextStyle(fontSize: 18, color: isConn ? txt : cs.outline)),
                 const SizedBox(height: 4),
@@ -226,37 +227,38 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
 
   Widget _buildScrollBtn(bool isConn, BluetoothHidService btService, ColorScheme cs) {
     return Expanded(
-      child: Material(
-        color: isConn ? cs.secondaryContainer : cs.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(16),
-        elevation: isConn ? 3 : 0,
-        shadowColor: cs.shadow.withValues(alpha: 0.5),
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
+      child: SizedBox(
+        height: 76,
+        child: Material(
+          color: isConn ? cs.secondaryContainer : cs.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            InkWell(
-              onTap: () => isConn ? btService.sendScroll(1) : null,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                child: Icon(Icons.arrow_drop_up, size: 28, color: isConn ? cs.onSecondaryContainer : cs.outline),
+          elevation: isConn ? 3 : 0,
+          shadowColor: cs.shadow.withValues(alpha: 0.5),
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: () => isConn ? btService.sendScroll(1) : null,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: Center(child: Icon(Icons.arrow_drop_up, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                ),
               ),
-            ),
-            Container(height: 1, color: isConn ? cs.onSecondaryContainer.withValues(alpha: 0.15) : cs.outlineVariant),
-            InkWell(
-              onTap: () => isConn ? btService.sendScroll(-1) : null,
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 7),
-                child: Icon(Icons.arrow_drop_down, size: 28, color: isConn ? cs.onSecondaryContainer : cs.outline),
+              Container(height: 1, color: isConn ? cs.onSecondaryContainer.withValues(alpha: 0.15) : cs.outlineVariant),
+              Expanded(
+                child: InkWell(
+                  onTap: () => isConn ? btService.sendScroll(-1) : null,
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+                  child: Center(child: Icon(Icons.arrow_drop_down, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

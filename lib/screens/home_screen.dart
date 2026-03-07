@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 12),
 
                     // Trackpad
-                    const AspectRatio(aspectRatio: 1.2, child: TouchpadWidget()),
+                    const AspectRatio(aspectRatio: 0.95, child: TouchpadWidget()),
 
                     // Trackpad lock indicator
                     if (btService.trackpadLocked)
@@ -131,48 +131,57 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSpecialKeysBar(BuildContext context, bool isConn, BluetoothHidService btService, ColorScheme cs) {
-    return Row(
-      children: [
-        // ⊞ Windows / Special Keys button
-        Material(
-          color: cs.secondaryContainer,
-          borderRadius: BorderRadius.circular(12),
-          child: InkWell(
-            onTap: isConn ? () => _showFunctionKeysSheet(context, btService) : null,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Special Keys button (opens sheet)
+          Material(
+            color: cs.secondaryContainer,
             borderRadius: BorderRadius.circular(12),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-              child: Row(
-                children: [
-                  Text("⊞", style: TextStyle(fontSize: 18, color: isConn ? cs.onSecondaryContainer : cs.outline)),
-                  const SizedBox(width: 6),
-                  Text("Special Keys", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: isConn ? cs.onSecondaryContainer : cs.outline)),
-                ],
+            child: InkWell(
+              onTap: isConn ? () => _showFunctionKeysSheet(context, btService) : null,
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                child: Row(
+                  children: [
+                    Icon(Icons.video_label, size: 16, color: isConn ? cs.onSecondaryContainer : cs.outline),
+                    const SizedBox(width: 6),
+                    Text("Special Keys", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        // Quick special actions
-        _buildMiniKey("Esc", 0x29, 0, isConn, btService, cs),
-        const SizedBox(width: 4),
-        _buildMiniKey("Tab", 0x2B, 0, isConn, btService, cs),
-        const SizedBox(width: 4),
-        _buildMiniKey("Del", 0x4C, 0, isConn, btService, cs),
-      ],
+          const SizedBox(width: 8),
+          _buildMiniKey("Esc", () => btService.sendKey(0, [0x29]), isConn, cs),
+          const SizedBox(width: 6),
+          _buildMiniKey("Win", () => btService.sendKey(0x08, [0x00]), isConn, cs),
+          const SizedBox(width: 6),
+          _buildMiniKey("Tab", () => btService.sendKey(0, [0x2B]), isConn, cs),
+          const SizedBox(width: 6),
+          _buildMiniKey("Del", () => btService.sendKey(0, [0x4C]), isConn, cs),
+          const SizedBox(width: 6),
+          _buildMiniKey("Prt Sc", () => btService.sendKey(0, [0x46]), isConn, cs),
+          const SizedBox(width: 6),
+          _buildMiniKey("Search", () => btService.sendKey(0x08, [0x16]), isConn, cs), // Win+S
+        ],
+      ),
     );
   }
 
-  Widget _buildMiniKey(String label, int hid, int mod, bool isConn, BluetoothHidService btService, ColorScheme cs) {
+  Widget _buildMiniKey(String label, VoidCallback onAct, bool isConn, ColorScheme cs) {
     return Material(
       color: cs.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
-        onTap: isConn ? () => btService.sendKey(mod, [hid]) : null,
+        onTap: isConn ? onAct : null,
         borderRadius: BorderRadius.circular(10),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-          child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isConn ? cs.onSurface : cs.outline)),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isConn ? cs.onSurface : cs.outline)),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import '../services/bluetooth_hid_service.dart';
 
@@ -96,7 +97,10 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                   textInputAction: TextInputAction.newline,
                   keyboardType: TextInputType.multiline,
                   enableSuggestions: false,
-                  autocorrect: false,
+                  onTap: () {
+                    // Force software keyboard to appear even if HID is connected
+                    SystemChannels.textInput.invokeMethod('TextInput.show');
+                  },
                   onChanged: (text) => _handleTextChanged(text, btService),
                   decoration: InputDecoration(
                     labelText: isConn ? "Type anywhere..." : "Connect to type",

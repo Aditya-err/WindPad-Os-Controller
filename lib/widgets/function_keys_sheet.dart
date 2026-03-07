@@ -32,9 +32,9 @@ class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
   ];
 
   static const List<Map<String, dynamic>> _mediaKeys = [
-    {'label': 'Vol+', 'hid': 0x80}, {'label': 'Vol-', 'hid': 0x81},
-    {'label': 'Mute', 'hid': 0x7F}, {'label': '⏯', 'hid': 0xCD},
-    {'label': '⏭', 'hid': 0xB5}, {'label': '⏮', 'hid': 0xB6},
+    {'label': 'Vol+', 'hid': 0x00E9}, {'label': 'Vol-', 'hid': 0x00EA},
+    {'label': 'Mute', 'hid': 0x00E2}, {'label': '⏯', 'hid': 0x00CD},
+    {'label': '⏭', 'hid': 0x00B5}, {'label': '⏮', 'hid': 0x00B6},
   ];
 
   static const List<Map<String, dynamic>> _modifierKeys = [
@@ -78,14 +78,14 @@ class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
             const SizedBox(height: 16),
             Text("Media & Audio", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
             const SizedBox(height: 8),
-            _buildGrid(_mediaKeys, cs),
+            _buildGrid(_mediaKeys, cs, isMedia: true),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGrid(List<Map<String, dynamic>> keys, ColorScheme cs) {
+  Widget _buildGrid(List<Map<String, dynamic>> keys, ColorScheme cs, {bool isMedia = false}) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -93,18 +93,22 @@ class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
         crossAxisCount: 4, mainAxisSpacing: 6, crossAxisSpacing: 6, childAspectRatio: 2.2,
       ),
       itemCount: keys.length,
-      itemBuilder: (_, i) => _buildKeyButton(keys[i]['label'], keys[i]['hid'], cs),
+      itemBuilder: (_, i) => _buildKeyButton(keys[i]['label'], keys[i]['hid'], cs, isMedia: isMedia),
     );
   }
 
-  Widget _buildKeyButton(String label, int hid, ColorScheme cs) {
+  Widget _buildKeyButton(String label, int hid, ColorScheme cs, {bool isMedia = false}) {
     return Material(
       color: cs.surfaceContainerHighest,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: () {
-          widget.btService.sendKey(_stickyModifier, [hid]);
-          if (_stickyModifier > 0) setState(() => _stickyModifier = 0);
+          if (isMedia) {
+            widget.btService.sendMedia(hid);
+          } else {
+            widget.btService.sendKey(_stickyModifier, [hid]);
+            if (_stickyModifier > 0) setState(() => _stickyModifier = 0);
+          }
         },
         borderRadius: BorderRadius.circular(10),
         child: Center(child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: cs.onSurface))),
