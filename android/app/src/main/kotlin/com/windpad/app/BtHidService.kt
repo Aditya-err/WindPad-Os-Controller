@@ -26,17 +26,33 @@ class BtHidService(private val context: Context) {
         }
     }
 
+    private var reconnectRetries = 0
+    private val maxRetries = 5
+
     private val hidCallback = object : BluetoothHidDevice.Callback() {
         override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
             super.onConnectionStateChanged(device, state)
             if (state == BluetoothProfile.STATE_CONNECTED) {
                 hostDevice = device
+                reconnectRetries = 0
                 onStateChanged?.invoke("onConnected", device?.name, device?.address)
                 Log.d("BtHidService", "Connected to ${device?.name}")
+            } else if (state == BluetoothProfile.STATE_CONNECTING) {
+                onStateChanged?.invoke("onConnecting", device?.name, device?.address)
             } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
-                hostDevice = null
-                onStateChanged?.invoke("onDisconnected", null, null)
-                Log.d("BtHidService", "Disconnected")
+                val isBound = device?.bondState == BluetoothDevice.BOND_BONDED
+                if (isBound && reconnectRetries < maxRetries) {
+                    reconnectRetries++
+                    Log.d("BtHidService", "HID disconnected, retrying silent reconnect... (\$reconnectRetries/\$maxRetries)")
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        device?.address?.let { reconnectLastDevice(it) }
+                    }, 500)
+                } else {
+                    hostDevice = null
+                    reconnectRetries = 0
+                    onStateChanged?.invoke("onDisconnected", null, null)
+                    Log.d("BtHidService", "Disconnected")
+                }
             }
         }
     }
@@ -143,6 +159,26 @@ class BtHidService(private val context: Context) {
             val method = hidDevice?.javaClass?.getMethod("connect", BluetoothDevice::class.java)
             if (method != null) {
                 method.invoke(hidDevice, device)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun checkAndSyncConnection(mac: String) {
+        if (mac.isEmpty()) return
+        if (hidDevice == null) {
+            initProfile()
+            return
+        }
+        val device = adapter?.getRemoteDevice(mac)
+        if (device != null) {
+            val state = hidDevice?.getConnectionState(device)
+            if (state == BluetoothProfile.STATE_CONNECTED) {
+                hostDevice = device
+                onStateChanged?.invoke("onConnected", device.name, device.address)
+                Log.d("BtHidService", "UI synced to connected")
+            } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
+                reconnectLastDevice(mac)
             }
         }
     }

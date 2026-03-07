@@ -123,7 +123,7 @@ class MainActivity: FlutterActivity() {
                     val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
                     val mac = prefs.getString("last_device_mac", "")
                     if (!mac.isNullOrEmpty()) {
-                        btHidService?.reconnectLastDevice(mac)
+                        btHidService?.checkAndSyncConnection(mac)
                         result.success(true)
                     } else {
                         result.success(false)

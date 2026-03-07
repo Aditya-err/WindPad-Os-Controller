@@ -373,6 +373,11 @@ class BluetoothHidService extends ChangeNotifier {
         }
         notifyListeners();
         break;
+      case 'onConnecting':
+        _state = BluetoothState.scanning;
+        _connectedDeviceName = call.arguments as String? ?? "Unknown Device";
+        notifyListeners();
+        break;
       case 'onDisconnected':
         _state = BluetoothState.disconnected;
         _connectedDeviceName = "";

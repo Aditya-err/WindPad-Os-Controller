@@ -68,7 +68,7 @@ class QuickKeysWidget extends StatelessWidget {
         btService.sendKey(0x01, [0x06]); // Ctrl+C
         break;
       case "paste":
-        btService.pasteClipboard(); // Paste from clipboard char-by-char
+        btService.sendKey(0x01, [0x19]); // Ctrl+V
         break;
       case "cut":
         btService.sendKey(0x01, [0x1B]); // Ctrl+X

@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 import '../services/bluetooth_hid_service.dart';
 import '../services/gesture_detector.dart';
 
@@ -23,6 +24,27 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
   late WindpadGestureDetector _gestureHandler;
   Offset _cursorPos = const Offset(0.5, 0.5);
   final List<RippleData> _ripples = [];
+
+
+  Timer? _scrollTimer;
+
+  void _startAutoScroll(bool up, BluetoothHidService btService) {
+    _scrollTimer?.cancel();
+    _scrollTimer = Timer.periodic(const Duration(milliseconds: 80), (_) {
+      btService.sendScroll(up ? 3 : -3);
+    });
+  }
+
+  void _stopAutoScroll() {
+    _scrollTimer?.cancel();
+    _scrollTimer = null;
+  }
+
+  @override
+  void dispose() {
+    _stopAutoScroll();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -255,18 +277,30 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: InkWell(
-                  onTap: () => isConn ? btService.sendScroll(1) : null,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Center(child: Icon(Icons.arrow_drop_up, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: isConn ? (_) => btService.sendScroll(1) : null,
+                  onLongPressStart: isConn ? (_) => _startAutoScroll(true, btService) : null,
+                  onLongPressEnd: isConn ? (_) => _stopAutoScroll() : null,
+                  onLongPressCancel: isConn ? () => _stopAutoScroll() : null,
+                  child: Container(
+                    decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+                    child: Center(child: Icon(Icons.arrow_drop_up, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                  ),
                 ),
               ),
               Container(height: 1, color: isConn ? cs.onSecondaryContainer.withValues(alpha: 0.15) : cs.outlineVariant),
               Expanded(
-                child: InkWell(
-                  onTap: () => isConn ? btService.sendScroll(-1) : null,
-                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-                  child: Center(child: Icon(Icons.arrow_drop_down, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTapDown: isConn ? (_) => btService.sendScroll(-1) : null,
+                  onLongPressStart: isConn ? (_) => _startAutoScroll(false, btService) : null,
+                  onLongPressEnd: isConn ? (_) => _stopAutoScroll() : null,
+                  onLongPressCancel: isConn ? () => _stopAutoScroll() : null,
+                  child: Container(
+                    decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(bottom: Radius.circular(16))),
+                    child: Center(child: Icon(Icons.arrow_drop_down, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                  ),
                 ),
               ),
             ],

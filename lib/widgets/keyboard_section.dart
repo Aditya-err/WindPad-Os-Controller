@@ -43,6 +43,14 @@ class _KeyboardSectionState extends State<KeyboardSection> {
     });
   }
 
+  Future<void> _openKeyboard() async {
+    _focusNode.unfocus();
+    await Future.delayed(const Duration(milliseconds: 50));
+    _focusNode.requestFocus();
+    await Future.delayed(const Duration(milliseconds: 50));
+    SystemChannels.textInput.invokeMethod('TextInput.show');
+  }
+
   void _handleTextChanged(String text, BluetoothHidService btService) {
     if (text.length < _previousText.length) {
       btService.sendKey(0, [0x2A]);
@@ -83,7 +91,7 @@ class _KeyboardSectionState extends State<KeyboardSection> {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 4),
           child: Text(
-            "⌨️ Keyboard  •  👀 See on your screen",
+            "⌨️ Keyboard",
             style: TextStyle(color: cs.onSurfaceVariant.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
           ),
         ),
@@ -97,10 +105,7 @@ class _KeyboardSectionState extends State<KeyboardSection> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () {
-              FocusScope.of(context).requestFocus(_focusNode);
-              SystemChannels.textInput.invokeMethod('TextInput.show');
-            },
+            onTap: _openKeyboard,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -114,13 +119,10 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                     enableSuggestions: false,
                     autocorrect: false,
                     showCursor: true,
-                    onTap: () {
-                      FocusScope.of(context).requestFocus(_focusNode);
-                      SystemChannels.textInput.invokeMethod('TextInput.show');
-                    },
+                    onTap: _openKeyboard,
                     onChanged: (text) => _handleTextChanged(text, btService),
                     decoration: InputDecoration(
-                      hintText: isConn ? "Type anywhere..." : "Connect to type",
+                      hintText: isConn ? "👀 See on your screen" : "Connect to type",
                       hintStyle: TextStyle(color: _isFocused ? cs.primary.withValues(alpha: 0.7) : cs.onSurfaceVariant, fontSize: 14),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
