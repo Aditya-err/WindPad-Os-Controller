@@ -58,8 +58,10 @@ class BluetoothHidService extends ChangeNotifier {
     Color(0xFFF3E5F5),
     Color(0xFFECEFF1),
     Color(0xFFFFEBEE),
-    Color(0xFF1A1A2E), // Dark Navy (night mode trackpad)
-    Color(0xFF212121), // Deep Charcoal / Graphite
+    Color(0xFF1A1A2E), // Dark Navy
+    Color(0xFF212121), // Charcoal
+    Color(0xFF000000), // Pure Black (AMOLED)
+    Color(0xFF121212), // Deep Grey
   ];
 
   Color get trackpadColor => trackpadColors[_trackpadColorIndex.clamp(0, trackpadColors.length - 1)];

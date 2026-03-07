@@ -22,20 +22,22 @@ class _KeyboardSectionState extends State<KeyboardSection> {
   void initState() {
     super.initState();
     _controller.text = " ";
-    _focusNode.addListener(() {
-      setState(() {
-        _isFocused = _focusNode.hasFocus;
-        if (_isFocused) {
-          _controller.value = const TextEditingValue(text: " ", selection: TextSelection.collapsed(offset: 1));
-          _previousText = " ";
-        }
-      });
-    });
 
-    // Lock trackpad when keyboard is visible
+    // Keyboard must open FIRST, then state updates and trackpad locks AFTER keyboard is visible
     _kbController = KeyboardVisibilityController();
     _kbController.onChange.listen((visible) {
       if (!mounted) return;
+      
+      setState(() {
+        _isFocused = visible;
+        if (_isFocused) {
+          _controller.value = const TextEditingValue(text: " ", selection: TextSelection.collapsed(offset: 1));
+          _previousText = " ";
+        } else {
+          FocusScope.of(context).unfocus();
+        }
+      });
+      
       final btService = Provider.of<BluetoothHidService>(context, listen: false);
       btService.setTrackpadLocked(visible);
     });
@@ -75,18 +77,25 @@ class _KeyboardSectionState extends State<KeyboardSection> {
     final isConn = btService.state == BluetoothState.connected;
     final cs = Theme.of(context).colorScheme;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest,
-        borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4)),
-        border: Border(bottom: BorderSide(color: _isFocused ? cs.primary : cs.outlineVariant, width: _isFocused ? 2.0 : 1.0)),
-      ),
-      padding: const EdgeInsets.only(top: 8, left: 16, right: 8, bottom: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GestureDetector(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 4),
+          child: Text(
+            "⌨️ Keyboard  •  👀 See on your screen",
+            style: TextStyle(color: cs.onSurfaceVariant.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: _isFocused ? cs.primary : Colors.transparent, width: 2.0),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+          child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
               FocusScope.of(context).requestFocus(_focusNode);
@@ -114,7 +123,7 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                       hintText: isConn ? "Type anywhere..." : "Connect to type",
                       hintStyle: TextStyle(color: _isFocused ? cs.primary.withValues(alpha: 0.7) : cs.onSurfaceVariant, fontSize: 14),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
                       isDense: true,
                     ),
                     style: TextStyle(color: cs.onSurface.withValues(alpha: 0.01), fontSize: 16, height: 1.5),
@@ -130,13 +139,8 @@ class _KeyboardSectionState extends State<KeyboardSection> {
               ],
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            "👀 See on your screen",
-            style: TextStyle(color: cs.onSurfaceVariant.withValues(alpha: 0.7), fontSize: 11, fontWeight: FontWeight.w500),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

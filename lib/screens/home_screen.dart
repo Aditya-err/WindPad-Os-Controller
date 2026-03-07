@@ -129,38 +129,41 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
+  
   Widget _buildSpecialKeysBar(BuildContext context, bool isConn, BluetoothHidService btService, ColorScheme cs) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          _buildMiniKey("⊞ Win", () => btService.sendKey(0x08, [0x00]), isConn, cs),
-          const SizedBox(width: 6),
-          _buildMiniKey("Esc", () => btService.sendKey(0, [0x29]), isConn, cs),
-          const SizedBox(width: 6),
-          _buildMiniKey("Tab", () => btService.sendKey(0, [0x2B]), isConn, cs),
-          const SizedBox(width: 6),
-          _buildMiniKey("Del", () => btService.sendKey(0, [0x4C]), isConn, cs),
-          const SizedBox(width: 6),
-          _buildMiniKey("Prt Sc", () => btService.sendKey(0, [0x46]), isConn, cs),
-          const SizedBox(width: 6),
-          _buildMiniKey("🔍 Search", () => btService.sendKey(0x08, [0x16]), isConn, cs),
-          const SizedBox(width: 6),
-          // Long-press any key to open full sheet; small hint button
-          Material(
-            color: cs.secondaryContainer.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(10),
-            child: InkWell(
-              onTap: isConn ? () => _showFunctionKeysSheet(context, btService) : null,
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Long-press any key to open full sheet; small hint button
+            Material(
+              color: cs.secondaryContainer.withValues(alpha: 0.6),
               borderRadius: BorderRadius.circular(10),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                child: Icon(Icons.keyboard_outlined, size: 16, color: isConn ? cs.onSecondaryContainer : cs.outline),
+              child: InkWell(
+                onTap: isConn ? () => _showFunctionKeysSheet(context, btService) : null,
+                borderRadius: BorderRadius.circular(10),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  child: Icon(Icons.keyboard_outlined, size: 16, color: isConn ? cs.onSecondaryContainer : cs.outline),
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 6),
+            _buildMiniKey("⊞ Win", () => btService.sendKey(0x08, [0x00]), isConn, cs),
+            const SizedBox(width: 6),
+            _buildMiniKey("Esc", () => btService.sendKey(0, [0x29]), isConn, cs),
+            const SizedBox(width: 6),
+            _buildMiniKey("Tab", () => btService.sendKey(0, [0x2B]), isConn, cs),
+            const SizedBox(width: 6),
+            _buildMiniKey("Del", () => btService.sendKey(0, [0x4C]), isConn, cs),
+            const SizedBox(width: 6),
+            _buildMiniKey("Prt Sc", () => btService.sendKey(0, [0x46]), isConn, cs),
+            const SizedBox(width: 6),
+            _buildMiniKey("🔍 Search", () => btService.sendKey(0x08, [0x16]), isConn, cs),
+          ],
+        ),
       ),
     );
   }

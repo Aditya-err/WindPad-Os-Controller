@@ -48,23 +48,29 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 const Text("Trackpad surface color", style: TextStyle(fontSize: 16)),
                 const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: BluetoothHidService.trackpadColors.asMap().entries.map((e) {
-                    final isSelected = btService.trackpadColorIndex == e.key;
-                    return GestureDetector(
-                      onTap: () => btService.setTrackpadColorIndex(e.key),
-                      child: Container(
-                        width: 36, height: 36,
-                        decoration: BoxDecoration(
-                          color: e.value,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: isSelected ? cs.primary : cs.outlineVariant, width: isSelected ? 3 : 1),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: BluetoothHidService.trackpadColors.asMap().entries.map((e) {
+                      final isSelected = btService.trackpadColorIndex == e.key;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: GestureDetector(
+                          onTap: () => btService.setTrackpadColorIndex(e.key),
+                          child: Container(
+                            width: 36, height: 36,
+                            decoration: BoxDecoration(
+                              color: e.value,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: isSelected ? cs.primary : cs.outlineVariant.withValues(alpha: 0.5), width: isSelected ? 3 : 1),
+                            ),
+                            child: isSelected ? Icon(Icons.check, size: 16, color: cs.primary) : null,
+                          ),
                         ),
-                        child: isSelected ? Icon(Icons.check, size: 16, color: cs.primary) : null,
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ],
             ),
