@@ -74,7 +74,19 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
                   Text(isConn ? "Touch to control cursor" : "Connect a device first", style: TextStyle(color: cs.onSurface, fontSize: 13)),
                 ],
               ),
-              if (activeGest != null) _buildGestureBadge(activeGest, kGestureDefinitions, cs),
+              Row(
+                children: [
+                  if (activeGest != null) ...[
+                    _buildGestureBadge(activeGest, kGestureDefinitions, cs),
+                    const SizedBox(width: 6),
+                  ],
+                  // Zoom In
+                  _buildZoomBtn("🔍+", isConn, () => btService.sendKey(0x01, [0x2E]), cs),
+                  const SizedBox(width: 4),
+                  // Zoom Out
+                  _buildZoomBtn("🔍−", isConn, () => btService.sendKey(0x01, [0x2D]), cs),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -278,6 +290,24 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
           const SizedBox(width: 4),
           Text(g["action"] as String, style: TextStyle(color: cs.onPrimaryContainer, fontSize: 11, fontWeight: FontWeight.w500)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildZoomBtn(String label, bool isConn, VoidCallback onTap, ColorScheme cs) {
+    return Material(
+      color: cs.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: isConn ? onTap : null,
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: 36,
+          height: 30,
+          child: Center(
+            child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isConn ? cs.onSurface : cs.outline)),
+          ),
+        ),
       ),
     );
   }
