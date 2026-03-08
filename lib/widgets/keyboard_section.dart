@@ -24,6 +24,7 @@ class _KeyboardSectionState extends State<KeyboardSection> {
     },
   );
   bool _isFocused = false;
+  TextInputType _keyboardType = TextInputType.multiline;
   String _previousText = "";
   late final KeyboardVisibilityController _kbController;
   Timer? _previewTimer;
@@ -129,6 +130,27 @@ class _KeyboardSectionState extends State<KeyboardSection> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              if (_isFocused)
+                IconButton(
+                  icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary, size: 22),
+                  padding: const EdgeInsets.all(8),
+                  constraints: const BoxConstraints(),
+                  onPressed: () async {
+                    _kbFocus.requestFocus();
+                    SystemChannels.textInput.invokeMethod('TextInput.show');
+                    await Future.delayed(const Duration(milliseconds: 200));
+                    SystemChannels.textInput.invokeMethod('TextInput.showEmojiPicker');
+                    
+                    // Fallback
+                    if (mounted) {
+                      setState(() => _keyboardType = TextInputType.text);
+                      _controller.text = '';
+                      _kbFocus.requestFocus();
+                    }
+                  },
+                  tooltip: "Open Emoji Panel",
+                ),
+              const SizedBox(width: 8),
               Expanded(
                 child: TextField(
                   restorationId: 'windpad_kb',
@@ -136,7 +158,7 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                   focusNode: _kbFocus,
                   enabled: isConn,
                   textInputAction: TextInputAction.newline,
-                  keyboardType: TextInputType.multiline,
+                  keyboardType: _keyboardType,
                   enableSuggestions: false,
                   autocorrect: false,
                   showCursor: true,
@@ -153,21 +175,14 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                   cursorColor: cs.primary,
                 ),
               ),
-              if (_isFocused) ...[
+              if (_isFocused)
                 IconButton(
-                  icon: Icon(Icons.backspace_outlined, color: cs.primary),
+                  icon: Icon(Icons.backspace_outlined, color: cs.primary, size: 22),
+                  padding: const EdgeInsets.all(8),
+                  constraints: const BoxConstraints(),
                   onPressed: () => btService.sendKey(0, [0x2A]),
                   tooltip: "Backspace (Send to PC)",
                 ),
-                IconButton(
-                  icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary),
-                  onPressed: () {
-                    _kbFocus.requestFocus();
-                    SystemChannels.textInput.invokeMethod('TextInput.show');
-                  },
-                  tooltip: "Open Emoji Panel",
-                ),
-              ],
             ],
           ),
         ),
