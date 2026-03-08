@@ -10,6 +10,8 @@ import '../widgets/keyboard_section.dart';
 import '../widgets/function_keys_sheet.dart';
 import '../widgets/device_picker_sheet.dart';
 import 'settings_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/platform_channel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _hasPromptedBattery = false;
+
   @override
   void initState() {
     super.initState();
@@ -30,11 +34,50 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _checkAndPromptBatteryOptimization(ColorScheme cs) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('battery_optimization_requested') == true) return;
+    await prefs.setBool('battery_optimization_requested', true);
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          backgroundColor: cs.surface,
+          title: Text("Background Connection", style: TextStyle(color: cs.onSurface)),
+          content: Text("Keep Windpad connected in background?", style: TextStyle(color: cs.onSurfaceVariant)),
+          actions: [
+            TextButton(
+              onPressed: () { Navigator.pop(ctx); },
+              child: Text("No", style: TextStyle(color: cs.primary)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: cs.primary, foregroundColor: cs.onPrimary),
+              onPressed: () {
+                Navigator.pop(ctx);
+                PlatformChannel.requestBatteryOptimization();
+              },
+              child: const Text("Yes"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final btService = Provider.of<BluetoothHidService>(context);
     final isConn = btService.state == BluetoothState.connected;
     final cs = Theme.of(context).colorScheme;
+
+    if (isConn && !_hasPromptedBattery) {
+      _hasPromptedBattery = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _checkAndPromptBatteryOptimization(cs);
+      });
+    }
 
     return PopScope(
       canPop: false,

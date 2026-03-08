@@ -41,10 +41,8 @@ class BtHidForegroundService : Service() {
     var onStateChanged: ((String, String?, String?) -> Unit)? = null
 
     private var reconnectRetries = 0
-    private val maxRetries = 5
+    private val maxRetries = 10
     private var pingTimer: Timer? = null
-
-    private val pairingReceiver = PairingReceiver()
 
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -94,7 +92,7 @@ class BtHidForegroundService : Service() {
                     Log.d("BtHidService", "HID disconnected, retrying silent reconnect... (\$reconnectRetries/\$maxRetries)")
                     Handler(Looper.getMainLooper()).postDelayed({
                         device?.address?.let { reconnectLastDevice(it) }
-                    }, 500)
+                    }, 2000)
                 } else {
                     hostDevice = null
                     reconnectRetries = 0
@@ -116,10 +114,6 @@ class BtHidForegroundService : Service() {
         filter.addAction(Intent.ACTION_SCREEN_ON)
         filter.addAction(Intent.ACTION_USER_PRESENT)
         registerReceiver(screenReceiver, filter)
-        
-        val pairingFilter = IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST)
-        pairingFilter.priority = IntentFilter.SYSTEM_HIGH_PRIORITY
-        registerReceiver(pairingReceiver, pairingFilter)
         
         acquireWakeLock()
         initProfile()
@@ -360,7 +354,6 @@ class BtHidForegroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(screenReceiver)
-        unregisterReceiver(pairingReceiver)
         stopWakeLock()
         stopPingTimer()
         instance = null

@@ -48,13 +48,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".PairingReceiver"
-            android:permission="android.permission.BLUETOOTH_ADMIN" android:exported="true">
-            <intent-filter android:priority="999">
-                <action android:name="android.bluetooth.device.action.PAIRING_REQUEST"/>
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name=".MainActivity"
             android:exported="true"

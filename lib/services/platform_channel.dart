@@ -61,6 +61,12 @@ class PlatformChannel {
     } on PlatformException catch (_) {}
   }
 
+  static Future<bool> requestBatteryOptimization() async {
+    try {
+      return await _ch.invokeMethod<bool>('requestBatteryOptimization') ?? false;
+    } on PlatformException catch (_) { return false; }
+  }
+
   static void setMethodCallHandler(Future<dynamic> Function(MethodCall call) handler) {
     _ch.setMethodCallHandler(handler);
   }
