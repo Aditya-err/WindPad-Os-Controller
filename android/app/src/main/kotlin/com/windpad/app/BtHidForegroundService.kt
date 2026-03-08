@@ -44,6 +44,8 @@ class BtHidForegroundService : Service() {
     private val maxRetries = 5
     private var pingTimer: Timer? = null
 
+    private val pairingReceiver = PairingReceiver()
+
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == Intent.ACTION_SCREEN_ON || intent?.action == Intent.ACTION_USER_PRESENT) {
@@ -114,6 +116,11 @@ class BtHidForegroundService : Service() {
         filter.addAction(Intent.ACTION_SCREEN_ON)
         filter.addAction(Intent.ACTION_USER_PRESENT)
         registerReceiver(screenReceiver, filter)
+        
+        val pairingFilter = IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST)
+        pairingFilter.priority = IntentFilter.SYSTEM_HIGH_PRIORITY
+        registerReceiver(pairingReceiver, pairingFilter)
+        
         acquireWakeLock()
         initProfile()
     }
@@ -353,6 +360,7 @@ class BtHidForegroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(screenReceiver)
+        unregisterReceiver(pairingReceiver)
         stopWakeLock()
         stopPingTimer()
         instance = null

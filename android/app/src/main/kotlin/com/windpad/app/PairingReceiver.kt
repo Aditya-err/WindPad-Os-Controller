@@ -10,44 +10,43 @@ import android.util.Log
 class PairingReceiver : BroadcastReceiver() {
     @SuppressLint("MissingPermission")
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == "android.bluetooth.device.action.PAIRING_REQUEST") {
-            val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-            val type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, -1)
-            
-            Log.d("PairingReceiver", "Pairing request type: $type for ${device?.name}")
+        if (intent.action != BluetoothDevice.ACTION_PAIRING_REQUEST) return
+        
+        val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
+        val type = intent.getIntExtra(BluetoothDevice.EXTRA_PAIRING_VARIANT, -1)
+        
+        Log.d("PairingReceiver", "Pairing request type: $type for ${device.name}")
 
+        try {
             when (type) {
-                0 -> { // PAIRING_VARIANT_PIN
-                    try {
-                        val method = device?.javaClass?.getMethod("setPin", ByteArray::class.java)
-                        if (method != null) {
-                            method.invoke(device, "0000".toByteArray())
-                            abortBroadcast()
-                            Log.d("PairingReceiver", "Auto-set PIN to 0000 for ${device?.name}")
-                        }
-                    } catch (e: Exception) {
-                        Log.e("PairingReceiver", "Could not set PIN", e)
-                    }
+                0, // PAIRING_VARIANT_PIN
+                7  // PAIRING_VARIANT_PIN_16_DIGITS 
+                -> {
+                    val method = device.javaClass.getMethod("setPin", ByteArray::class.java)
+                    method.invoke(device, "0000".toByteArray(Charsets.UTF_8))
+                    Log.d("PairingReceiver", "Auto-set PIN to 0000 for ${device.name}")
                 }
-                1, 2, 3, 4, 5, 6 -> { 
-                    // PAIRING_VARIANT_PASSKEY, PAIRING_VARIANT_PASSKEY_CONFIRMATION, PAIRING_VARIANT_CONSENT etc.
-                    try {
-                        val method = device?.javaClass?.getMethod("setPairingConfirmation", Boolean::class.javaPrimitiveType)
-                        if (method != null) {
-                            method.invoke(device, true)
-                            abortBroadcast()
-                            Log.d("PairingReceiver", "Auto-confirmed pairing request for ${device?.name}")
-                        }
-                    } catch (e: Exception) {
-                        try {
-                            val method = device?.javaClass?.getMethod("setPairingConfirmation", Boolean::class.java)
-                            method?.invoke(device, true)
-                            abortBroadcast()
-                        } catch (e2: Exception) {
-                            Log.e("PairingReceiver", "Could not auto-confirm pairing", e2)
-                        }
-                    }
+                1, 2, 3, 4, 5, 6 -> {
+                    val method = device.javaClass.getMethod("setPairingConfirmation", Boolean::class.javaPrimitiveType)
+                    method.invoke(device, true)
+                    Log.d("PairingReceiver", "Auto-confirmed pairing request for ${device.name}")
                 }
+            }
+            abortBroadcast()
+        } catch (e: Exception) {
+            // fallback reflection
+            try {
+                device.javaClass
+                    .getMethod("setPairingConfirmation", Boolean::class.java)
+                    .invoke(device, true)
+                try {
+                    device.javaClass
+                        .getMethod("cancelPairingUserInput")
+                        .invoke(device)
+                } catch (ignored: Exception) {}
+                abortBroadcast()
+            } catch (ignored: Exception) {
+                Log.e("PairingReceiver", "Could not fully auto-confirm pairing", ignored)
             }
         }
     }
