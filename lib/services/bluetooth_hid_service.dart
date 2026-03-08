@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +31,9 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   // Bonded devices
   List<Map<String, String>> _bondedDevices = [];
   String? _lastConnectedMac;
+  Timer? _connectingTimer;
+
+  VoidCallback? onConnectionTimeout;
 
   BluetoothState get state => _state;
   String get connectedDeviceName => _connectedDeviceName;
@@ -237,6 +242,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> disconnect() async {
+    _connectingTimer?.cancel();
     await PlatformChannel.disconnect();
     _state = BluetoothState.disconnected;
     _connectedDeviceName = "";
@@ -377,6 +383,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'onConnected':
+        _connectingTimer?.cancel();
         _state = BluetoothState.connected;
         _connectedDeviceName = call.arguments as String? ?? "Unknown Device";
         // Try to save the MAC of connected device
@@ -392,9 +399,17 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
       case 'onConnecting':
         _state = BluetoothState.scanning;
         _connectedDeviceName = call.arguments as String? ?? "Unknown Device";
+        _connectingTimer?.cancel();
+        _connectingTimer = Timer(const Duration(seconds: 8), () {
+          if (_state == BluetoothState.scanning || _state == BluetoothState.pairing) {
+            disconnect();
+            onConnectionTimeout?.call();
+          }
+        });
         notifyListeners();
         break;
       case 'onDisconnected':
+        _connectingTimer?.cancel();
         _state = BluetoothState.disconnected;
         _connectedDeviceName = "";
         notifyListeners();

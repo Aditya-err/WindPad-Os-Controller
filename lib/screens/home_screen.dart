@@ -20,6 +20,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<BluetoothHidService>(context, listen: false).onConnectionTimeout = () {
+        if (!mounted) return;
+        _showDevicePicker(context, Provider.of<BluetoothHidService>(context, listen: false), Theme.of(context).colorScheme);
+      };
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final btService = Provider.of<BluetoothHidService>(context);
     final isConn = btService.state == BluetoothState.connected;
@@ -120,12 +131,15 @@ class _HomeScreenState extends State<HomeScreen> {
         floatingActionButton: !isConn
             ? FloatingActionButton.extended(
                 onPressed: btService.state == BluetoothState.scanning
-                    ? null
+                    ? () {
+                        btService.disconnect();
+                        _showDevicePicker(context, btService, cs);
+                      }
                     : () => _showDevicePicker(context, btService, cs),
                 icon: btService.state == BluetoothState.scanning
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const Icon(Icons.close)
                     : const Icon(Icons.bluetooth_searching),
-                label: Text(btService.state == BluetoothState.scanning ? "Connecting…" : "Connect"),
+                label: Text(btService.state == BluetoothState.scanning ? "Cancel" : "Connect"),
               )
             : null,
       ),

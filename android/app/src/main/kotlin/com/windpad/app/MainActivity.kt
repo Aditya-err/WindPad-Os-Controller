@@ -134,40 +134,6 @@ class MainActivity: FlutterActivity() {
         } else {
             registerReceiver(disconnectReceiver, IntentFilter("com.windpad.app.DISCONNECT_HID"))
         }
-
-        // Delay checking battery optimization until context is fully started
-        Handler(Looper.getMainLooper()).postDelayed({
-            checkBatteryOptimization()
-        }, 1000)
-    }
-
-    private fun checkBatteryOptimization() {
-        val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
-        val hasRequested = prefs.getBoolean("has_requested_battery_opt", false)
-        if (hasRequested) return
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
-            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
-                val dialog = android.app.AlertDialog.Builder(this)
-                    .setTitle("Allow Background Connection")
-                    .setMessage("Allow Windpad to stay connected in the background? Without this, Android will kill the Bluetooth connection when the screen turns off.")
-                    .setCancelable(false)
-                    .setPositiveButton("Allow") { _, _ ->
-                        prefs.edit().putBoolean("has_requested_battery_opt", true).apply()
-                        val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                        intent.data = android.net.Uri.parse("package:$packageName")
-                        try {
-                            startActivity(intent)
-                        } catch(e: Exception) {}
-                    }
-                    .setNegativeButton("Deny") { _, _ ->
-                        prefs.edit().putBoolean("has_requested_battery_opt", true).apply()
-                    }
-                    .create()
-                dialog.show()
-            }
-        }
     }
 
     private fun attachCallbackWithRetry(attempts: Int = 0) {

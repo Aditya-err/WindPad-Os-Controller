@@ -241,14 +241,16 @@ class BtHidForegroundService : Service() {
         try {
             val sdpSettings = BluetoothHidDeviceAppSdpSettings(
                 "Windpad",
-                "Bluetooth Touchpad & Keyboard",
-                "Windpad Inc",
+                "Bluetooth Trackpad",
+                "Windpad",
                 BluetoothHidDevice.SUBCLASS1_MOUSE,
                 HidReportDescriptor.MOUSE_DESCRIPTOR + HidReportDescriptor.KEYBOARD_DESCRIPTOR + HidReportDescriptor.CONSUMER_DESCRIPTOR
             )
-            // Passing null for both QoS parameters is crucial. iOS, WebOS (Smart TVs), and Windows
-            // often reject L2CAP connections if non-standard QoS is requested by the Android host.
-            hidDevice?.registerApp(sdpSettings, null, null, mainExecutor, hidCallback)
+            val qosOut = BluetoothHidDeviceAppQosSettings(
+                BluetoothHidDeviceAppQosSettings.SERVICE_BEST_EFFORT,
+                800, 9, 0, 11250, BluetoothHidDeviceAppQosSettings.MAX
+            )
+            hidDevice?.registerApp(sdpSettings, null, qosOut, mainExecutor, hidCallback)
         } catch (e: SecurityException) {
             Log.e("BtHidService", "Permission denied for registerApp", e)
         }

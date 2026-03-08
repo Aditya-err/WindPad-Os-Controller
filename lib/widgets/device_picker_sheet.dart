@@ -76,7 +76,7 @@ class DevicePickerSheet extends StatelessWidget {
                         "1. Stay on this app (Windpad must be running).\n"
                         "2. Go to your TV/Tablet/Desktop's Bluetooth Settings.\n"
                         "3. Find your phone in their list and pair from there.\n\n"
-                        "If it fails or immediately disconnects, UNPAIR your phone from the device, and try pairing again while Windpad is fully open.",
+                        "If a PIN dialog appears on your PC/TV, type 0000 and press Enter. After the first successful pairing, it will never ask again.",
                       ),
                       actions: [
                         TextButton(onPressed: () => Navigator.pop(c), child: const Text("Cancel")),
