@@ -1,25 +1,24 @@
-﻿package com.windpad.app
+package com.windpad.app
 
-import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.windpad/hid"
-    private var btHidService: BtHidService? = null
     private var methodChannel: MethodChannel? = null
 
     private val disconnectReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "com.windpad.app.DISCONNECT_HID") {
-                btHidService?.disconnect()
-                stopForegroundService()
+                BtHidForegroundService.instance?.disconnect()
             }
         }
     }
@@ -27,45 +26,41 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         
-        btHidService = BtHidService(this)
-        methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
-        
-        btHidService?.setCallback { method, name, mac ->
-            runOnUiThread {
-                methodChannel?.invokeMethod(method, name)
-                if (method == "onConnected" && mac != null) {
-                    val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
-                    prefs.edit().putString("last_device_mac", mac).apply()
-                    startForegroundService(name ?: "Unknown Device")
-                } else if (method == "onDisconnected") {
-                    stopForegroundService()
-                }
-            }
+        val startServiceIntent = Intent(this, BtHidForegroundService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(startServiceIntent)
+        } else {
+            startService(startServiceIntent)
         }
 
+        methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        
+        attachCallbackWithRetry()
+
         methodChannel?.setMethodCallHandler { call, result ->
+            val svc = BtHidForegroundService.instance
             when (call.method) {
                 "sendMouse" -> {
                     val b = call.argument<Int>("b")?.toByte() ?: 0
                     val x = call.argument<Int>("x")?.toByte() ?: 0
                     val y = call.argument<Int>("y")?.toByte() ?: 0
                     val s = call.argument<Int>("s")?.toByte() ?: 0
-                    btHidService?.sendMouseReport(b, x, y, s)
+                    svc?.sendMouseReport(b, x, y, s)
                     result.success(null)
                 }
                 "sendKey" -> {
                     val mod = call.argument<Int>("mod")?.toByte() ?: 0
                     val keys = call.argument<List<Int>>("keys")?.map { it.toByte() }?.toByteArray() ?: byteArrayOf()
-                    btHidService?.sendKeyboardReport(mod, keys)
+                    svc?.sendKeyboardReport(mod, keys)
                     result.success(null)
                 }
                 "sendMedia" -> {
                     val keys = call.argument<List<Int>>("keys")?.map { it.toByte() }?.toByteArray() ?: byteArrayOf()
-                    btHidService?.sendMediaReport(keys)
+                    svc?.sendMediaReport(keys)
                     result.success(null)
                 }
                 "initHid" -> {
-                    btHidService?.initProfile()
+                    svc?.initProfile()
                     result.success(true)
                 }
                 "startAdvert" -> {
@@ -96,7 +91,6 @@ class MainActivity: FlutterActivity() {
                                 }
                             }
                         } catch (e: SecurityException) {
-                            // Ignored
                         }
                     }
                     result.success(resultList)
@@ -104,7 +98,7 @@ class MainActivity: FlutterActivity() {
                 "connectToDevice" -> {
                     val mac = call.argument<String>("mac")
                     if (mac != null) {
-                        btHidService?.reconnectLastDevice(mac)
+                        svc?.reconnectLastDevice(mac)
                         result.success(true)
                     } else {
                         result.success(false)
@@ -115,15 +109,14 @@ class MainActivity: FlutterActivity() {
                     result.success(null)
                 }
                 "disconnect" -> {
-                    btHidService?.disconnect()
-                    stopForegroundService()
+                    svc?.disconnect()
                     result.success(null)
                 }
                 "checkAndReconnect" -> {
                     val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
                     val mac = prefs.getString("last_device_mac", "")
                     if (!mac.isNullOrEmpty()) {
-                        btHidService?.checkAndSyncConnection(mac)
+                        svc?.checkAndSyncConnection(mac)
                         result.success(true)
                     } else {
                         result.success(false)
@@ -141,38 +134,47 @@ class MainActivity: FlutterActivity() {
         } else {
             registerReceiver(disconnectReceiver, IntentFilter("com.windpad.app.DISCONNECT_HID"))
         }
+
+        // Delay checking battery optimization until context is fully started
+        Handler(Looper.getMainLooper()).postDelayed({
+            checkBatteryOptimization()
+        }, 1000)
+    }
+
+    private fun checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val pm = getSystemService(Context.POWER_SERVICE) as android.os.PowerManager
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                val intent = Intent(android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                intent.data = android.net.Uri.parse("package:$packageName")
+                try {
+                    startActivity(intent)
+                } catch(e: Exception) {}
+            }
+        }
+    }
+
+    private fun attachCallbackWithRetry(attempts: Int = 0) {
+        val svc = BtHidForegroundService.instance
+        if (svc != null) {
+            svc.onStateChanged = { method, name, mac ->
+                runOnUiThread {
+                    methodChannel?.invokeMethod(method, name)
+                    if (method == "onConnected" && mac != null) {
+                        val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
+                        prefs.edit().putString("last_device_mac", mac).apply()
+                    }
+                }
+            }
+        } else if (attempts < 20) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                attachCallbackWithRetry(attempts + 1)
+            }, 100)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(disconnectReceiver)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
-        val mac = prefs.getString("last_device_mac", "")
-        if (!mac.isNullOrEmpty()) {
-            btHidService?.reconnectLastDevice(mac)
-        }
-    }
-
-    private fun startForegroundService(deviceName: String) {
-        val intent = Intent(this, BtHidForegroundService::class.java).apply {
-            action = BtHidForegroundService.ACTION_START
-            putExtra(BtHidForegroundService.EXTRA_DEVICE_NAME, deviceName)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
-    }
-
-    private fun stopForegroundService() {
-        val intent = Intent(this, BtHidForegroundService::class.java).apply {
-            action = BtHidForegroundService.ACTION_STOP
-        }
-        startService(intent) // stopSelf will be called
     }
 }

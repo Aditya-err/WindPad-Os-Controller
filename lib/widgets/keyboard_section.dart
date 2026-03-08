@@ -14,9 +14,14 @@ class KeyboardSection extends StatefulWidget {
 
 class _KeyboardSectionState extends State<KeyboardSection> {
   final TextEditingController _controller = TextEditingController();
-  final FocusNode _kbFocus = FocusNode(
+  late final FocusNode _kbFocus = FocusNode(
     skipTraversal: true,
-    onKeyEvent: (node, event) => KeyEventResult.ignored,
+    onKeyEvent: (node, event) {
+      if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.backspace) {
+        Provider.of<BluetoothHidService>(context, listen: false).sendKey(0, [0x2A]);
+      }
+      return KeyEventResult.ignored;
+    },
   );
   bool _isFocused = false;
   String _previousText = "";
@@ -148,12 +153,21 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                   cursorColor: cs.primary,
                 ),
               ),
-              if (_isFocused)
+              if (_isFocused) ...[
+                IconButton(
+                  icon: Icon(Icons.backspace_outlined, color: cs.primary),
+                  onPressed: () => btService.sendKey(0, [0x2A]),
+                  tooltip: "Backspace (Send to PC)",
+                ),
                 IconButton(
                   icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary),
-                  onPressed: () => btService.sendEmoji(),
-                  tooltip: "Emoji",
+                  onPressed: () {
+                    _kbFocus.requestFocus();
+                    SystemChannels.textInput.invokeMethod('TextInput.show');
+                  },
+                  tooltip: "Open Emoji Panel",
                 ),
+              ],
             ],
           ),
         ),
