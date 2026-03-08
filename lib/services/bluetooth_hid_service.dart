@@ -6,7 +6,7 @@ import 'platform_channel.dart';
 
 enum BluetoothState { disconnected, scanning, pairing, connected }
 
-class BluetoothHidService extends ChangeNotifier {
+class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   BluetoothState _state = BluetoothState.disconnected;
   String _connectedDeviceName = "";
   int _dpi = 1200;
@@ -71,12 +71,28 @@ class BluetoothHidService extends ChangeNotifier {
   }
 
   Future<void> _initService() async {
+    WidgetsBinding.instance.addObserver(this);
     await _loadSettings();
     PlatformChannel.setMethodCallHandler(_handleMethodCall);
     await _requestPermissions();
     await PlatformChannel.initHid();
     // Auto-connect to last device
     await _autoConnect();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (_state == BluetoothState.disconnected) {
+        checkAndReconnect();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _requestPermissions() async {

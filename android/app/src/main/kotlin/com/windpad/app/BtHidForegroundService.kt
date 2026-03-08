@@ -46,7 +46,7 @@ class BtHidForegroundService : Service() {
 
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == Intent.ACTION_SCREEN_ON) {
+            if (intent?.action == Intent.ACTION_SCREEN_ON || intent?.action == Intent.ACTION_USER_PRESENT) {
                 if (hostDevice == null) {
                     val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
                     val mac = prefs.getString("last_device_mac", "")
@@ -112,6 +112,7 @@ class BtHidForegroundService : Service() {
         startForegroundServiceWithNotification(null)
         val filter = IntentFilter()
         filter.addAction(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_USER_PRESENT)
         registerReceiver(screenReceiver, filter)
         acquireWakeLock()
         initProfile()
@@ -213,7 +214,7 @@ class BtHidForegroundService : Service() {
             override fun run() {
                 sendMouseReport(0, 0, 0, 0)
             }
-        }, 15000, 15000)
+        }, 10000, 10000)
     }
 
     private fun stopPingTimer() {
@@ -242,7 +243,7 @@ class BtHidForegroundService : Service() {
                 "Windpad",
                 "Bluetooth Touchpad & Keyboard",
                 "Windpad Inc",
-                BluetoothHidDevice.SUBCLASS1_COMBO,
+                BluetoothHidDevice.SUBCLASS1_MOUSE,
                 HidReportDescriptor.MOUSE_DESCRIPTOR + HidReportDescriptor.KEYBOARD_DESCRIPTOR + HidReportDescriptor.CONSUMER_DESCRIPTOR
             )
             // Passing null for both QoS parameters is crucial. iOS, WebOS (Smart TVs), and Windows
@@ -313,9 +314,13 @@ class BtHidForegroundService : Service() {
         if (mac.isEmpty()) return
         val device = adapter?.getRemoteDevice(mac)
         if (device != null && hidDevice != null) {
-            val method = hidDevice?.javaClass?.getMethod("connect", BluetoothDevice::class.java)
-            if (method != null) {
-                method.invoke(hidDevice, device)
+            if (device.bondState == BluetoothDevice.BOND_BONDED) {
+                val method = hidDevice?.javaClass?.getMethod("connect", BluetoothDevice::class.java)
+                if (method != null) {
+                    method.invoke(hidDevice, device)
+                }
+            } else {
+                Log.d("BtHidService", "Device not bonded, ignoring auto reconnect")
             }
         }
     }
