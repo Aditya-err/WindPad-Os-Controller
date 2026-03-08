@@ -38,9 +38,6 @@ class _KeyboardSectionState extends State<KeyboardSection> {
       
       setState(() {
         _isFocused = visible;
-        if (!_isFocused) {
-          _kbFocus.unfocus();
-        }
       });
       
       final btService = Provider.of<BluetoothHidService>(context, listen: false);
@@ -130,7 +127,6 @@ class _KeyboardSectionState extends State<KeyboardSection> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (_isFocused)
                 IconButton(
                   icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary, size: 22),
                   padding: const EdgeInsets.all(8),
@@ -140,13 +136,6 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                     SystemChannels.textInput.invokeMethod('TextInput.show');
                     await Future.delayed(const Duration(milliseconds: 200));
                     SystemChannels.textInput.invokeMethod('TextInput.showEmojiPicker');
-                    
-                    // Fallback
-                    if (mounted) {
-                      setState(() => _keyboardType = TextInputType.text);
-                      _controller.text = '';
-                      _kbFocus.requestFocus();
-                    }
                   },
                   tooltip: "Open Emoji Panel",
                 ),
@@ -158,7 +147,8 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                   focusNode: _kbFocus,
                   enabled: isConn,
                   textInputAction: TextInputAction.newline,
-                  keyboardType: _keyboardType,
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                   enableSuggestions: false,
                   autocorrect: false,
                   showCursor: true,
@@ -175,14 +165,13 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                   cursorColor: cs.primary,
                 ),
               ),
-              if (_isFocused)
-                IconButton(
-                  icon: Icon(Icons.backspace_outlined, color: cs.primary, size: 22),
-                  padding: const EdgeInsets.all(8),
-                  constraints: const BoxConstraints(),
-                  onPressed: () => btService.sendKey(0, [0x2A]),
-                  tooltip: "Backspace (Send to PC)",
-                ),
+              IconButton(
+                icon: Icon(Icons.backspace_outlined, color: cs.primary, size: 22),
+                padding: const EdgeInsets.all(8),
+                constraints: const BoxConstraints(),
+                onPressed: () => btService.sendKey(0, [0x2A]),
+                tooltip: "Backspace (Send to PC)",
+              ),
             ],
           ),
         ),
