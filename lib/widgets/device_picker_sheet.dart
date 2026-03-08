@@ -65,9 +65,31 @@ class DevicePickerSheet extends StatelessWidget {
                 label: const Text("Refresh"),
               ),
               FilledButton.icon(
-                onPressed: () async {
+                onPressed: () {
                   Navigator.pop(context);
-                  await btService.connect();
+                  showDialog(
+                    context: context,
+                    builder: (c) => AlertDialog(
+                      title: const Text("Important Pairing Step"),
+                      content: const Text(
+                        "To connect to Smart TVs, iPads, Macs, or Desktop PCs:\n\n"
+                        "1. Stay on this app (Windpad must be running).\n"
+                        "2. Go to your TV/Tablet/Desktop's Bluetooth Settings.\n"
+                        "3. Find your phone in their list and pair from there.\n\n"
+                        "If it fails or immediately disconnects, UNPAIR your phone from the device, and try pairing again while Windpad is fully open.",
+                      ),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(c), child: const Text("Cancel")),
+                        FilledButton(
+                          onPressed: () async {
+                            Navigator.pop(c);
+                            await btService.connect();
+                          },
+                          child: const Text("Make Phone Discoverable"),
+                        )
+                      ],
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.bluetooth_searching, size: 18),
                 label: const Text("Pair New Device"),
