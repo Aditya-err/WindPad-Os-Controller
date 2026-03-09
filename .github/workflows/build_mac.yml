@@ -1,23 +1,71 @@
 name: Build Mac DMG
-on: push
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Install dependencies
         run: |
-          pip install pyinstaller pyobjc-framework-Quartz pystray pillow qrcode zeroconf pyperclip
+          pip install pyinstaller pillow qrcode zeroconf pyperclip pystray
+          pip install pyobjc-framework-Quartz pyobjc-framework-AppKit
+
       - name: Build with PyInstaller
         run: |
           cd windpad-server
-          chmod +x build_mac.sh
-          ./build_mac.sh
-      - name: Upload DMG
-        uses: actions/upload-artifact@v3
+          pyinstaller --onefile --noconsole \
+            --name="WindpadHelper" \
+            main.py
+
+      - name: Create .app bundle
+        run: |
+          cd windpad-server
+          mkdir -p WindpadHelper.app/Contents/MacOS
+          mkdir -p WindpadHelper.app/Contents/Resources
+          cp dist/WindpadHelper WindpadHelper.app/Contents/MacOS/
+          # Using placeholder icon if icns is missing
+          touch WindpadHelper.app/Contents/Resources/windpad.icns
+          cat > WindpadHelper.app/Contents/Info.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleName</key><string>WindpadHelper</string>
+            <key>CFBundleExecutable</key><string>WindpadHelper</string>
+            <key>CFBundleIdentifier</key><string>com.windpad.helper</string>
+            <key>CFBundleVersion</key><string>1.0.0</string>
+            <key>LSUIElement</key><true/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create DMG
+        run: |
+          cd windpad-server
+          create-dmg \
+            --volname "Windpad Helper" \
+            --window-size 400 300 \
+            --icon-size 100 \
+            --app-drop-link 300 150 \
+            "WindpadHelper.dmg" \
+            "WindpadHelper.app"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: WindpadHelper-Mac
           path: windpad-server/WindpadHelper.dmg

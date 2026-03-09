@@ -1,28 +1,52 @@
 name: Build Linux
-on: push
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install dependencies
+
+      - name: Install system deps
         run: |
-          pip install pyinstaller python-xlib pystray pillow qrcode zeroconf pyperclip
           sudo apt-get update
-          sudo apt-get install -y ruby ruby-dev rubygems build-essential
+          sudo apt-get install -y python3-tk ruby-dev build-essential
           sudo gem install fpm
+
+      - name: Install Python deps
+        run: |
+          cd windpad-server
+          pip install pyinstaller pillow qrcode zeroconf \
+            pyperclip pystray python-xlib
+
       - name: Build with PyInstaller
         run: |
           cd windpad-server
-          chmod +x build_linux.sh
-          ./build_linux.sh
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+          pyinstaller --onefile \
+            --name="windpad-helper" \
+            main.py
+
+      - name: Create .deb
+        run: |
+          cd windpad-server
+          fpm -s dir -t deb \
+            -n windpad-helper \
+            -v 1.0.0 \
+            --description "Windpad Companion App" \
+            --maintainer "Aditya" \
+            dist/windpad-helper=/usr/local/bin/windpad-helper
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
           name: WindpadHelper-Linux
-          path: |
-            windpad-server/*.deb
-            windpad-server/*.AppImage
+          path: windpad-server/windpad-helper_1.0.0_amd64.deb

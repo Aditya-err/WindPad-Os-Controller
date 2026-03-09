@@ -1,0 +1,40 @@
+name: Build Windows
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller pillow qrcode zeroconf pyperclip pystray pywin32
+
+      - name: Build with PyInstaller
+        run: |
+          cd windpad-server
+          pyinstaller --onefile --noconsole --name="WindpadHelper" main.py
+
+      - name: Install Inno Setup
+        run: choco install innosetup
+
+      - name: Compile Installer
+        run: |
+          cd windpad-server
+          & "C:\Program Files (x86)\Inno Setup 6\iscc.exe" windpad_setup.iss
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WindpadHelper-Windows
+          path: windpad-server/Output/WindpadHelper_Setup.exe

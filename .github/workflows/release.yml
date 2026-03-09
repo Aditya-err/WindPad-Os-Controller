@@ -1,0 +1,57 @@
+name: Create Release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Mac artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: build_mac.yml
+          name: WindpadHelper-Mac
+          path: .
+
+      - name: Download Linux artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: build_linux.yml
+          name: WindpadHelper-Linux
+          path: .
+
+      - name: Download Windows artifact
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: build_windows.yml
+          name: WindpadHelper-Windows
+          path: .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: "Windpad ${{ github.event.inputs.version }}"
+          body: |
+            ## Windpad Helper App
+
+            Download the helper app for your platform:
+            - **Windows**: WindpadHelper_Setup.exe
+            - **Mac**: WindpadHelper.dmg
+            - **Linux**: windpad-helper_1.0.0_amd64.deb
+
+            Install once → stays in background → auto-connects!
+          files: |
+            WindpadHelper.dmg
+            windpad-helper_1.0.0_amd64.deb
+            WindpadHelper_Setup.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
