@@ -1,0 +1,7 @@
+pynput==1.7.7
+pystray==0.19.5
+zeroconf==0.131.0
+qrcode==7.4.2
+Pillow==10.3.0
+plyer==2.1.0
+pyinstaller==6.5.0

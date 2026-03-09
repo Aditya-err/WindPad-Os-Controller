@@ -22,6 +22,19 @@ class SettingsScreen extends StatelessWidget {
         children: [
           _sectionHeader("WINDPAD SETTINGS", cs),
 
+          // Disconnect all
+          ListTile(
+            leading: const Icon(Icons.phonelink_off, color: Colors.deepOrange),
+            title: const Text("Disconnect connected device"),
+            subtitle: const Text("Clear active Bluetooth connection"),
+            onTap: () async {
+              await btService.disconnect();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Device disconnected.")));
+              }
+            },
+          ),
+          
           // Theme toggle
           ListTile(
             leading: const Icon(Icons.palette_outlined),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import '../services/bluetooth_hid_service.dart';
 
 class KeyboardSection extends StatefulWidget {
@@ -24,7 +25,6 @@ class _KeyboardSectionState extends State<KeyboardSection> {
     },
   );
   bool _isFocused = false;
-  TextInputType _keyboardType = TextInputType.multiline;
   String _previousText = "";
   late final KeyboardVisibilityController _kbController;
   Timer? _previewTimer;
@@ -131,11 +131,27 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                   icon: Icon(Icons.emoji_emotions_outlined, color: cs.primary, size: 22),
                   padding: const EdgeInsets.all(8),
                   constraints: const BoxConstraints(),
-                  onPressed: () async {
-                    _kbFocus.requestFocus();
-                    SystemChannels.textInput.invokeMethod('TextInput.show');
-                    await Future.delayed(const Duration(milliseconds: 200));
-                    SystemChannels.textInput.invokeMethod('TextInput.showEmojiPicker');
+                  onPressed: () {
+                    _kbFocus.unfocus();
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SizedBox(
+                          height: 300,
+                          child: EmojiPicker(
+                            onEmojiSelected: (category, emoji) {
+                              final btService = Provider.of<BluetoothHidService>(context, listen: false);
+                              for (int i = 0; i < emoji.emoji.length; i++) {
+                                btService.sendText(emoji.emoji[i]);
+                              }
+                            },
+                            config: Config(
+                              bottomActionBarConfig: const BottomActionBarConfig(showSearchViewButton: false),
+                            ),
+                          ),
+                        );
+                      },
+                    );
                   },
                   tooltip: "Open Emoji Panel",
                 ),

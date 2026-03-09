@@ -155,10 +155,14 @@ class MainActivity: FlutterActivity() {
         if (svc != null) {
             svc.onStateChanged = { method, name, mac ->
                 runOnUiThread {
-                    methodChannel?.invokeMethod(method, name)
                     if (method == "onConnected" && mac != null) {
                         val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
                         prefs.edit().putString("last_device_mac", mac).apply()
+                        
+                        val isTv = svc.isCurrentDeviceTv()
+                        methodChannel?.invokeMethod(method, mapOf("name" to name, "isTv" to isTv))
+                    } else {
+                        methodChannel?.invokeMethod(method, name)
                     }
                 }
             }
@@ -172,5 +176,21 @@ class MainActivity: FlutterActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(disconnectReceiver)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
+        if (keyCode == android.view.KeyEvent.KEYCODE_VOLUME_UP || keyCode == android.view.KeyEvent.KEYCODE_VOLUME_DOWN) {
+            methodChannel?.invokeMethod("onVolumeKeyDown", mapOf("keyCode" to keyCode))
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: android.view.KeyEvent): Boolean {
+        if (keyCode == android.view.KeyEvent.KEYCODE_VOLUME_UP || keyCode == android.view.KeyEvent.KEYCODE_VOLUME_DOWN) {
+            methodChannel?.invokeMethod("onVolumeKeyUp", mapOf("keyCode" to keyCode))
+            return true
+        }
+        return super.onKeyUp(keyCode, event)
     }
 }

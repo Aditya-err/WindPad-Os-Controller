@@ -58,6 +58,21 @@ class BtHidForegroundService : Service() {
         }
     }
 
+    private val pairingReceiver = object : BroadcastReceiver() {
+        override fun onReceive(ctx: Context, intent: Intent) {
+            if (intent.action == BluetoothDevice.ACTION_PAIRING_REQUEST) {
+                val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
+                try {
+                    device.javaClass.getMethod("setPairingConfirmation", Boolean::class.java).invoke(device, true)
+                    abortBroadcast()
+                    Log.d("BtHidService", "Auto-confirmed pairing for ${device.name}")
+                } catch (e: Exception) {
+                    Log.e("BtHidService", "setPairingConfirmation failed", e)
+                }
+            }
+        }
+    }
+
     private val hidServiceListener = object : BluetoothProfile.ServiceListener {
         override fun onServiceConnected(profile: Int, proxy: BluetoothProfile?) {
             if (profile == BluetoothProfile.HID_DEVICE) {
@@ -114,6 +129,11 @@ class BtHidForegroundService : Service() {
         filter.addAction(Intent.ACTION_SCREEN_ON)
         filter.addAction(Intent.ACTION_USER_PRESENT)
         registerReceiver(screenReceiver, filter)
+        
+        // Intercept pairing requests for Just Works
+        val pairingFilter = IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST)
+        pairingFilter.priority = IntentFilter.SYSTEM_HIGH_PRIORITY
+        registerReceiver(pairingReceiver, pairingFilter)
         
         acquireWakeLock()
         initProfile()
@@ -240,9 +260,19 @@ class BtHidForegroundService : Service() {
             }
         }
         try {
+            // Force legacy pairing mode, Just Works
+            try {
+                val method = adapter?.javaClass?.getDeclaredMethod("setIoCapability", Int::class.java)
+                method?.isAccessible = true
+                method?.invoke(adapter, 3) // 3 = IO_CAPABILITY_NOINPUTNOOUTPUT = Just Works
+                Log.d("BtHidService", "Set IO Capability to NOINPUTNOOUTPUT")
+            } catch (e: Exception) {
+                Log.e("BtHidService", "Failed to set IO capability", e)
+            }
+            
             val sdpSettings = BluetoothHidDeviceAppSdpSettings(
-                "Windpad",
-                "Bluetooth Trackpad",
+                "Windpad Mouse",
+                "Windpad BT HID",
                 "Windpad",
                 BluetoothHidDevice.SUBCLASS1_MOUSE,
                 HidReportDescriptor.MOUSE_DESCRIPTOR + HidReportDescriptor.KEYBOARD_DESCRIPTOR + HidReportDescriptor.CONSUMER_DESCRIPTOR
@@ -251,6 +281,7 @@ class BtHidForegroundService : Service() {
                 BluetoothHidDeviceAppQosSettings.SERVICE_BEST_EFFORT,
                 800, 9, 0, 11250, BluetoothHidDeviceAppQosSettings.MAX
             )
+            // inQos = null for no auth
             hidDevice?.registerApp(sdpSettings, null, qosOut, mainExecutor, hidCallback)
         } catch (e: SecurityException) {
             Log.e("BtHidService", "Permission denied for registerApp", e)
@@ -305,7 +336,7 @@ class BtHidForegroundService : Service() {
                  override fun onServiceDisconnected(profile: Int) {}
             }, BluetoothProfile.HID_DEVICE)
         }
-        hidDevice?.unregisterApp()
+        // hidDevice?.unregisterApp() removed to allow instant reconnect
         hostDevice = null
         stopPingTimer()
         onStateChanged?.invoke("onDisconnected", null, null)
@@ -354,10 +385,18 @@ class BtHidForegroundService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(screenReceiver)
+        unregisterReceiver(pairingReceiver)
+        hidDevice?.unregisterApp()
         stopWakeLock()
         stopPingTimer()
         instance = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    @SuppressLint("MissingPermission")
+    fun isCurrentDeviceTv(): Boolean {
+        val bClass = hostDevice?.bluetoothClass?.majorDeviceClass
+        return bClass == android.bluetooth.BluetoothClass.Device.Major.IMAGING || bClass == android.bluetooth.BluetoothClass.Device.Major.AUDIO_VIDEO || bClass == 1024
+    }
 }

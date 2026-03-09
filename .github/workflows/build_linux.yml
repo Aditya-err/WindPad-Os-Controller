@@ -1,0 +1,28 @@
+name: Build Linux
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller python-xlib pystray pillow qrcode zeroconf pyperclip
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev rubygems build-essential
+          sudo gem install fpm
+      - name: Build with PyInstaller
+        run: |
+          cd windpad-server
+          chmod +x build_linux.sh
+          ./build_linux.sh
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: WindpadHelper-Linux
+          path: |
+            windpad-server/*.deb
+            windpad-server/*.AppImage

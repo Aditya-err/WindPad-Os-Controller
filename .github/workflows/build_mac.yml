@@ -1,0 +1,23 @@
+name: Build Mac DMG
+on: push
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller pyobjc-framework-Quartz pystray pillow qrcode zeroconf pyperclip
+      - name: Build with PyInstaller
+        run: |
+          cd windpad-server
+          chmod +x build_mac.sh
+          ./build_mac.sh
+      - name: Upload DMG
+        uses: actions/upload-artifact@v3
+        with:
+          name: WindpadHelper-Mac
+          path: windpad-server/WindpadHelper.dmg

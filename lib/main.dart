@@ -4,21 +4,33 @@ import 'theme/app_theme.dart';
 import 'services/bluetooth_hid_service.dart';
 import 'screens/home_screen.dart';
 
-void main() {
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/device_selection_screen.dart';
+import 'screens/onboarding_screen.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  final prefs = await SharedPreferences.getInstance();
+  final savedStr = prefs.getString('savedDeviceType');
+  final bool hasSavedDevice = savedStr != null;
+  final bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BluetoothHidService()),
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
       ],
-      child: const WindpadApp(),
+      child: WindpadApp(hasSavedDevice: hasSavedDevice, hasSeenOnboarding: hasSeenOnboarding),
     ),
   );
 }
 
 class WindpadApp extends StatefulWidget {
-  const WindpadApp({super.key});
+  final bool hasSavedDevice;
+  final bool hasSeenOnboarding;
+  const WindpadApp({super.key, required this.hasSavedDevice, required this.hasSeenOnboarding});
 
   @override
   State<WindpadApp> createState() => _WindpadAppState();
@@ -55,10 +67,12 @@ class _WindpadAppState extends State<WindpadApp> {
     return MaterialApp(
       title: 'Windpad',
       debugShowCheckedModeBanner: false,
-      themeMode: themeNotifier.themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: const HomeScreen(),
+      themeMode: themeNotifier.themeMode,
+      home: widget.hasSeenOnboarding 
+          ? (widget.hasSavedDevice ? const HomeScreen() : const DeviceSelectionScreen()) 
+          : const OnboardingScreen(),
     );
   }
 }

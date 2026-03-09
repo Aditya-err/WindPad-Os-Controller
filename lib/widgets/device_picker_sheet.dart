@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../services/bluetooth_hid_service.dart';
+
+void showDevicePickerSheet(BuildContext context, BluetoothHidService btService, ColorScheme cs) {
+  btService.refreshBondedDevices();
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: cs.surface,
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+    builder: (_) => ChangeNotifierProvider.value(
+      value: btService,
+      child: Consumer<BluetoothHidService>(
+        builder: (_, bt, __) => DevicePickerSheet(btService: bt),
+      ),
+    ),
+  );
+}
 
 class DevicePickerSheet extends StatelessWidget {
   final BluetoothHidService btService;

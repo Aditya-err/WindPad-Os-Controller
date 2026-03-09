@@ -18,6 +18,15 @@ dependencies:
   package_info_plus: ^8.0.0
   flutter_keyboard_visibility: ^6.0.0
   flutter_rating_bar: ^4.0.1
+  sensors_plus: ^7.0.0
+  network_info_plus: ^7.0.0
+  multicast_dns: ^0.3.3
+  mobile_scanner: ^7.2.0
+  qr_flutter: ^4.1.0
+  introduction_screen: ^4.0.0
+  flutter_svg: ^2.2.4
+  emoji_picker_flutter: ^4.4.0
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:

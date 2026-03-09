@@ -10,6 +10,7 @@ class FunctionKeysSheet extends StatefulWidget {
 }
 
 class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
+  int _activeTab = 0; // 0 = Keyboard, 1 = TV Remote
   int _stickyModifier = 0; // Accumulated sticky modifier
 
   static const List<Map<String, dynamic>> _fnKeys = [
@@ -37,10 +38,24 @@ class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
     {'label': '⏭', 'hid': 0x00B5}, {'label': '⏮', 'hid': 0x00B6},
   ];
 
-  static const List<Map<String, dynamic>> _modifierKeys = [
-    {'label': 'Ctrl', 'mod': 0x01}, {'label': 'Shift', 'mod': 0x02},
-    {'label': 'Alt', 'mod': 0x04}, {'label': 'Win', 'mod': 0x08},
-  ];
+  List<Map<String, dynamic>> get _modifierKeys {
+    if (widget.btService.deviceType == DeviceType.mac) {
+      return [
+        {'label': '⌃ Ctl', 'mod': 0x01}, {'label': '⇧ Sft', 'mod': 0x02},
+        {'label': '⌥ Opt', 'mod': 0x04}, {'label': '⌘ Cmd', 'mod': 0x08},
+      ];
+    } else if (widget.btService.deviceType == DeviceType.linux) {
+      return [
+        {'label': 'Ctrl', 'mod': 0x01}, {'label': 'Shift', 'mod': 0x02},
+        {'label': 'Alt', 'mod': 0x04}, {'label': 'Super', 'mod': 0x08},
+      ];
+    } else {
+      return [
+        {'label': 'Ctrl', 'mod': 0x01}, {'label': 'Shift', 'mod': 0x02},
+        {'label': 'Alt', 'mod': 0x04}, {'label': 'Win', 'mod': 0x08},
+      ];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,31 +70,178 @@ class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
             Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: cs.outlineVariant, borderRadius: BorderRadius.circular(2)))),
             const SizedBox(height: 16),
 
-            // Sticky Modifiers
-            Text("Modifiers (sticky)", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
-            const SizedBox(height: 8),
-            Row(children: _modifierKeys.map((k) => _buildModifierBtn(k, cs)).toList()),
-            if (_stickyModifier > 0)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text("Active: ${_modifierLabel()}", style: TextStyle(fontSize: 11, color: cs.primary, fontWeight: FontWeight.w500)),
+            // Tabs (Only for TV)
+            if (widget.btService.deviceType == DeviceType.tv) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: SegmentedButton<int>(
+                      segments: const [
+                        ButtonSegment(value: 0, label: Text("Keyboard")),
+                        ButtonSegment(value: 1, label: Text("📺 TV Remote")),
+                      ],
+                      selected: {_activeTab},
+                      onSelectionChanged: (Set<int> newSelection) {
+                        setState(() => _activeTab = newSelection.first);
+                      },
+                    ),
+                  ),
+                ],
               ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ] else ...[
+              // Force activeTab to 0 if not TV
+              Builder(builder: (_) {
+                if (_activeTab != 0) WidgetsBinding.instance.addPostFrameCallback((_) => setState(() => _activeTab = 0));
+                return const SizedBox.shrink();
+              })
+            ],
 
-            Text("Function Keys", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurface)),
-            const SizedBox(height: 8),
-            _buildGrid(_fnKeys, cs),
+            if (_activeTab == 0) ...[
+              // Sticky Modifiers
+              Text("Modifiers (sticky)", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
+              const SizedBox(height: 8),
+              Row(children: _modifierKeys.map((k) => _buildModifierBtn(k, cs)).toList()),
+              if (_stickyModifier > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text("Active: ${_modifierLabel()}", style: TextStyle(fontSize: 11, color: cs.primary, fontWeight: FontWeight.w500)),
+                ),
+              const SizedBox(height: 16),
 
-            const SizedBox(height: 16),
-            Text("Navigation & System", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
-            const SizedBox(height: 8),
-            _buildGrid(_navKeys, cs),
+              Text("Function Keys", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurface)),
+              const SizedBox(height: 8),
+              _buildGrid(_fnKeys, cs),
 
-            const SizedBox(height: 16),
-            Text("Media & Audio", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
-            const SizedBox(height: 8),
-            _buildGrid(_mediaKeys, cs, isMedia: true),
+              const SizedBox(height: 16),
+              Text("Navigation & System", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
+              const SizedBox(height: 8),
+              _buildGrid(_navKeys, cs),
+
+              const SizedBox(height: 16),
+              Text("Media & Audio", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
+              const SizedBox(height: 8),
+              _buildGrid(_mediaKeys, cs, isMedia: true),
+            ] else _buildTvRemote(cs),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTvRemote(ColorScheme cs) {
+    return Column(
+      children: [
+        // D-pad
+        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildDpadBtn(Icons.arrow_upward, 0x52, cs),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildDpadBtn(Icons.arrow_back, 0x50, cs),
+            _buildDpadBtn(Icons.circle, 0x28, cs, label: "OK"),
+            _buildDpadBtn(Icons.arrow_forward, 0x4F, cs),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildDpadBtn(Icons.arrow_downward, 0x51, cs),
+          ],
+        ),
+        const SizedBox(height: 24),
+
+        // Settings / Back / Home
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildCirBtn(Icons.arrow_back_ios_new, 0x29, cs, false), // Esc (Back)
+            _buildCirBtn(Icons.home, 0x4A, cs, false), // Home
+            _buildCirBtn(Icons.menu, 0x76, cs, false), // Menu
+          ],
+        ),
+        const SizedBox(height: 24),
+        
+        Text("Streaming Apps", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [
+            _buildAppBtn("Netflix", Colors.red, () => widget.btService.sendMedia(0x0192)),
+            _buildAppBtn("YouTube", Colors.redAccent, () => widget.btService.sendMedia(0x0193)),
+            _buildAppBtn("Prime", Colors.blue, () => widget.btService.sendMedia(0x0194)),
+            _buildAppBtn("Hotstar", Colors.indigo, () => widget.btService.sendMedia(0x0195)), // Custom or fallback
+            _buildAppBtn("Spotify", Colors.green, () => widget.btService.sendMedia(0x0196)),
+            _buildAppBtn("Disney+", Colors.blueAccent, () => widget.btService.sendMedia(0x0197)),
+          ],
+        ),
+        const SizedBox(height: 24),
+
+        Text("Media Controls", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: cs.onSurfaceVariant)),
+        const SizedBox(height: 8),
+        _buildGrid(_mediaKeys, cs, isMedia: true),
+      ],
+    );
+  }
+
+  Widget _buildDpadBtn(IconData icon, int hid, ColorScheme cs, {String? label}) {
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Material(
+        color: cs.surfaceContainerHighest,
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: () => _sendTap(hid),
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: 70, height: 70,
+            alignment: Alignment.center,
+            child: label != null ? Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)) : Icon(icon, size: 28),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCirBtn(IconData icon, int hid, ColorScheme cs, bool isMedia) {
+    return Material(
+      color: cs.primaryContainer,
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: () {
+          if (isMedia) widget.btService.sendMedia(hid);
+          else _sendTap(hid);
+        },
+        customBorder: const CircleBorder(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Icon(icon, color: cs.onPrimaryContainer, size: 24),
+        ),
+      ),
+    );
+  }
+
+  void _sendTap(int hid) {
+    widget.btService.sendKey(0, [hid]);
+  }
+
+  Widget _buildAppBtn(String label, Color color, VoidCallback onTap) {
+    return Material(
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
         ),
       ),
     );

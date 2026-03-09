@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
@@ -8,10 +9,13 @@ import '../widgets/touchpad_widget.dart';
 import '../widgets/quick_keys_widget.dart';
 import '../widgets/keyboard_section.dart';
 import '../widgets/function_keys_sheet.dart';
+import '../widgets/device_controls_widget.dart';
 import '../widgets/device_picker_sheet.dart';
 import 'settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/platform_channel.dart';
+import 'device_selection_screen.dart';
+import 'wifi_connect_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -95,7 +99,56 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 child: Row(
                   children: [
-                    Text("Windpad", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: cs.onSurface)),
+                    // Device Selection Chip
+                    InkWell(
+                      onTap: () {
+                        // Keep current device type mostly empty but push the selection screen to change it.
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DeviceSelectionScreen()));
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(color: cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          children: [
+                            SvgPicture.string(
+                              _getSvgForDevice(btService.deviceType),
+                              width: 18,
+                              height: 18,
+                              colorFilter: ColorFilter.mode(
+                                btService.deviceType == DeviceType.pc ? const Color(0xFF0078D6) : Colors.white, 
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(_deviceName(btService.deviceType), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: cs.onSurfaceVariant)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Air/Touch Toggle (Only for Smart TV)
+                    if (btService.deviceType == DeviceType.tv) ...[
+                      InkWell(
+                        onTap: () => btService.toggleAirMouse(),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          decoration: BoxDecoration(color: btService.isAirMouse ? cs.primary : cs.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                          child: Row(
+                            children: [
+                              Text(btService.isAirMouse ? "🌀" : "✋"),
+                              const SizedBox(width: 4),
+                              Text(
+                                btService.isAirMouse ? "AIR" : "TOUCH", 
+                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: btService.isAirMouse ? cs.onPrimary : cs.onSurfaceVariant)
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     const Spacer(),
                     StatusPill(state: btService.state, deviceName: btService.connectedDeviceName),
                     const SizedBox(width: 8),
@@ -130,7 +183,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Icon(Icons.info_outline, size: 16, color: cs.primary),
                             const SizedBox(width: 8),
-                            Expanded(child: Text("Ready to connect. Ensure Bluetooth is on.", style: TextStyle(fontSize: 12, color: cs.onPrimaryContainer, fontWeight: FontWeight.w500))),
+                            Expanded(child: Text(
+                              btService.deviceType == DeviceType.tv
+                                  ? "Ready to connect. Ensure Bluetooth is on."
+                                  : "Ready to connect. Open Windpad Companion App on PC to scan.",
+                              style: TextStyle(fontSize: 12, color: cs.onPrimaryContainer, fontWeight: FontWeight.w500))),
                           ],
                         ),
                       ).animate().fadeIn(),
@@ -155,8 +212,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 8),
                     ],
 
-                    // Special Keys Bar: ⊞ Windows button opens full sheet
-                    _buildSpecialKeysBar(context, isConn, btService, cs),
+                    // Special Device Aware UI
+                    DeviceControlsWidget(
+                      isConn: isConn,
+                      btService: btService,
+                      cs: cs,
+                    ),
 
                     const SizedBox(height: 12),
 
@@ -173,93 +234,39 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         floatingActionButton: !isConn
             ? FloatingActionButton.extended(
-                onPressed: btService.state == BluetoothState.scanning
-                    ? () {
-                        btService.disconnect();
-                        _showDevicePicker(context, btService, cs);
-                      }
-                    : () => _showDevicePicker(context, btService, cs),
-                icon: btService.state == BluetoothState.scanning
-                    ? const Icon(Icons.close)
-                    : const Icon(Icons.bluetooth_searching),
-                label: Text(btService.state == BluetoothState.scanning ? "Cancel" : "Connect"),
+                onPressed: btService.deviceType == DeviceType.tv
+                    ? (btService.state == BluetoothState.scanning
+                        ? () {
+                            btService.disconnect();
+                            _showDevicePicker(context, btService, cs);
+                          }
+                        : () => _showDevicePicker(context, btService, cs))
+                    : () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WifiConnectScreen())),
+                icon: btService.deviceType == DeviceType.tv
+                    ? (btService.state == BluetoothState.scanning
+                        ? const Icon(Icons.close)
+                        : const Icon(Icons.bluetooth_searching))
+                    : const Icon(Icons.qr_code_scanner),
+                label: Text(btService.deviceType == DeviceType.tv
+                    ? (btService.state == BluetoothState.scanning ? "Cancel" : "Connect")
+                    : "Show QR Code"),
               )
             : null,
       ),
     );
   }
   
-  Widget _buildSpecialKeysBar(BuildContext context, bool isConn, BluetoothHidService btService, ColorScheme cs) {
-    return Center(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Long-press any key to open full sheet; small hint button
-            Material(
-              color: cs.secondaryContainer.withValues(alpha: 0.6),
-              borderRadius: BorderRadius.circular(10),
-              child: InkWell(
-                onTap: isConn ? () => _showFunctionKeysSheet(context, btService) : null,
-                borderRadius: BorderRadius.circular(10),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  child: Icon(Icons.keyboard_outlined, size: 16, color: isConn ? cs.onSecondaryContainer : cs.outline),
-                ),
-              ),
-            ),
-            const SizedBox(width: 6),
-            _buildMiniKey("⊞ Win", () => btService.sendKey(0x08, [0x00]), isConn, cs),
-            const SizedBox(width: 6),
-            _buildMiniKey("Esc", () => btService.sendKey(0, [0x29]), isConn, cs),
-            const SizedBox(width: 6),
-            _buildMiniKey("Tab", () => btService.sendKey(0, [0x2B]), isConn, cs),
-            const SizedBox(width: 6),
-            _buildMiniKey("Del", () => btService.sendKey(0, [0x4C]), isConn, cs),
-            const SizedBox(width: 6),
-            _buildMiniKey("Prt Sc", () => btService.sendKey(0, [0x46]), isConn, cs),
-            const SizedBox(width: 6),
-            _buildMiniKey("🔍 Search", () => btService.sendKey(0x08, [0x16]), isConn, cs),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildMiniKey(String label, VoidCallback onAct, bool isConn, ColorScheme cs) {
-    return Material(
-      color: cs.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(10),
-      child: InkWell(
-        onTap: isConn ? onAct : null,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-          child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isConn ? cs.onSurface : cs.outline)),
-        ),
-      ),
-    );
-  }
 
   void _showFunctionKeysSheet(BuildContext context, BluetoothHidService btService) {
-    final cs = Theme.of(context).colorScheme;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: cs.surface,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        maxChildSize: 0.9,
-        minChildSize: 0.4,
-        expand: false,
-        builder: (_, scrollController) => SingleChildScrollView(
-          controller: scrollController,
-          child: FunctionKeysSheet(btService: btService),
-        ),
-      ),
-    );
+    if (mounted) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => FunctionKeysSheet(btService: btService),
+      );
+    }
   }
 
   void _showDevicePicker(BuildContext context, BluetoothHidService btService, ColorScheme cs) {
@@ -276,4 +283,47 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  String _getSvgForDevice(DeviceType type) {
+    switch (type) {
+      case DeviceType.tv: return _tvSvg;
+      case DeviceType.mac: return _macSvg;
+      case DeviceType.linux: return _linuxSvg;
+      case DeviceType.pc: default: return _windowsSvg;
+    }
+  }
+
+  String _deviceName(DeviceType type) {
+    switch (type) {
+      case DeviceType.tv: return "Smart TV";
+      case DeviceType.mac: return "Mac";
+      case DeviceType.linux: return "Linux";
+      case DeviceType.pc: default: return "PC / Desktop";
+    }
+  }
 }
+
+const String _tvSvg = '''
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <path d="M21 3H3C1.89 3 1 3.89 1 5v12c0 1.1.89 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2zm0 14H3V5h18v12z" />
+</svg>
+''';
+
+const String _windowsSvg = '''
+<svg viewBox="0 0 122.46 122.88" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,17.58 l51.8,-7.4 v48.8 h-51.8 v-41.4 z M58.9,8.2 l63.5,-8.2 v58.7 h-63.5 v-50.5 z M0,63.1 l51.8,0.1 v48.8 l-51.8,-7.4 v-41.5 z M58.9,63.1 h63.5 v59.8 l-63.5,-8.2 v-51.6 z" />
+</svg>
+''';
+
+const String _macSvg = '''
+<svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg">
+  <path d="M433.2 249.4c-0.6-58.4 47.7-86.8 49.9-88.2 -27.2-39.7-69.5-44.9-84.5-45.6 -35.9-3.6-70.1 21.2-88.3 21.2 -18.2 0-46.7-20.8-77-20.2 -39.9 0.6-76.7 23.2-97.1 58.7 -41.3 71.5-10.6 177.3 29.8 235.4 19.8 28.5 43.3 60.1 73.8 58.9 29.8-1.2 41.1-19.3 77.2-19.3 35.8 0 46.4 19.3 77.5 18.7 31.7-0.6 52.4-29.6 71.9-58 22.5-32.9 31.8-64.8 32.2-66.4 -0.7-0.3-61.9-23.7-65.4-95.2" />
+  <path d="M371.4 100.8c16.3-19.8 27.3-47.3 24.3-74.8 -23.7 1-52.2 15.8-69.1 35.5 -13.5 15.6-26.8 43.7-23.2 70.6 26.5 2.1 51.7-11.5 68-31.3" />
+</svg>
+''';
+
+const String _linuxSvg = '''
+<svg viewBox="0 0 93.56 122.88" xmlns="http://www.w3.org/2000/svg">
+  <path d="M60.2,7C60.2,7,44.9-5,29.9,2.8C20,7.9,13.7,19.9,11.8,31C8.8,49.2,14.6,67.6,18.8,85.2 C19.6,88.7,20.2,92.5,23.1,94.9c5.3,4.4,14.1,4.7,20.5,6c9.8,2,20.1,2.8,30.1,2.5c6.5-0.2,14.6-2.1,19.2-7C97.1,91.8,93.4,85.3,92.6,82 C88.3,64.4,94,44.9,90.4,27.1C87.4,11.4,72.6-3.8,60.2,7z M48.2,19.8C54,19.8,59,24,60.1,29.7c1.1,5.6-1.8,11.7-6.8,14.4 c-4.9,2.7-11.4,1.4-15-2.8c-3.6-4.2-3.8-10.9-0.5-15.3C40.6,22,44.5,19.8,48.2,19.8z M27.8,23.3c3.5,0,6.6,2.5,7.3,5.9c0.7,3.4-1.1,7.1-4.1,8.7c-3,1.6-6.9,0.8-9.1-1.7C19.7,33.7,19.6,29.7,21.6,27C23.1,24.8,25.4,23.3,27.8,23.3z" />
+</svg>
+''';
