@@ -216,8 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Draw text
             ctx.fillStyle = 'white';
-            const fontSize = Math.min(window.innerWidth / 5, 150);
-            ctx.font = `bold ${fontSize}px Inter`;
+            const fontSize = Math.min(window.innerWidth / 4, 180); // Slightly larger font
+            ctx.font = `900 ${fontSize}px Inter`; // Bolder font for better halftone
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('WindPad', textCanvas.width / 2, textCanvas.height / 2);
@@ -225,30 +225,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const textCoordinates = ctx.getImageData(0, 0, textCanvas.width, textCanvas.height);
             particleArray = [];
             
-            // Iterate over pixels to create dots
-            for (let y = 0, y2 = textCoordinates.height; y < y2; y += 5) {
-                for (let x = 0, x2 = textCoordinates.width; x < x2; x += 5) {
+            // Halftone grid setup
+            const gridStep = 8; // Spacing between dots
+            const maxRadius = (gridStep / 2) * 1.2; // Max size of a dot
+            
+            for (let y = 0, y2 = textCoordinates.height; y < y2; y += gridStep) {
+                for (let x = 0, x2 = textCoordinates.width; x < x2; x += gridStep) {
                     const index = (y * textCoordinates.width + x) * 4 + 3;
-                    if (textCoordinates.data[index] > 128) {
-                        let positionX = x;
-                        let positionY = y;
-                        particleArray.push(new Particle(positionX, positionY));
+                    const alpha = textCoordinates.data[index];
+                    
+                    if (alpha > 10) { // If pixel is not fully transparent
+                        let normalizedAlpha = alpha / 255;
+                        // Calculate dot size based on text alpha (Halftone effect)
+                        let dotSize = normalizedAlpha * maxRadius;
+                        
+                        if (dotSize > 0.5) {
+                            particleArray.push(new Particle(x, y, dotSize));
+                        }
                     }
                 }
             }
         };
 
         class Particle {
-            constructor(x, y) {
+            constructor(x, y, size) {
                 this.x = x;
                 this.y = y;
-                this.size = 3.5; // Bigger dots
+                this.size = size; 
                 this.baseX = x;
                 this.baseY = y;
                 this.density = (Math.random() * 30) + 1;
                 
-                // Color variation (White, 50% opacity)
-                this.color = 'rgba(255, 255, 255, 0.5)';
+                // Color variation (Solid white for halftone look)
+                this.color = 'rgba(255, 255, 255, 0.7)';
             }
             draw() {
                 ctx.fillStyle = this.color;
