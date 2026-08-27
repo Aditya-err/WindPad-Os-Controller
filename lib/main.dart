@@ -1,20 +1,16 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'theme/app_theme.dart';
 import 'services/bluetooth_hid_service.dart';
 import 'screens/home_screen.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/device_selection_screen.dart';
-import 'screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
   final prefs = await SharedPreferences.getInstance();
-  final savedStr = prefs.getString('savedDeviceType');
-  final bool hasSavedDevice = savedStr != null;
-  final bool hasSeenOnboarding = prefs.getBool('hasSeenOnboarding') ?? false;
+  final savedDevice = prefs.getString('savedDeviceType');
 
   runApp(
     MultiProvider(
@@ -22,15 +18,18 @@ void main() async {
         ChangeNotifierProvider(create: (_) => BluetoothHidService()),
         ChangeNotifierProvider(create: (_) => ThemeNotifier()),
       ],
-      child: WindpadApp(hasSavedDevice: hasSavedDevice, hasSeenOnboarding: hasSeenOnboarding),
+      child: WindpadApp(
+        initialScreen: savedDevice != null
+            ? HomeScreen(deviceType: savedDevice)
+            : const DeviceSelectionScreen(),
+      ),
     ),
   );
 }
 
 class WindpadApp extends StatefulWidget {
-  final bool hasSavedDevice;
-  final bool hasSeenOnboarding;
-  const WindpadApp({super.key, required this.hasSavedDevice, required this.hasSeenOnboarding});
+  final Widget initialScreen;
+  const WindpadApp({super.key, required this.initialScreen});
 
   @override
   State<WindpadApp> createState() => _WindpadAppState();
@@ -49,15 +48,21 @@ class _WindpadAppState extends State<WindpadApp> {
     if (!mounted) return;
     final bt = Provider.of<BluetoothHidService>(context, listen: false);
     if (state == AppLifecycleState.resumed) {
+      if (bt.state == BluetoothState.connected) {
+        WakelockPlus.enable();
+      }
       bt.checkAndReconnect();
     } else if (state == AppLifecycleState.paused) {
       bt.ensureServiceRunning();
+    } else if (state == AppLifecycleState.detached) {
+      WakelockPlus.disable();
     }
   }
 
   @override
   void dispose() {
     _listener.dispose();
+    WakelockPlus.disable();
     super.dispose();
   }
 
@@ -70,9 +75,7 @@ class _WindpadAppState extends State<WindpadApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeNotifier.themeMode,
-      home: widget.hasSeenOnboarding 
-          ? (widget.hasSavedDevice ? const HomeScreen() : const DeviceSelectionScreen()) 
-          : const OnboardingScreen(),
+      home: widget.initialScreen,
     );
   }
 }

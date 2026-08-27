@@ -27,6 +27,8 @@ dependencies:
   flutter_svg: ^2.2.4
   emoji_picker_flutter: ^4.4.0
   lottie: ^3.3.2
+  animated_text_kit: ^4.2.2
+  wakelock_plus: ^1.2.8
 
 dev_dependencies:
   flutter_test:
@@ -34,12 +36,21 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.14.1
 
-flutter_icons:
-  android: true
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
   image_path: "assets/icon/windpad-icon.png"
-  min_sdk_android: 28
-  adaptive_icon_background: "#6C3FF5"
-  adaptive_icon_foreground: "assets/icon/windpad-icon.png"
+  min_sdk_android: 21
+  web:
+    generate: false
+
+  # Android adaptive icon — NO white background
+  adaptive_icon_background: "#1565C0"  # blue matching the logo
+  adaptive_icon_foreground: "assets/icon/windpad-icon-foreground.png"
+
+  # Remove white padding — logo fills full icon
+  remove_alpha_ios: false
+  background_color: "#1565C0"
 
 flutter:
   uses-material-design: true

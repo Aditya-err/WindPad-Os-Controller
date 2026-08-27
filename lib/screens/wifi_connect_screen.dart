@@ -130,18 +130,36 @@ class _WifiConnectScreenState extends State<WifiConnectScreen> {
     final String? code = capture.barcodes.first.rawValue;
     if (code == null) return;
     
-    // Format: windpad://connect?ip=X.X.X.X&port=8765
-    if (code.startsWith("windpad://connect")) {
-      final uri = Uri.parse(code);
-      final ip = uri.queryParameters['ip'];
-      final port = uri.queryParameters['port'];
+    // Support formats:
+    // 1. windpad://192.168.x.x:8765
+    // 2. windpad://connect?ip=X.X.X.X&port=8765
+    if (code.startsWith("windpad://")) {
+      String ip = "";
+      int port = 8765;
+
+      if (code.contains("?ip=")) {
+        final uri = Uri.parse(code);
+        ip = uri.queryParameters['ip'] ?? "";
+        port = int.tryParse(uri.queryParameters['port'] ?? "8765") ?? 8765;
+      } else {
+        final raw = code.replaceAll("windpad://", "");
+        if (raw.contains(":")) {
+          final parts = raw.split(":");
+          ip = parts[0];
+          port = int.tryParse(parts[1]) ?? 8765;
+        } else {
+          ip = raw;
+        }
+      }
       
-      if (ip != null && port != null) {
+      if (ip.isNotEmpty) {
         final btService = Provider.of<BluetoothHidService>(context, listen: false);
-        btService.connectToWifiTcp(ip, int.tryParse(port) ?? 8765);
-        setState(() {
-          _isScanning = false;
-        });
+        btService.connectToWifiTcp(ip, port);
+        if (mounted) {
+          setState(() {
+            _isScanning = false;
+          });
+        }
       }
     }
   }

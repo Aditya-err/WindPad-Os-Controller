@@ -264,6 +264,15 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   void toggleAirMouse() {
     if (_deviceType == DeviceType.tv) {
       _isAirMouse = !_isAirMouse;
+      if (_isAirMouse) _startGyro(); else _stopGyro();
+      notifyListeners();
+    }
+  }
+
+  void setAirMouseEnabled(bool enabled) {
+    if (_deviceType == DeviceType.tv && _isAirMouse != enabled) {
+      _isAirMouse = enabled;
+      if (_isAirMouse) _startGyro(); else _stopGyro();
       notifyListeners();
     }
   }
@@ -663,8 +672,11 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
           _connectedDeviceName = call.arguments as String? ?? "Unknown Device";
         }
         
-        if (_deviceType == DeviceType.tv) _startGyro();
-        else _stopGyro();
+        if (_deviceType == DeviceType.tv) {
+          _startGyro();
+        } else {
+          _stopGyro();
+        }
 
         // Try to save the MAC of connected device
         final connDevice = _bondedDevices.firstWhere(

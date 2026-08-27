@@ -40,7 +40,7 @@ class DeviceSelectionScreen extends StatelessWidget {
                       context,
                       title: "Smart TV",
                       svgContent: _tvSvg,
-                      iconColor: Colors.white,
+                      iconColor: const Color(0xFFEA4335),
                       desc: "Air mouse & TV remote",
                       type: DeviceType.tv,
                       delay: 100,
@@ -49,7 +49,7 @@ class DeviceSelectionScreen extends StatelessWidget {
                       context,
                       title: "Windows",
                       svgContent: _windowsSvg,
-                      iconColor: const Color(0xFF0078D6),
+                      iconColor: const Color(0xFF4285F4),
                       desc: "Full PC control",
                       type: DeviceType.pc,
                       delay: 200,
@@ -67,7 +67,7 @@ class DeviceSelectionScreen extends StatelessWidget {
                       context,
                       title: "Linux",
                       svgContent: _linuxSvg,
-                      iconColor: Colors.white,
+                      iconColor: const Color(0xFFFBBC04),
                       desc: "Linux commands & shortcuts",
                       type: DeviceType.linux,
                       delay: 400,
@@ -110,21 +110,25 @@ class DeviceSelectionScreen extends StatelessWidget {
             final btService = Provider.of<BluetoothHidService>(context, listen: false);
             await btService.setDeviceType(type);
             
+            // FIX 14: Save to prefs FIRST
+            final prefs = await SharedPreferences.getInstance();
+            final deviceKey = type == DeviceType.pc ? 'windows' : type.name;
+            await prefs.setString('savedDeviceType', deviceKey);
+
             if (type != DeviceType.tv) {
-              final prefs = await SharedPreferences.getInstance();
-              final String prefKey = 'helper_installed_\${type.name}';
+              final String prefKey = 'helper_installed_${type.name}';
               final bool isInstalled = prefs.getBool(prefKey) ?? false;
               
               if (!isInstalled && context.mounted) {
-                // Show setup bottom sheet
                 _showSetupSheet(context, type, prefKey);
                 return;
               }
             }
 
             if (context.mounted) {
+              // FIX 14: Pass deviceType directly — no async read at HomeScreen
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
+                MaterialPageRoute(builder: (_) => HomeScreen(deviceType: deviceKey)),
               );
             }
           },
@@ -253,8 +257,10 @@ class DeviceSelectionScreen extends StatelessWidget {
                     Navigator.pop(sheetContext);
                   }
                   if (context.mounted) {
+                    final selectedDevice = type.name;
+                    final deviceKey = type == DeviceType.pc ? 'windows' : selectedDevice;
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const HomeScreen()),
+                      MaterialPageRoute(builder: (_) => HomeScreen(deviceType: deviceKey)),
                     );
                   }
                 },
@@ -289,7 +295,21 @@ const String _macSvg = '''
 ''';
 
 const String _linuxSvg = '''
-<svg viewBox="0 0 93.56 122.88" xmlns="http://www.w3.org/2000/svg">
-  <path d="M60.2,7C60.2,7,44.9-5,29.9,2.8C20,7.9,13.7,19.9,11.8,31C8.8,49.2,14.6,67.6,18.8,85.2 C19.6,88.7,20.2,92.5,23.1,94.9c5.3,4.4,14.1,4.7,20.5,6c9.8,2,20.1,2.8,30.1,2.5c6.5-0.2,14.6-2.1,19.2-7C97.1,91.8,93.4,85.3,92.6,82 C88.3,64.4,94,44.9,90.4,27.1C87.4,11.4,72.6-3.8,60.2,7z M48.2,19.8C54,19.8,59,24,60.1,29.7c1.1,5.6-1.8,11.7-6.8,14.4 c-4.9,2.7-11.4,1.4-15-2.8c-3.6-4.2-3.8-10.9-0.5-15.3C40.6,22,44.5,19.8,48.2,19.8z M27.8,23.3c3.5,0,6.6,2.5,7.3,5.9c0.7,3.4-1.1,7.1-4.1,8.7c-3,1.6-6.9,0.8-9.1-1.7C19.7,33.7,19.6,29.7,21.6,27C23.1,24.8,25.4,23.3,27.8,23.3z" />
+<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="50" cy="78" rx="28" ry="34" fill="#1a1a1a"/>
+  <ellipse cx="50" cy="84" rx="17" ry="24" fill="#f0f0f0"/>
+  <circle cx="50" cy="36" r="24" fill="#1a1a1a"/>
+  <ellipse cx="50" cy="38" rx="14" ry="12" fill="#f5c842"/>
+  <circle cx="43" cy="30" r="5" fill="white"/>
+  <circle cx="57" cy="30" r="5" fill="white"/>
+  <circle cx="44" cy="30" r="2.5" fill="#1a1a1a"/>
+  <circle cx="58" cy="30" r="2.5" fill="#1a1a1a"/>
+  <circle cx="45" cy="29" r="1" fill="white"/>
+  <circle cx="59" cy="29" r="1" fill="white"/>
+  <ellipse cx="50" cy="41" rx="6" ry="4" fill="#f5a623"/>
+  <ellipse cx="20" cy="76" rx="10" ry="22" fill="#1a1a1a" transform="rotate(-15 20 76)"/>
+  <ellipse cx="80" cy="76" rx="10" ry="22" fill="#1a1a1a" transform="rotate(15 80 76)"/>
+  <ellipse cx="37" cy="113" rx="10" ry="5" fill="#f5a623"/>
+  <ellipse cx="63" cy="113" rx="10" ry="5" fill="#f5a623"/>
 </svg>
 ''';

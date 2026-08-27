@@ -1,14 +1,22 @@
 @echo off
+echo Installing dependencies from requirements.txt...
+pip install -r requirements.txt
+
 echo Building Windpad Helper for Windows...
 
 :: Build the executable
 call pyinstaller --onefile --noconsole ^
+    --hidden-import pynput.keyboard ^
+    --hidden-import pynput.mouse ^
+    --hidden-import pynput.keyboard._win32 ^
+    --hidden-import pynput.mouse._win32 ^
+    --hidden-import zeroconf ^
+    --hidden-import zeroconf._utils.ipaddress ^
+    --hidden-import zeroconf._dns ^
     --exclude-module matplotlib ^
     --exclude-module numpy ^
     --exclude-module pandas ^
     --exclude-module scipy ^
-    --exclude-module PIL.ImageTk ^
-    --exclude-module tkinter.ttk ^
     --exclude-module unittest ^
     --exclude-module email ^
     --exclude-module html ^
@@ -16,7 +24,6 @@ call pyinstaller --onefile --noconsole ^
     --exclude-module xml ^
     --strip ^
     --icon=windpad.ico ^
-    --upx-dir=. ^
     --name="WindpadHelper" main.py
 
 :: Compile the Inno Setup script if ISCC is available

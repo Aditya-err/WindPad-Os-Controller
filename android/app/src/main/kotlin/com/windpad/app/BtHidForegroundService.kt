@@ -89,22 +89,37 @@ class BtHidForegroundService : Service() {
     }
 
     private val hidCallback = object : BluetoothHidDevice.Callback() {
+        override fun onAppStatusChanged(pluggedDevice: BluetoothDevice?, registered: Boolean) {
+            super.onAppStatusChanged(pluggedDevice, registered)
+            if (registered) {
+                Log.d("BtHidService", "HID app registered — checking connections")
+                checkAlreadyConnectedDevices()
+                autoConnectLastDevice()
+                tryConnectBondedDevices()
+            }
+        }
+
         override fun onConnectionStateChanged(device: BluetoothDevice?, state: Int) {
             super.onConnectionStateChanged(device, state)
             if (state == BluetoothProfile.STATE_CONNECTED) {
                 hostDevice = device
                 reconnectRetries = 0
+                Log.d("BtHidService", "Connected to ${device?.name} (${device?.address})")
+                // Save last connected
+                device?.address?.let { addr ->
+                    val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
+                    prefs.edit().putString("last_device_mac", addr).apply()
+                }
                 onStateChanged?.invoke("onConnected", device?.name, device?.address)
                 updateNotification(device?.name ?: "Unknown Device")
                 startPingTimer()
-                Log.d("BtHidService", "Connected to ${device?.name}")
             } else if (state == BluetoothProfile.STATE_CONNECTING) {
                 onStateChanged?.invoke("onConnecting", device?.name, device?.address)
             } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
                 val isBound = device?.bondState == BluetoothDevice.BOND_BONDED
                 if (isBound && reconnectRetries < maxRetries) {
                     reconnectRetries++
-                    Log.d("BtHidService", "HID disconnected, retrying silent reconnect... (\$reconnectRetries/\$maxRetries)")
+                    Log.d("BtHidService", "HID disconnected, retrying... ($reconnectRetries/$maxRetries)")
                     Handler(Looper.getMainLooper()).postDelayed({
                         device?.address?.let { reconnectLastDevice(it) }
                     }, 2000)
@@ -355,6 +370,52 @@ class BtHidForegroundService : Service() {
                 }
             } else {
                 Log.d("BtHidService", "Device not bonded, ignoring auto reconnect")
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun checkAlreadyConnectedDevices() {
+        try {
+            val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
+            val connected = btManager.getConnectedDevices(BluetoothProfile.HID_DEVICE)
+            if (connected.isNotEmpty()) {
+                val device = connected[0]
+                hostDevice = device
+                Log.d("BtHidService", "Already connected: ${device.name}")
+                onStateChanged?.invoke("onConnected", device.name, device.address)
+                updateNotification(device.name ?: "Device")
+                startPingTimer()
+            }
+        } catch (e: Exception) {
+            Log.e("BtHidService", "checkAlreadyConnected: ${e.message}")
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun autoConnectLastDevice() {
+        val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
+        val lastMac = prefs.getString("last_device_mac", null) ?: return
+        if (hostDevice != null) return // already connected
+        val target = adapter?.bondedDevices?.find { it.address == lastMac } ?: return
+        Log.d("BtHidService", "Auto-connecting last device: ${target.name}")
+        try {
+            hidDevice?.connect(target)
+        } catch (e: Exception) {
+            Log.e("BtHidService", "autoConnectLast: ${e.message}")
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun tryConnectBondedDevices() {
+        if (hostDevice != null) return // already connected
+        val bonded = adapter?.bondedDevices ?: return
+        for (device in bonded) {
+            Log.d("BtHidService", "Trying bonded: ${device.name}")
+            try {
+                hidDevice?.connect(device)
+            } catch (e: Exception) {
+                Log.e("BtHidService", "tryBonded: ${e.message}")
             }
         }
     }
