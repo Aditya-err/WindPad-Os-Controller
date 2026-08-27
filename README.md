@@ -19,15 +19,15 @@ For the ultimate experience on Windows, the included **Windpad Helper** adds adv
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="assets/icon/Home%20Screen.jpg" width="160">
+  <img src="assets/icon/user%20choose.jpg" width="160">
   &nbsp;
-  <img src="assets/icon/Options.jpg" width="160">
+  <img src="assets/icon/Home%20Screen.jpg" width="160">
   &nbsp;
   <img src="assets/icon/Setting.jpg" width="160">
   &nbsp;
-  <img src="assets/icon/All%20Shortcut.jpg" width="160">
+  <img src="assets/icon/Options.jpg" width="160">
   &nbsp;
-  <img src="assets/icon/user%20choose.jpg" width="160">
+  <img src="assets/icon/All%20Shortcut.jpg" width="160">  
 </div>
 
 ---
