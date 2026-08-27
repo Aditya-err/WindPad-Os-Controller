@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const initCanvas = () => {
             textCanvas.width = textCanvas.parentElement.clientWidth;
-            textCanvas.height = 350;
+            textCanvas.height = 250;
             
             // Draw text
             ctx.fillStyle = 'white';
@@ -242,16 +242,13 @@ document.addEventListener('DOMContentLoaded', () => {
             constructor(x, y) {
                 this.x = x;
                 this.y = y;
-                this.size = 2; 
+                this.size = 3.5; // Bigger dots
                 this.baseX = x;
                 this.baseY = y;
                 this.density = (Math.random() * 30) + 1;
                 
-                // Color variation
-                const rand = Math.random();
-                if (rand < 0.3) this.color = '#3b82f6';
-                else if (rand < 0.6) this.color = '#10b981';
-                else this.color = '#a855f7';
+                // Color variation (White, 50% opacity)
+                this.color = 'rgba(255, 255, 255, 0.5)';
             }
             draw() {
                 ctx.fillStyle = this.color;
