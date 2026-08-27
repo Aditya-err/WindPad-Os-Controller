@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=" alt="Windpad Logo" width="200" height="200">
+  <img src="https://raw.githubusercontent.com/Aditya-err/WindPad-Os-Controller/main/assets/windpad.png" alt="Windpad Logo" width="200" height="200">
   <h1>Windpad 🖱️⌨️</h1>
   <p><strong>Turn your Android phone into a Bluetooth HID Trackpad & Keyboard for any device.</strong></p>
 
