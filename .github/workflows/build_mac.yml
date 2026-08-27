@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pyinstaller pillow qrcode zeroconf pyperclip pystray
-          pip install pyobjc-framework-Quartz pyobjc-framework-AppKit
+          pip install pyobjc-framework-Quartz pyobjc-framework-Cocoa
 
       - name: Build with PyInstaller
         run: |
