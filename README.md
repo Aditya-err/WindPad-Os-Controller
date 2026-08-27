@@ -18,14 +18,16 @@ For the ultimate experience on Windows, the included **Windpad Helper** adds adv
 
 ## 📸 Screenshots
 
-*(💡 **Tip**: To add your real screenshots here, open this `README.md` file on GitHub, click the Edit (✏️) icon, and just drag-and-drop your images right below this text!)*
-
 <div align="center">
-  <img src="https://via.placeholder.com/250x500.png?text=Home+Screen" width="250">
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://via.placeholder.com/250x500.png?text=Trackpad" width="250">
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="https://via.placeholder.com/250x500.png?text=Settings" width="250">
+  <img src="assets/icon/Home%20Screen.jpg" width="160">
+  &nbsp;
+  <img src="assets/icon/Options.jpg" width="160">
+  &nbsp;
+  <img src="assets/icon/Setting.jpg" width="160">
+  &nbsp;
+  <img src="assets/icon/All%20Shortcut.jpg" width="160">
+  &nbsp;
+  <img src="assets/icon/user%20choose.jpg" width="160">
 </div>
 
 ---
