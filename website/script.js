@@ -202,4 +202,121 @@ document.addEventListener('DOMContentLoaded', () => {
             cursorDot.classList.remove('hovered');
         });
     });
+
+    // --- Interactive Particle Text ---
+    const textCanvas = document.getElementById('text-canvas');
+    if (textCanvas) {
+        const ctx = textCanvas.getContext('2d', { willReadFrequently: true });
+        let particleArray = [];
+        let mouseText = { x: null, y: null, radius: 80 };
+
+        const initCanvas = () => {
+            textCanvas.width = textCanvas.parentElement.clientWidth;
+            textCanvas.height = 350;
+            
+            // Draw text
+            ctx.fillStyle = 'white';
+            const fontSize = Math.min(window.innerWidth / 5, 150);
+            ctx.font = `bold ${fontSize}px Inter`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('WindPad', textCanvas.width / 2, textCanvas.height / 2);
+            
+            const textCoordinates = ctx.getImageData(0, 0, textCanvas.width, textCanvas.height);
+            particleArray = [];
+            
+            // Iterate over pixels to create dots
+            for (let y = 0, y2 = textCoordinates.height; y < y2; y += 5) {
+                for (let x = 0, x2 = textCoordinates.width; x < x2; x += 5) {
+                    const index = (y * textCoordinates.width + x) * 4 + 3;
+                    if (textCoordinates.data[index] > 128) {
+                        let positionX = x;
+                        let positionY = y;
+                        particleArray.push(new Particle(positionX, positionY));
+                    }
+                }
+            }
+        };
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 2; 
+                this.baseX = x;
+                this.baseY = y;
+                this.density = (Math.random() * 30) + 1;
+                
+                // Color variation
+                const rand = Math.random();
+                if (rand < 0.3) this.color = '#3b82f6';
+                else if (rand < 0.6) this.color = '#10b981';
+                else this.color = '#a855f7';
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            update() {
+                let dx = mouseText.x - this.x;
+                let dy = mouseText.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                let forceDirectionX = dx / distance;
+                let forceDirectionY = dy / distance;
+                let maxDistance = mouseText.radius;
+                let force = (maxDistance - distance) / maxDistance;
+                let directionX = forceDirectionX * force * this.density;
+                let directionY = forceDirectionY * force * this.density;
+
+                if (distance < maxDistance && mouseText.x != null) {
+                    this.x -= directionX;
+                    this.y -= directionY;
+                } else {
+                    if (this.x !== this.baseX) {
+                        let dx = this.x - this.baseX;
+                        this.x -= dx / 10;
+                    }
+                    if (this.y !== this.baseY) {
+                        let dy = this.y - this.baseY;
+                        this.y -= dy / 10;
+                    }
+                }
+            }
+        }
+
+        textCanvas.addEventListener('mousemove', (event) => {
+            const rect = textCanvas.getBoundingClientRect();
+            mouseText.x = event.clientX - rect.left;
+            mouseText.y = event.clientY - rect.top;
+        });
+
+        textCanvas.addEventListener('mouseleave', () => {
+            mouseText.x = null;
+            mouseText.y = null;
+        });
+
+        const animateText = () => {
+            ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
+            for (let i = 0; i < particleArray.length; i++) {
+                particleArray[i].draw();
+                particleArray[i].update();
+            }
+            requestAnimationFrame(animateText);
+        }
+
+        // Slight delay to ensure fonts are loaded
+        setTimeout(() => {
+            initCanvas();
+            animateText();
+        }, 500);
+        
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(initCanvas, 200);
+        });
+    }
 });
