@@ -59,8 +59,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const posArray = new Float32Array(particlesCount * 3);
         const colorsArray = new Float32Array(particlesCount * 3);
 
+        // Create a circular texture dynamically for soft particles
+        const createCircleTexture = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            
+            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+            gradient.addColorStop(1, 'rgba(255,255,255,0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 64, 64);
+            
+            return new THREE.CanvasTexture(canvas);
+        };
+
         const color1 = new THREE.Color(0x3b82f6); // Primary blue
         const color2 = new THREE.Color(0xa855f7); // Purple
+        const color3 = new THREE.Color(0x10b981); // Emerald Green (Added as requested)
 
         for(let i = 0; i < particlesCount * 3; i+=3) {
             // Position
@@ -68,8 +87,18 @@ document.addEventListener('DOMContentLoaded', () => {
             posArray[i+1] = (Math.random() - 0.5) * 100;   // y
             posArray[i+2] = (Math.random() - 0.5) * 100;   // z
 
-            // Colors (mix of blue and purple)
-            const mixedColor = color1.clone().lerp(color2, Math.random());
+            // Colors (mix of blue, purple, and green)
+            const rand = Math.random();
+            let mixedColor = new THREE.Color();
+            
+            if (rand < 0.33) {
+                mixedColor.lerpColors(color1, color2, Math.random());
+            } else if (rand < 0.66) {
+                mixedColor.lerpColors(color2, color3, Math.random());
+            } else {
+                mixedColor.lerpColors(color3, color1, Math.random());
+            }
+            
             colorsArray[i] = mixedColor.r;
             colorsArray[i+1] = mixedColor.g;
             colorsArray[i+2] = mixedColor.b;
@@ -78,13 +107,15 @@ document.addEventListener('DOMContentLoaded', () => {
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
         particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
 
-        // Create custom shader-like material for glowing dots
+        // Create custom shader-like material for soft glowing dots (no more squares!)
         const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.15,
+            size: 0.3, // Slightly larger to show the soft texture
             vertexColors: true,
             transparent: true,
             opacity: 0.8,
-            blending: THREE.AdditiveBlending
+            map: createCircleTexture(), // Apply the circle texture
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
         });
 
         const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
@@ -136,4 +167,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         animate();
     }
+
+    // --- Custom Cursor ---
+    const cursorDot = document.createElement('div');
+    cursorDot.classList.add('cursor-dot');
+    document.body.appendChild(cursorDot);
+
+    const cursorOutline = document.createElement('div');
+    cursorOutline.classList.add('cursor-outline');
+    document.body.appendChild(cursorOutline);
+
+    window.addEventListener('mousemove', (e) => {
+        const posX = e.clientX;
+        const posY = e.clientY;
+        
+        cursorDot.style.left = `${posX}px`;
+        cursorDot.style.top = `${posY}px`;
+
+        // Smooth follow for outline
+        cursorOutline.animate({
+            left: `${posX}px`,
+            top: `${posY}px`
+        }, { duration: 500, fill: "forwards" });
+    });
+
+    // Add hover effect for links and buttons
+    document.querySelectorAll('a, button, .btn').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursorOutline.classList.add('hovered');
+            cursorDot.classList.add('hovered');
+        });
+        el.addEventListener('mouseleave', () => {
+            cursorOutline.classList.remove('hovered');
+            cursorDot.classList.remove('hovered');
+        });
+    });
 });
