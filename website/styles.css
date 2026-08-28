@@ -584,16 +584,24 @@ footer {
     padding: 48px 0;
     background: rgba(0,0,0,0.3);
 }
-.footer-content {
+.footer-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 24px;
+    width: 100%;
 }
-.footer-content p {
-    margin-bottom: 0;
+.footer-bottom {
+    width: 100%;
     text-align: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.footer-bottom p {
+    margin-bottom: 0;
+    font-size: 0.9rem;
 }
 .footer-logo { display: flex; align-items: center; gap: 12px; font-weight: 600; }
 .footer-logo img { width: 30px; height: 30px; border-radius: 8px; }
@@ -771,8 +779,9 @@ footer {
     }
     .contact-buttons { flex-direction: column; width: 100%; }
     .contact-buttons .btn { width: 100%; }
-    .footer-content { flex-direction: column; text-align: center; gap: 16px; }
+    .footer-top { flex-direction: column; text-align: center; gap: 20px; }
     .footer-links { justify-content: center; flex-direction: row; flex-wrap: wrap; gap: 16px; }
+    .footer-bottom { margin-top: 24px; padding-top: 20px; }
     
     /* Make tables responsive */
     .compat-table-wrapper { overflow-x: auto; border-radius: 8px; }
