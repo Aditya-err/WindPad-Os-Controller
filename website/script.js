@@ -10,11 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const el = entry.target;
                 
                 // Add staggered delay for grid items
-                if (el.classList.contains('feature-card') || 
-                    el.classList.contains('use-card') || 
+                if (el.classList.contains('bento-item') || 
+                    el.classList.contains('timeline-step') || 
                     el.classList.contains('comparison-card') ||
                     el.classList.contains('faq-item') ||
-                    el.classList.contains('gallery-img') ||
                     el.classList.contains('download-card')) {
                     
                     const parent = el.parentElement;
@@ -160,6 +159,23 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show success UI
         formContainer.style.display = 'none';
         successContainer.style.display = 'block';
+    });
+
+    // --- Tabs Logic ---
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanes = document.querySelectorAll('.tab-pane');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active from all
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+            
+            // Add active to clicked
+            btn.classList.add('active');
+            const target = btn.getAttribute('data-target');
+            document.getElementById(target).classList.add('active');
+        });
     });
 
 });

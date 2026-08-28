@@ -217,26 +217,46 @@
             <div class="section-header reveal">
                 <h2>Designed for every situation.</h2>
             </div>
-            <div class="cards-wrapper">
-                <div class="use-card glass reveal">
-                    <h3>🍿 Movie Night</h3>
-                    <p>Control your laptop or Smart TV from your bed. No need to get up to pause or change volume.</p>
+            <div class="tabs-container reveal">
+                <div class="tabs-nav">
+                    <button class="tab-btn active" data-target="movie">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Movie Night
+                    </button>
+                    <button class="tab-btn" data-target="presentations">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+                        Presentations
+                    </button>
+                    <button class="tab-btn" data-target="broken">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/></svg>
+                        Broken Trackpad
+                    </button>
+                    <button class="tab-btn" data-target="tv">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+                        Smart TV Control
+                    </button>
                 </div>
-                <div class="use-card glass reveal">
-                    <h3>📊 Presentations</h3>
-                    <p>Walk around the stage freely while controlling your slides right from your phone.</p>
-                </div>
-                <div class="use-card glass reveal">
-                    <h3>🛠️ Broken Laptop Trackpad</h3>
-                    <p>Hardware failed? WindPad is the perfect, instant, zero-cost replacement.</p>
-                </div>
-                <div class="use-card glass reveal">
-                    <h3>📺 Smart TV Control</h3>
-                    <p>Navigate clunky Smart TV interfaces easily using your phone's keyboard and trackpad.</p>
-                </div>
-                <div class="use-card glass reveal">
-                    <h3>💻 Remote PC Control</h3>
-                    <p>Manage your media center PC or headless setup effortlessly over Bluetooth.</p>
+                <div class="tabs-content glass">
+                    <div class="tab-pane active" id="movie">
+                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+                        <h3>Movie Night</h3>
+                        <p>Control your laptop or Smart TV from your bed. No need to get up to pause or change volume.</p>
+                    </div>
+                    <div class="tab-pane" id="presentations">
+                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></div>
+                        <h3>Presentations</h3>
+                        <p>Walk around the stage freely while controlling your slides right from your phone.</p>
+                    </div>
+                    <div class="tab-pane" id="broken">
+                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/></svg></div>
+                        <h3>Broken Laptop Trackpad</h3>
+                        <p>Hardware failed? WindPad is the perfect, instant, zero-cost replacement.</p>
+                    </div>
+                    <div class="tab-pane" id="tv">
+                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
+                        <h3>Smart TV Control</h3>
+                        <p>Navigate clunky Smart TV interfaces easily using your phone's keyboard and trackpad.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -244,43 +264,60 @@
 
     <!-- Screenshots Gallery -->
     <section class="screenshots" id="screenshots">
-        <div class="container">
+        <div class="container" style="max-width: 100%; padding: 0;">
             <div class="section-header reveal">
                 <h2>Beautiful Interface</h2>
             </div>
-            <div class="gallery-track reveal">
-                <img src="assets/Setting.jpg" alt="Settings Screen" class="gallery-img">
-                <img src="assets/Options.jpg" alt="Options Screen" class="gallery-img">
-                <img src="assets/all_shortcut.jpg" alt="Shortcuts Screen" class="gallery-img">
-                <img src="assets/user_choose.jpg" alt="User Choose Screen" class="gallery-img">
+            <div class="marquee-container reveal">
+                <div class="marquee-track">
+                    <img src="assets/Setting.jpg" alt="Settings Screen" class="gallery-img">
+                    <img src="assets/Options.jpg" alt="Options Screen" class="gallery-img">
+                    <img src="assets/all_shortcut.jpg" alt="Shortcuts Screen" class="gallery-img">
+                    <img src="assets/user_choose.jpg" alt="User Choose Screen" class="gallery-img">
+                    <!-- Duplicate for infinite scroll -->
+                    <img src="assets/Setting.jpg" alt="Settings Screen" class="gallery-img">
+                    <img src="assets/Options.jpg" alt="Options Screen" class="gallery-img">
+                    <img src="assets/all_shortcut.jpg" alt="Shortcuts Screen" class="gallery-img">
+                    <img src="assets/user_choose.jpg" alt="User Choose Screen" class="gallery-img">
+                </div>
             </div>
-            <!-- Placeholder for future demo video -->
-            <div class="demo-placeholder reveal" style="display:none;"></div>
         </div>
     </section>
 
-    <!-- Setup Section -->
+    <!-- Setup Section (Timeline) -->
     <section class="how-it-works" id="setup">
         <div class="container">
             <div class="section-header reveal">
                 <h2>Setup in seconds.</h2>
                 <p>No messy cables, <strong>no receiver apps needed</strong> on your target device.</p>
             </div>
-            <div class="steps-container">
-                <div class="step reveal">
-                    <div class="step-number">1</div>
-                    <h3>Install WindPad</h3>
-                    <p>Download and install the WindPad APK on your Android device.</p>
+            <div class="timeline-container">
+                <div class="timeline-step reveal">
+                    <div class="timeline-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>1. Install WindPad</h3>
+                        <p>Download and install the WindPad APK on your Android device.</p>
+                    </div>
                 </div>
-                <div class="step reveal">
-                    <div class="step-number">2</div>
-                    <h3>Pair Devices</h3>
-                    <p>Enable Bluetooth on your computer/TV and pair it with your Android phone.</p>
+                <div class="timeline-step reveal">
+                    <div class="timeline-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>2. Pair Devices</h3>
+                        <p>Enable Bluetooth on your computer/TV and pair it with your Android phone.</p>
+                    </div>
                 </div>
-                <div class="step reveal">
-                    <div class="step-number">3</div>
-                    <h3>Start Controlling</h3>
-                    <p>Open WindPad. Your phone is instantly recognized as a physical mouse and keyboard.</p>
+                <div class="timeline-step reveal">
+                    <div class="timeline-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>3. Start Using</h3>
+                        <p>Open WindPad and instantly start controlling your device like a native Bluetooth mouse!</p>
+                    </div>
                 </div>
             </div>
             <div class="setup-note glass reveal">
