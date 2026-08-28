@@ -41,15 +41,17 @@ jobs:
           tag_name: ${{ github.event.inputs.version }}
           name: "Windpad ${{ github.event.inputs.version }}"
           body: |
-            ## Windpad Helper App
+            ## WindPad Release
 
-            Download the helper app for your platform:
+            Download the app and helper for your platform:
+            - **Android (APK)**: WindPad.apk
             - **Windows**: WindpadHelper_Setup.exe
             - **Mac**: WindpadHelper.dmg
             - **Linux**: windpad-helper_1.0.0_amd64.deb
 
             Install once → stays in background → auto-connects!
           files: |
+            website/assets/WindPad.apk
             WindpadHelper.dmg
             windpad-helper_1.0.0_amd64.deb
             WindpadHelper_Setup.exe
