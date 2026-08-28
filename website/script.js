@@ -26,12 +26,115 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const target = document.querySelector(this.getAttribute('href'));
             if (target) {
+                // Close mobile menu if open
+                document.querySelector('.nav-links').classList.remove('open');
+                document.querySelector('.mobile-menu-btn').classList.remove('open');
+                
                 target.scrollIntoView({
                     behavior: 'smooth'
                 });
             }
         });
     });
+
+    // --- Mobile Menu Toggle ---
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const navLinks = document.querySelector('.nav-links');
+    
+    if (menuBtn && navLinks) {
+        menuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('open');
+            menuBtn.classList.toggle('open');
+        });
+    }
+
+    // --- Support Modal Logic ---
+    const supportBtns = document.querySelectorAll('.support-btn, .footer-support-btn');
+    const modal = document.getElementById('supportModal');
+    const closeBtn = document.querySelector('.modal-close');
+    const cancelBtn = document.getElementById('cancelSupport');
+    const submitBtn = document.getElementById('submitSupport');
+    const messageInput = document.getElementById('supportMessage');
+    const errorMsg = document.getElementById('supportError');
+    const formContainer = document.getElementById('supportFormContainer');
+    const successContainer = document.getElementById('supportSuccessMessage');
+    const closeSuccessBtn = document.getElementById('closeSuccess');
+
+    const openModal = () => {
+        // Reset state
+        formContainer.style.display = 'block';
+        successContainer.style.display = 'none';
+        messageInput.value = '';
+        errorMsg.textContent = '';
+        
+        modal.classList.add('open');
+        document.body.classList.add('modal-open');
+        
+        // Close mobile menu if open
+        if (navLinks.classList.contains('open')) {
+            navLinks.classList.remove('open');
+            menuBtn.classList.remove('open');
+        }
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('open');
+        document.body.classList.remove('modal-open');
+    };
+
+    supportBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
+        });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    closeSuccessBtn.addEventListener('click', closeModal);
+
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('open')) {
+            closeModal();
+        }
+    });
+
+    // Submit logic (mailto fallback)
+    submitBtn.addEventListener('click', () => {
+        const message = messageInput.value.trim();
+        if (!message) {
+            errorMsg.textContent = 'Please describe your update or request before sending.';
+            return;
+        }
+
+        errorMsg.textContent = '';
+        
+        // Prepare mailto link
+        const recipient = 'gadityaprasadachary@gmail.com';
+        const subject = encodeURIComponent('WindPad User Update');
+        
+        const date = new Date().toLocaleString();
+        const bodyText = `New WindPad user update/request:\n\n${message}\n\nSource: WindPad Website\nDate: ${date}`;
+        const body = encodeURIComponent(bodyText);
+        
+        const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
+        
+        // Attempt to open email client
+        window.location.href = mailtoLink;
+        
+        // Show success UI
+        formContainer.style.display = 'none';
+        successContainer.style.display = 'block';
+    });
+
 
     // --- Three.js Background Animation ---
     const canvas = document.querySelector('#bg-canvas');
@@ -54,12 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create Particles
         const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 1500;
+        const particlesCount = window.innerWidth < 768 ? 800 : 1500; // Optimize for mobile
         
         const posArray = new Float32Array(particlesCount * 3);
         const colorsArray = new Float32Array(particlesCount * 3);
 
-        // Create a circular texture dynamically for soft particles
         const createCircleTexture = () => {
             const canvas = document.createElement('canvas');
             canvas.width = 64;
@@ -79,15 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const color1 = new THREE.Color(0x3b82f6); // Primary blue
         const color2 = new THREE.Color(0xa855f7); // Purple
-        const color3 = new THREE.Color(0x10b981); // Emerald Green (Added as requested)
+        const color3 = new THREE.Color(0x10b981); // Emerald Green
 
         for(let i = 0; i < particlesCount * 3; i+=3) {
-            // Position
             posArray[i] = (Math.random() - 0.5) * 100;     // x
             posArray[i+1] = (Math.random() - 0.5) * 100;   // y
             posArray[i+2] = (Math.random() - 0.5) * 100;   // z
 
-            // Colors (mix of blue, purple, and green)
             const rand = Math.random();
             let mixedColor = new THREE.Color();
             
@@ -107,13 +207,12 @@ document.addEventListener('DOMContentLoaded', () => {
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
         particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
 
-        // Create custom shader-like material for soft glowing dots (no more squares!)
         const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.3, // Slightly larger to show the soft texture
+            size: 0.4,
             vertexColors: true,
             transparent: true,
             opacity: 0.8,
-            map: createCircleTexture(), // Apply the circle texture
+            map: createCircleTexture(),
             blending: THREE.AdditiveBlending,
             depthWrite: false
         });
@@ -121,27 +220,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const particleMesh = new THREE.Points(particlesGeometry, particlesMaterial);
         scene.add(particleMesh);
 
-        // Mouse interaction variables
         let mouseX = 0;
         let mouseY = 0;
         let targetX = 0;
         let targetY = 0;
-        const windowHalfX = window.innerWidth / 2;
-        const windowHalfY = window.innerHeight / 2;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
 
         document.addEventListener('mousemove', (event) => {
             mouseX = (event.clientX - windowHalfX);
             mouseY = (event.clientY - windowHalfY);
         });
 
-        // Resize handler
         window.addEventListener('resize', () => {
+            windowHalfX = window.innerWidth / 2;
+            windowHalfY = window.innerHeight / 2;
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Animation Loop
         const clock = new THREE.Clock();
 
         const animate = () => {
@@ -151,15 +249,15 @@ document.addEventListener('DOMContentLoaded', () => {
             targetX = mouseX * 0.001;
             targetY = mouseY * 0.001;
 
-            // Rotate particle mesh slowly
             particleMesh.rotation.y += 0.001;
             particleMesh.rotation.x += 0.0005;
 
-            // Interact with mouse (Parallax)
-            particleMesh.rotation.y += 0.05 * (targetX - particleMesh.rotation.y);
-            particleMesh.rotation.x += 0.05 * (targetY - particleMesh.rotation.x);
+            // Only apply parallax if not on mobile (touch devices don't have mousemove generally)
+            if (window.innerWidth > 900) {
+                particleMesh.rotation.y += 0.05 * (targetX - particleMesh.rotation.y);
+                particleMesh.rotation.x += 0.05 * (targetY - particleMesh.rotation.x);
+            }
 
-            // Subtle floating motion
             particleMesh.position.y = Math.sin(elapsedTime * 0.5) * 2;
 
             renderer.render(scene, camera);
@@ -167,40 +265,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
         animate();
     }
-
-    // --- Custom Cursor ---
-    const cursorDot = document.createElement('div');
-    cursorDot.classList.add('cursor-dot');
-    document.body.appendChild(cursorDot);
-
-    const cursorOutline = document.createElement('div');
-    cursorOutline.classList.add('cursor-outline');
-    document.body.appendChild(cursorOutline);
-
-    window.addEventListener('mousemove', (e) => {
-        const posX = e.clientX;
-        const posY = e.clientY;
-        
-        cursorDot.style.left = `${posX}px`;
-        cursorDot.style.top = `${posY}px`;
-
-        // Smooth follow for outline
-        cursorOutline.animate({
-            left: `${posX}px`,
-            top: `${posY}px`
-        }, { duration: 500, fill: "forwards" });
-    });
-
-    // Add hover effect for links and buttons
-    document.querySelectorAll('a, button, .btn').forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursorOutline.classList.add('hovered');
-            cursorDot.classList.add('hovered');
-        });
-        el.addEventListener('mouseleave', () => {
-            cursorOutline.classList.remove('hovered');
-            cursorDot.classList.remove('hovered');
-        });
-    });
-
 });

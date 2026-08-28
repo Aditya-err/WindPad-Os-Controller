@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Windpad - Remote Trackpad & Keyboard</title>
-    <meta name="description" content="Turn your Android phone into a Bluetooth HID Trackpad & Keyboard for any device. No apps needed on the receiving end.">
+    <title>WindPad — Turn Your Android Phone Into a Bluetooth Mouse & Keyboard</title>
+    <meta name="description" content="WindPad turns your Android phone into a Bluetooth HID mouse, trackpad and keyboard. Works with Windows, macOS, Linux and compatible Smart TVs without a receiver app.">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="WindPad — Bluetooth Mouse & Keyboard">
+    <meta property="og:description" content="Turn your Android phone into a Bluetooth HID mouse, trackpad and keyboard. No PC receiver app required.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/Aditya-err/WindPad-Os-Controller/main/assets/windpad.png">
+    <meta property="og:type" content="website">
+    
     <link rel="icon" type="image/png" href="assets/windpad.png">
     
     <!-- Google Fonts -->
@@ -24,14 +31,22 @@
         <div class="container nav-content">
             <div class="logo">
                 <img src="assets/windpad.png" alt="Windpad Logo">
-                <span>Windpad</span>
+                <span>WindPad</span>
             </div>
+            
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">
+                <span></span><span></span><span></span>
+            </button>
+            
             <nav class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#screenshots">Gallery</a>
-                <a href="#setup">How to use</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#compatibility" class="nav-link">Compatibility</a>
+                <a href="#setup" class="nav-link">Setup</a>
+                <a href="#faq" class="nav-link">FAQ</a>
+                <a href="#download" class="nav-link">Download</a>
+                <a href="#contact" class="nav-link">Contact</a>
+                <button class="btn btn-outline support-btn">Support</button>
             </nav>
-            <a href="#download" class="btn btn-primary">Download</a>
         </div>
     </header>
 
@@ -39,22 +54,69 @@
     <section class="hero" id="home">
         <div class="container hero-content">
             <div class="hero-text reveal">
-                <div class="badge">Version 1.0 is here 🚀</div>
-                <h1>Your Phone, Reimagined as a <span>Powerful Trackpad</span>.</h1>
-                <p>Turn your Android device into a low-latency Bluetooth HID Trackpad & Keyboard. Works seamlessly with Windows, macOS, Linux, and Smart TVs—no receiving app required.</p>
+                <div class="badge">Open Source & Free 🚀</div>
+                <h1>Turn Your Android Phone<br>Into a <span>Wireless</span><br><span>Mouse & Keyboard</span></h1>
+                <p>Low-latency Bluetooth HID. Works seamlessly with Windows, macOS, Linux, and compatible Smart TVs.</p>
+                <div class="highlight-box">
+                    <p class="highlight-text"><strong>No PC receiver app required.</strong></p>
+                </div>
+                
                 <div class="hero-buttons">
-                    <a href="#download" class="btn btn-primary btn-large">Get the APK</a>
+                    <a href="#download" class="btn btn-primary btn-large">Download APK</a>
                     <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" class="btn btn-secondary btn-large">View on GitHub</a>
+                </div>
+                
+                <!-- Integrated Trust Bar -->
+                <div class="trust-bar-integrated">
+                    <span>🔓 Open Source</span>
+                    <span>💸 Free</span>
+                    <span>🚫 No Ads</span>
+                    <span>🕵️ No Tracking</span>
+                    <span>📶 Bluetooth HID</span>
                 </div>
             </div>
             <div class="hero-image reveal">
-                <div class="phone-mockup">
-                    <img src="assets/Home Screen.jpg" alt="Windpad App Home Screen">
+                <div class="hero-image-wrapper">
+                    <div class="phone-mockup">
+                        <img src="assets/home_screen.jpg" alt="WindPad App Home Screen">
+                    </div>
                 </div>
             </div>
         </div>
+        
         <div class="bg-glow glow-1"></div>
         <div class="bg-glow glow-2"></div>
+    </section>
+
+    <!-- Why WindPad Section (Comparison) -->
+    <section class="why-windpad" id="why-windpad">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Why WindPad?</h2>
+                <p>Built differently from typical remote apps.</p>
+            </div>
+            <div class="comparison-grid reveal">
+                <div class="comparison-card windpad-card glass">
+                    <h3>WindPad</h3>
+                    <ul>
+                        <li>✅ <strong>Bluetooth HID</strong> (Acts like a standard hardware mouse)</li>
+                        <li>✅ <strong>No receiver app required</strong> on the target device</li>
+                        <li>✅ <strong>No Wi-Fi required</strong></li>
+                        <li>✅ <strong>100% Free & Open Source</strong></li>
+                        <li>✅ <strong>No Ads / No Tracking</strong></li>
+                    </ul>
+                </div>
+                <div class="comparison-card competitor-card glass">
+                    <h3>Typical Wi-Fi Remote Apps</h3>
+                    <ul>
+                        <li>❌ Usually require a receiver app installed on every PC</li>
+                        <li>❌ Depend heavily on Wi-Fi/network configuration</li>
+                        <li>❌ May not behave like native HID devices</li>
+                        <li>❌ Often contain ads or premium paywalls</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Features Section -->
@@ -62,45 +124,65 @@
         <div class="container">
             <div class="section-header reveal">
                 <h2>Everything you need, right in your hand.</h2>
-                <p>Designed for power users with smooth gestures and quick keys.</p>
             </div>
             <div class="feature-grid">
-                <!-- Feature 1 -->
                 <div class="feature-card glass reveal">
-                    <div class="icon">🖱️</div>
+                    <div class="icon" aria-hidden="true">🖱️</div>
                     <h3>Precision Trackpad</h3>
-                    <p>Experience smooth cursor movement with low-pass filtering and pointer acceleration tailored for speed and accuracy.</p>
+                    <p>Smooth cursor movement tailored for speed and accuracy.</p>
                 </div>
-                <!-- Feature 2 -->
                 <div class="feature-card glass reveal">
-                    <div class="icon">✌️</div>
+                    <div class="icon" aria-hidden="true">✌️</div>
                     <h3>Multi-touch Gestures</h3>
-                    <p>Navigate easily with 1-finger move, 2-finger scroll, pinch-to-zoom, and 3-finger swipe gestures.</p>
+                    <p>1-finger move, 2-finger scroll, pinch-to-zoom, and 3-finger swipe.</p>
                 </div>
-                <!-- Feature 3 -->
                 <div class="feature-card glass reveal">
-                    <div class="icon">⚡</div>
+                    <div class="icon" aria-hidden="true">⚡</div>
                     <h3>Quick Action Keys</h3>
-                    <p>Dedicated buttons for Copy, Paste, Cut, Undo, Select All, and Emoji right on your screen.</p>
+                    <p>Dedicated buttons for Copy, Paste, Cut, Undo, Select All, and Emoji.</p>
                 </div>
-                <!-- Feature 4 -->
                 <div class="feature-card glass reveal">
-                    <div class="icon">🔗</div>
+                    <div class="icon" aria-hidden="true">🔗</div>
                     <h3>Universal Compatibility</h3>
-                    <p>Acts as a standard Bluetooth HID device. Connects to any PC or TV just like a real bluetooth mouse.</p>
+                    <p>Uses standard Bluetooth HID. Connects to devices just like a real mouse.</p>
                 </div>
-                <!-- Feature 5 -->
                 <div class="feature-card glass reveal">
-                    <div class="icon">📋</div>
+                    <div class="icon" aria-hidden="true">📋</div>
                     <h3>Smart Clipboard Paste</h3>
-                    <p>Send text directly from your phone's clipboard to your PC, character by character.</p>
+                    <p>Send text directly from your phone's clipboard to your PC effortlessly.</p>
                 </div>
-                <!-- Feature 6 -->
                 <div class="feature-card glass reveal">
-                    <div class="icon">🎨</div>
+                    <div class="icon" aria-hidden="true">🎨</div>
                     <h3>Material Theming</h3>
-                    <p>Beautiful dark, light, and system themes with customizable trackpad colors and settings.</p>
+                    <p>Beautiful dark, light, and system themes with customizable colors.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compatibility Section -->
+    <section class="compatibility" id="compatibility">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Works where you need it.</h2>
+                <p>If your device supports a Bluetooth mouse, it supports WindPad.</p>
+            </div>
+            <div class="compat-table-wrapper glass reveal">
+                <table class="compat-table">
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Support Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Windows</td><td>✅ Supported</td></tr>
+                        <tr><td>macOS</td><td>✅ Supported</td></tr>
+                        <tr><td>Linux</td><td>✅ Supported</td></tr>
+                        <tr><td>Compatible Smart TVs</td><td>✅ Supported</td></tr>
+                        <tr><td>Android</td><td>📱 Controller Device</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
@@ -110,20 +192,27 @@
         <div class="container">
             <div class="section-header reveal">
                 <h2>Designed for every situation.</h2>
-                <p>More than just a backup mouse.</p>
             </div>
             <div class="cards-wrapper">
                 <div class="use-card glass reveal">
                     <h3>🍿 Movie Night</h3>
-                    <p>Control your laptop or Smart TV from the comfort of your bed. No need to get up to pause, skip, or change volume.</p>
+                    <p>Control your laptop or Smart TV from your bed. No need to get up to pause or change volume.</p>
                 </div>
                 <div class="use-card glass reveal">
                     <h3>📊 Presentations</h3>
-                    <p>Walk around the stage freely while controlling your PowerPoint or Keynote slides right from your phone.</p>
+                    <p>Walk around the stage freely while controlling your slides right from your phone.</p>
                 </div>
                 <div class="use-card glass reveal">
-                    <h3>🛠️ Broken Trackpad?</h3>
-                    <p>Laptop trackpad stopped working? Windpad is the perfect, instant, zero-cost replacement.</p>
+                    <h3>🛠️ Broken Laptop Trackpad</h3>
+                    <p>Hardware failed? WindPad is the perfect, instant, zero-cost replacement.</p>
+                </div>
+                <div class="use-card glass reveal">
+                    <h3>📺 Smart TV Control</h3>
+                    <p>Navigate clunky Smart TV interfaces easily using your phone's keyboard and trackpad.</p>
+                </div>
+                <div class="use-card glass reveal">
+                    <h3>💻 Remote PC Control</h3>
+                    <p>Manage your media center PC or headless setup effortlessly over Bluetooth.</p>
                 </div>
             </div>
         </div>
@@ -134,40 +223,66 @@
         <div class="container">
             <div class="section-header reveal">
                 <h2>Beautiful Interface</h2>
-                <p>A sleek, distraction-free design that feels native on your device.</p>
             </div>
             <div class="gallery-track reveal">
-                <img src="assets/Setting.jpg" alt="Settings Screen" class="gallery-img">
-                <img src="assets/Options.jpg" alt="Options Screen" class="gallery-img">
-                <img src="assets/All Shortcut.jpg" alt="Shortcuts Screen" class="gallery-img">
-                <img src="assets/user choose.jpg" alt="User Choose Screen" class="gallery-img">
+                <img src="assets/setting.jpg" alt="Settings Screen" class="gallery-img">
+                <img src="assets/options.jpg" alt="Options Screen" class="gallery-img">
+                <img src="assets/all_shortcut.jpg" alt="Shortcuts Screen" class="gallery-img">
+                <img src="assets/user_choose.jpg" alt="User Choose Screen" class="gallery-img">
             </div>
+            <!-- Placeholder for future demo video -->
+            <div class="demo-placeholder reveal" style="display:none;"></div>
         </div>
     </section>
 
-    <!-- How It Works Section -->
+    <!-- Setup Section -->
     <section class="how-it-works" id="setup">
         <div class="container">
             <div class="section-header reveal">
                 <h2>Setup in seconds.</h2>
-                <p>No messy cables, no receiver apps needed on your computer.</p>
+                <p>No messy cables, <strong>no receiver apps needed</strong> on your target device.</p>
             </div>
             <div class="steps-container">
                 <div class="step reveal">
                     <div class="step-number">1</div>
-                    <h3>Install the App</h3>
-                    <p>Download and install the Windpad APK on your Android device.</p>
+                    <h3>Install WindPad</h3>
+                    <p>Download and install the WindPad APK on your Android device.</p>
                 </div>
                 <div class="step reveal">
                     <div class="step-number">2</div>
-                    <h3>Turn on Bluetooth</h3>
-                    <p>Enable Bluetooth on your computer (Windows/Mac/Linux) and pair it with your phone.</p>
+                    <h3>Pair Devices</h3>
+                    <p>Enable Bluetooth on your computer/TV and pair it with your Android phone.</p>
                 </div>
                 <div class="step reveal">
                     <div class="step-number">3</div>
                     <h3>Start Controlling</h3>
-                    <p>Open Windpad. Your phone is now recognized as a standard physical mouse and keyboard!</p>
+                    <p>Open WindPad. Your phone is instantly recognized as a physical mouse and keyboard.</p>
                 </div>
+            </div>
+            <div class="setup-note glass reveal">
+                <p><strong>🛠️ Troubleshooting Bluetooth:</strong> If pairing fails, unpair the device from both your phone and PC, restart Bluetooth on both, and try pairing again from your PC's Bluetooth menu.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacy Section -->
+    <section class="privacy" id="privacy">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2>Privacy by Design.</h2>
+                <p>Your data belongs to you.</p>
+            </div>
+            <div class="privacy-content glass reveal">
+                <ul class="privacy-list">
+                    <li><strong>100% Open Source:</strong> Inspect the code yourself on GitHub.</li>
+                    <li><strong>No Ads & No Tracking:</strong> WindPad does not collect analytics or serve ads. It doesn't even require internet permission!</li>
+                    <li><strong>Transparent Permissions:</strong> We only request what is necessary:
+                        <ul>
+                            <li><em>Bluetooth:</em> To discover, pair, and act as a HID device.</li>
+                            <li><em>Foreground Service:</em> To keep the connection alive so your mouse doesn't disconnect when you switch apps.</li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </section>
@@ -180,42 +295,68 @@
             </div>
             <div class="faq-list">
                 <div class="faq-item glass reveal">
-                    <h4>Do I need to install anything on my PC?</h4>
-                    <p>No! Windpad uses standard Bluetooth HID profiles. Your PC thinks it's a real, physical bluetooth mouse.</p>
+                    <h4>Does the computer need a receiver app?</h4>
+                    <p>No! WindPad uses standard Bluetooth HID profiles. Your PC thinks it's a real, physical bluetooth mouse.</p>
                 </div>
                 <div class="faq-item glass reveal">
-                    <h4>Does it work over Wi-Fi?</h4>
-                    <p>Windpad is specifically designed for Bluetooth for the lowest possible latency and maximum compatibility without network restrictions.</p>
+                    <h4>Does it require Wi-Fi or Internet?</h4>
+                    <p>No. WindPad operates entirely over Bluetooth. No Wi-Fi or internet connection is required.</p>
                 </div>
                 <div class="faq-item glass reveal">
-                    <h4>Is it completely free?</h4>
-                    <p>Yes, Windpad is 100% free and Open Source. No ads, no tracking.</p>
+                    <h4>Which operating systems are supported?</h4>
+                    <p>It works natively with Windows, macOS, Linux, and compatible Smart TVs.</p>
                 </div>
                 <div class="faq-item glass reveal">
-                    <h4>What is the "Windows Helper" app for?</h4>
-                    <p>The Helper is completely optional. It just provides advanced pointer smoothing for Windows machines if you want an even better experience.</p>
+                    <h4>Is WindPad free and open source?</h4>
+                    <p>Yes, 100% free, open-source, with no ads or tracking.</p>
+                </div>
+                <div class="faq-item glass reveal">
+                    <h4>How does Bluetooth HID work?</h4>
+                    <p>HID stands for Human Interface Device. Android's Bluetooth stack allows the phone to broadcast itself exactly like a standard hardware keyboard or mouse.</p>
+                </div>
+                <div class="faq-item glass reveal">
+                    <h4>What is the "Windows Helper"? Is it required?</h4>
+                    <p>The Helper is completely optional and Windows-only. It provides advanced pointer smoothing. You do <strong>not</strong> need it to use WindPad's core features.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Setup / Download Section -->
+    <!-- Download Section -->
     <section class="download" id="download">
         <div class="container">
-            <div class="download-box glass reveal">
+            <div class="section-header reveal">
                 <h2>Ready to take control?</h2>
-                <p>Download the APK for your Android device and pair it with your computer via Bluetooth.</p>
-                <div class="download-options">
-                    <div class="download-card">
-                        <h3>Android APK</h3>
-                        <p>The main application for your phone.</p>
-                        <a href="assets/WindPad.apk" class="btn btn-primary" download>Download APK</a>
-                    </div>
-                    <div class="download-card">
-                        <h3>Windows Helper</h3>
-                        <p>Optional companion app for advanced cursor smoothing.</p>
-                        <a href="https://github.com/Aditya-err/WindPad-Os-Controller/tree/main/windpad-server" target="_blank" class="btn btn-secondary">Get Windows Helper</a>
-                    </div>
+            </div>
+            <div class="download-grid">
+                <div class="download-card glass reveal">
+                    <h3>📱 Android APK</h3>
+                    <p>The main application for your phone. Turns your device into a trackpad and keyboard.</p>
+                    <a href="assets/WindPad.apk" class="btn btn-primary" download>Download APK</a>
+                    <p class="download-note"><br/>Prefer verified releases?<br/><a href="https://github.com/Aditya-err/WindPad-Os-Controller/releases" target="_blank">Download from GitHub Releases</a></p>
+                </div>
+                <div class="download-card glass reveal">
+                    <h3>💻 Windows Helper</h3>
+                    <p><em>(Optional)</em> A companion app for Windows providing advanced cursor smoothing and filtering.</p>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/tree/main/windpad-server" target="_blank" class="btn btn-secondary">Get Windows Helper</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="contact-box glass reveal">
+                <h2>Need help or want to talk to us?</h2>
+                <p>We are always open to feedback and questions.</p>
+                <div class="contact-buttons">
+                    <a href="https://wa.me/918596064717" target="_blank" class="btn btn-whatsapp" aria-label="Chat on WhatsApp">
+                        💬 WhatsApp
+                    </a>
+                    <a href="tel:+918596064717" class="btn btn-call" aria-label="Call Us">
+                        📞 Call Us
+                    </a>
                 </div>
             </div>
         </div>
@@ -226,15 +367,42 @@
         <div class="container footer-content">
             <div class="footer-logo">
                 <img src="assets/windpad.png" alt="Windpad Logo">
-                <span>Windpad</span>
+                <span>WindPad</span>
             </div>
             <p>Developed by Aditya 🎓 — Made in India 🇮🇳</p>
             <div class="footer-links">
                 <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank">GitHub</a>
-                <a href="#">License</a>
+                <a href="#download">Download APK</a>
+                <a href="https://github.com/Aditya-err/WindPad-Os-Controller/tree/main/windpad-server" target="_blank">Windows Helper</a>
+                <a href="#contact">Contact</a>
+                <button class="footer-support-btn">Support</button>
             </div>
         </div>
     </footer>
+    
+    <!-- Support Modal -->
+    <div id="supportModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content glass">
+            <button class="modal-close" aria-label="Close modal">✖</button>
+            <h2 id="modalTitle">WindPad Support</h2>
+            <p class="modal-subtitle">Have an update, improvement, bug report, or feature request? Tell us what you’d like to see in WindPad.</p>
+            
+            <div id="supportFormContainer">
+                <textarea id="supportMessage" placeholder="Describe the update, feature, bug, or improvement you’d like to request..." required aria-required="true"></textarea>
+                <p id="supportError" class="modal-error"></p>
+                <div class="modal-actions">
+                    <button id="cancelSupport" class="btn btn-secondary">Cancel</button>
+                    <button id="submitSupport" class="btn btn-primary">Send Update</button>
+                </div>
+            </div>
+            
+            <div id="supportSuccessMessage" class="modal-success" style="display: none;">
+                <p><strong>Your email client is opening with the update request.</strong></p>
+                <p>Please press Send in your email app to complete the request.</p>
+                <button id="closeSuccess" class="btn btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
