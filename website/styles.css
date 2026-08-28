@@ -63,9 +63,9 @@ img {
 
 .container {
     width: 100%;
-    max-width: 900px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 20px;
 }
 
 /* Glassmorphism utility */
@@ -79,10 +79,10 @@ img {
 
 /* Typography Fluid Scaling */
 h1 {
-    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
     line-height: 1.2;
     font-weight: 800;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     letter-spacing: -0.5px;
 }
 
@@ -93,15 +93,15 @@ h1 span {
 }
 
 h2 {
-    font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 p {
     color: var(--text-muted);
-    font-size: clamp(0.85rem, 1.2vw, 0.95rem);
-    margin-bottom: 16px;
+    font-size: clamp(0.8rem, 1vw, 0.85rem);
+    margin-bottom: 14px;
 }
 
 /* Buttons */
@@ -109,20 +109,20 @@ p {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 8px 16px;
+    border-radius: 6px;
     font-weight: 600;
     transition: all 0.3s ease;
     cursor: pointer;
     text-align: center;
     border: none;
-    font-size: 0.9rem;
-    min-height: 40px; /* Touch-friendly minimum */
+    font-size: 0.85rem;
+    min-height: 36px;
 }
 
 .btn-large {
-    padding: 16px 32px;
-    font-size: 1.1rem;
+    padding: 12px 24px;
+    font-size: 0.95rem;
 }
 
 .btn-primary {
@@ -187,29 +187,30 @@ p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    height: 60px;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 1.5rem;
+    gap: 8px;
+    font-size: 1.2rem;
     font-weight: 700;
 }
 .logo img {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
 }
 
 .nav-links {
     display: flex;
-    gap: 32px;
+    gap: 24px;
     align-items: center;
 }
 .nav-link {
     font-weight: 500;
+    font-size: 0.85rem;
     color: var(--text-muted);
     transition: color 0.3s;
 }
@@ -247,7 +248,7 @@ p {
 /* Hero Section */
 .hero {
     position: relative;
-    padding: 80px 0 30px;
+    padding: 80px 0 20px;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -376,26 +377,26 @@ body.section-download .glow-2, body.section-contact .glow-2 { background: rgba(2
 
 /* Common Section Layout */
 section {
-    padding: 50px 0;
+    padding: 40px 0;
     position: relative;
     z-index: 2;
 }
 .section-header {
     text-align: center;
     max-width: 600px;
-    margin: 0 auto 32px;
+    margin: 0 auto 24px;
 }
 
 /* Why WindPad */
 .comparison-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
 }
-.comparison-card { padding: 24px; }
-.comparison-card h3 { margin-bottom: 20px; font-size: 1.3rem; text-align: center; }
+.comparison-card { padding: 16px; }
+.comparison-card h3 { margin-bottom: 12px; font-size: 1.1rem; text-align: center; }
 .comparison-card ul { list-style: none; }
-.comparison-card li { margin-bottom: 16px; font-size: 1.05rem; }
+.comparison-card li { margin-bottom: 8px; font-size: 0.9rem; }
 .windpad-card {
     border: 1px solid rgba(16, 185, 129, 0.3);
     background: rgba(16, 185, 129, 0.05);
@@ -406,17 +407,17 @@ section {
 /* Features */
 .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
 }
-.feature-card { padding: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.feature-card { padding: 16px; transition: transform 0.3s ease, box-shadow 0.3s ease; }
 .feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
     border-color: rgba(255, 255, 255, 0.2);
 }
-.icon { font-size: 2.5rem; margin-bottom: 24px; }
-.feature-card h3 { margin-bottom: 12px; font-size: 1.3rem; }
+.icon { font-size: 1.8rem; margin-bottom: 12px; }
+.feature-card h3 { margin-bottom: 8px; font-size: 1.1rem; }
 .feature-card p { margin-bottom: 0; }
 
 /* Compatibility */
@@ -437,12 +438,12 @@ section {
 /* Use Cases */
 .cards-wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
 }
-.use-card { padding: 24px; transition: transform 0.3s; }
-.use-card:hover { transform: translateY(-5px); }
-.use-card h3 { margin-bottom: 12px; color: #60a5fa; }
+.use-card { padding: 16px; transition: transform 0.3s; }
+.use-card:hover { transform: translateY(-3px); }
+.use-card h3 { margin-bottom: 8px; color: #60a5fa; font-size: 1.1rem; }
 
 /* Screenshots */
 .gallery-track {
