@@ -23,8 +23,8 @@
     <link rel="stylesheet" href="styles.css?v=14.0">
 </head>
 <body>
-    <!-- 3D Background -->
-    <canvas id="bg-canvas"></canvas>
+    <!-- Static Background -->
+    <div class="bg-static"></div>
     
     <!-- Dynamic Glows -->
     <div class="bg-glow glow-1"></div>
@@ -59,46 +59,46 @@
     <section class="hero" id="home">
         <div class="container hero-content">
             <div class="hero-text reveal">
-                <div class="badge">Open Source & Free 🚀</div>
-                <h1>Turn Your Android Phone<br>Into a <span>Wireless</span><br><span>Mouse & Keyboard</span></h1>
-                <p>Low-latency Bluetooth HID. Works seamlessly with Windows, macOS, Linux, and compatible Smart TVs.</p>
-                <div class="highlight-box">
-                    <p class="highlight-text"><strong>No PC receiver app required.</strong></p>
+                <div class="badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Open Source & Free
                 </div>
+                <h1>Turn Your Android Phone<br>Into a <span>Wireless</span><br><span>Mouse & Keyboard</span></h1>
+                <p>Low-latency Bluetooth HID. Works seamlessly with Windows, macOS, Linux, and compatible Smart TVs without any receiver app.</p>
                 
                 <div class="hero-buttons">
-                    <a href="#download" class="btn btn-primary btn-large">Download APK</a>
-                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" class="btn btn-secondary btn-large">
-                        <svg height="20" width="20" viewBox="0 0 16 16" version="1.1" style="fill: currentColor; margin-right: 8px;">
-                            <path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path>
-                        </svg>
-                        Star on GitHub
+                    <a href="#download" class="btn btn-primary btn-large">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download APK
                     </a>
-                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" style="display: flex; align-items: center; margin-left: 8px;">
-                        <img src="https://img.shields.io/github/stars/Aditya-err/WindPad-Os-Controller?style=social" alt="GitHub stars">
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" class="btn btn-secondary btn-large">
+                        <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg>
+                        Star on GitHub
                     </a>
                 </div>
                 
                 <!-- Integrated Trust Bar -->
                 <div class="trust-bar-integrated">
-                    <span>🔓 Open Source</span>
-                    <span>💸 Free</span>
-                    <span>🚫 No Ads</span>
-                    <span>🕵️ No Tracking</span>
-                    <span>📶 Bluetooth HID</span>
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        No Ads
+                    </span>
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        No Tracking
+                    </span>
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                        Bluetooth HID
+                    </span>
                 </div>
             </div>
             <div class="hero-image reveal">
                 <div class="hero-image-wrapper">
-                    <div class="phone-mockup">
-                        <img src="assets/home_screen.jpg" alt="WindPad App Home Screen">
-                    </div>
+                    <img src="assets/home_screen.jpg" alt="WindPad App Home Screen">
                 </div>
             </div>
         </div>
-        
-        <div class="bg-glow glow-1"></div>
-        <div class="bg-glow glow-2"></div>
     </section>
 
     <!-- Why WindPad Section (Comparison) -->
@@ -132,43 +132,54 @@
         </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- Features Section (Bento Grid) -->
     <section class="features" id="features">
         <div class="container">
             <div class="section-header reveal">
                 <h2>Everything you need, right in your hand.</h2>
             </div>
-            <div class="feature-grid">
-                <div class="feature-card glass reveal">
-                    <div class="icon" aria-hidden="true">🖱️</div>
-                    <h3>Precision Trackpad</h3>
-                    <p>Smooth cursor movement tailored for speed and accuracy.</p>
+            <div class="bento-grid">
+                
+                <div class="bento-item glass reveal bento-large">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3>Precision Trackpad</h3>
+                        <p>Smooth cursor movement tailored for speed and accuracy. Includes 1-finger move, 2-finger scroll, pinch-to-zoom, and 3-finger swipe.</p>
+                    </div>
                 </div>
-                <div class="feature-card glass reveal">
-                    <div class="icon" aria-hidden="true">✌️</div>
-                    <h3>Multi-touch Gestures</h3>
-                    <p>1-finger move, 2-finger scroll, pinch-to-zoom, and 3-finger swipe.</p>
+
+                <div class="bento-item glass reveal bento-medium">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3>Quick Action Keys</h3>
+                        <p>Dedicated buttons for Copy, Paste, Cut, Undo, Select All, and Emoji.</p>
+                    </div>
                 </div>
-                <div class="feature-card glass reveal">
-                    <div class="icon" aria-hidden="true">⚡</div>
-                    <h3>Quick Action Keys</h3>
-                    <p>Dedicated buttons for Copy, Paste, Cut, Undo, Select All, and Emoji.</p>
+
+                <div class="bento-item glass reveal bento-medium">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3>Smart Clipboard</h3>
+                        <p>Send text directly from your phone's clipboard to your PC effortlessly.</p>
+                    </div>
                 </div>
-                <div class="feature-card glass reveal">
-                    <div class="icon" aria-hidden="true">🔗</div>
-                    <h3>Universal Compatibility</h3>
-                    <p>Uses standard Bluetooth HID. Connects to devices just like a real mouse.</p>
+
+                <div class="bento-item glass reveal bento-wide">
+                    <div class="bento-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <div class="bento-content">
+                        <h3>Universal Compatibility</h3>
+                        <p>Uses standard Bluetooth HID. Connects to devices just like a real mouse.</p>
+                    </div>
                 </div>
-                <div class="feature-card glass reveal">
-                    <div class="icon" aria-hidden="true">📋</div>
-                    <h3>Smart Clipboard Paste</h3>
-                    <p>Send text directly from your phone's clipboard to your PC effortlessly.</p>
-                </div>
-                <div class="feature-card glass reveal">
-                    <div class="icon" aria-hidden="true">🎨</div>
-                    <h3>Material Theming</h3>
-                    <p>Beautiful dark, light, and system themes with customizable colors.</p>
-                </div>
+
             </div>
         </div>
     </section>
@@ -422,7 +433,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script src="script.js?v=4.0"></script>
+    <script src="script.js?v=14.0"></script>
 </body>
 </html>
