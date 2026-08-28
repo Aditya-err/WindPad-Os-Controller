@@ -31,7 +31,7 @@ body {
     overflow-x: hidden; /* Strict horizontal scroll prevention */
     scroll-behavior: smooth;
     position: relative;
-    width: 100vw;
+    width: 100%;
 }
 
 /* Prevent modal scrolling on body */
@@ -727,10 +727,25 @@ footer {
     section { padding: 64px 0; }
     .hero { padding: 120px 0 60px; }
     .comparison-grid, .feature-grid, .cards-wrapper, .download-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 16px;
+        -webkit-overflow-scrolling: touch;
+        gap: 16px;
     }
     .comparison-card, .feature-card, .use-card, .download-card {
+        flex: 0 0 85%;
+        scroll-snap-align: center;
         padding: 24px;
+    }
+    /* Hide scrollbar for a cleaner look but keep it functional */
+    .comparison-grid::-webkit-scrollbar, .feature-grid::-webkit-scrollbar, .cards-wrapper::-webkit-scrollbar, .download-grid::-webkit-scrollbar {
+        height: 6px;
+    }
+    .comparison-grid::-webkit-scrollbar-thumb, .feature-grid::-webkit-scrollbar-thumb, .cards-wrapper::-webkit-scrollbar-thumb, .download-grid::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.2);
+        border-radius: 10px;
     }
     .contact-buttons { flex-direction: column; width: 100%; }
     .contact-buttons .btn { width: 100%; }
@@ -761,6 +776,19 @@ footer {
     .modal-actions { flex-direction: column; width: 100%; }
     .modal-actions .btn { width: 100%; margin-bottom: 8px; }
     
-    .gallery-track { grid-template-columns: 1fr; }
-    .gallery-img { max-width: 200px; }
+    .gallery-track { 
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 16px;
+        -webkit-overflow-scrolling: touch;
+        gap: 16px;
+    }
+    .gallery-img { 
+        flex: 0 0 80%;
+        scroll-snap-align: center;
+        max-width: none;
+    }
+    .gallery-track::-webkit-scrollbar { height: 6px; }
+    .gallery-track::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 }
