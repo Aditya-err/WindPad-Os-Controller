@@ -63,7 +63,7 @@ img {
 
 .container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1050px;
     margin: 0 auto;
     padding: 0 24px;
 }
@@ -79,10 +79,10 @@ img {
 
 /* Typography Fluid Scaling */
 h1 {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    line-height: 1.1;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.15;
     font-weight: 800;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     letter-spacing: -1px;
 }
 
@@ -93,15 +93,15 @@ h1 span {
 }
 
 h2 {
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
     font-weight: 700;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 p {
     color: var(--text-muted);
-    font-size: clamp(1rem, 2vw, 1.1rem);
-    margin-bottom: 24px;
+    font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+    margin-bottom: 20px;
 }
 
 /* Buttons */
@@ -247,7 +247,7 @@ p {
 /* Hero Section */
 .hero {
     position: relative;
-    padding: 140px 0 60px;
+    padding: 100px 0 40px;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -376,14 +376,14 @@ body.section-download .glow-2, body.section-contact .glow-2 { background: rgba(2
 
 /* Common Section Layout */
 section {
-    padding: 100px 0;
+    padding: 70px 0;
     position: relative;
     z-index: 2;
 }
 .section-header {
     text-align: center;
     max-width: 600px;
-    margin: 0 auto 56px;
+    margin: 0 auto 40px;
 }
 
 /* Why WindPad */
@@ -737,8 +737,8 @@ footer {
 }
 
 @media (max-width: 768px) {
-    section { padding: 64px 0; }
-    .hero { padding: 120px 0 60px; }
+    section { padding: 40px 0; }
+    .hero { padding: 80px 0 30px; min-height: auto; }
     .feature-grid, .cards-wrapper {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
