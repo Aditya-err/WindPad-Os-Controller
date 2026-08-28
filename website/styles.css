@@ -727,25 +727,22 @@ footer {
     section { padding: 64px 0; }
     .hero { padding: 120px 0 60px; }
     .comparison-grid, .feature-grid, .cards-wrapper, .download-grid {
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        padding-bottom: 16px;
-        -webkit-overflow-scrolling: touch;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 16px;
     }
     .comparison-card, .feature-card, .use-card, .download-card {
-        flex: 0 0 85%;
-        scroll-snap-align: center;
-        padding: 24px;
+        padding: 16px;
     }
-    /* Hide scrollbar for a cleaner look but keep it functional */
-    .comparison-grid::-webkit-scrollbar, .feature-grid::-webkit-scrollbar, .cards-wrapper::-webkit-scrollbar, .download-grid::-webkit-scrollbar {
-        height: 6px;
+    .feature-card h3, .use-card h3 {
+        font-size: 1rem;
     }
-    .comparison-grid::-webkit-scrollbar-thumb, .feature-grid::-webkit-scrollbar-thumb, .cards-wrapper::-webkit-scrollbar-thumb, .download-grid::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.2);
-        border-radius: 10px;
+    .feature-card p, .use-card p {
+        font-size: 0.85rem;
+    }
+    .feature-card .icon {
+        font-size: 2rem;
+        margin-bottom: 12px;
     }
     .contact-buttons { flex-direction: column; width: 100%; }
     .contact-buttons .btn { width: 100%; }
@@ -777,18 +774,13 @@ footer {
     .modal-actions .btn { width: 100%; margin-bottom: 8px; }
     
     .gallery-track { 
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        padding-bottom: 16px;
-        -webkit-overflow-scrolling: touch;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
     .gallery-img { 
-        flex: 0 0 80%;
-        scroll-snap-align: center;
-        max-width: none;
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
     }
-    .gallery-track::-webkit-scrollbar { height: 6px; }
-    .gallery-track::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
 }
