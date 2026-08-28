@@ -1,181 +1,235 @@
-// Intersection Observer for scroll animations
+/**
+ * WindPad — Global Core JavaScript
+ * Theme Management, Mobile Navigation, FAQ Accordions, Support Modal & Motion
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Global state for Three.js active section
-    window.activeSection = 'home';
+    initTheme();
+    initMobileNav();
+    initFAQ();
+    initSupportModal();
+    initDynamicImages();
+    initCopyright();
+});
+
+/* ==========================================================================
+   1. THEME ENGINE (Dark / Light Mode with LocalStorage & OS Preference)
+   ========================================================================== */
+function initTheme() {
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleMobileBtn = document.getElementById('themeToggleMobileBtn');
+    const themeValMobile = document.querySelector('.theme-val');
     
-    // Intersection Observer for scroll animations (Staggered)
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const el = entry.target;
-                
-                // Add staggered delay for grid items
-                if (el.classList.contains('bento-item') || 
-                    el.classList.contains('timeline-step') || 
-                    el.classList.contains('comparison-card') ||
-                    el.classList.contains('faq-item') ||
-                    el.classList.contains('download-card')) {
-                    
-                    const parent = el.parentElement;
-                    const siblings = Array.from(parent.children).filter(child => child.classList.contains('reveal'));
-                    const index = siblings.indexOf(el);
-                    el.style.transitionDelay = `${index * 0.15}s`;
+    // Check saved preference or OS preference
+    const savedTheme = localStorage.getItem('windpad_theme');
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    let currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    applyTheme(currentTheme);
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('windpad_theme', theme);
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+            themeToggleBtn.setAttribute('title', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+
+        if (themeValMobile) {
+            themeValMobile.textContent = theme === 'dark' ? '🌙 Dark' : '☀️ Light';
+        }
+
+        // Update any dynamic theme images
+        updateThemeImages(theme);
+    }
+
+    function toggleTheme() {
+        const active = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = active === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    if (themeToggleMobileBtn) {
+        themeToggleMobileBtn.addEventListener('click', toggleTheme);
+    }
+
+    // Listen to OS scheme changes if user hasn't manually set one
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('windpad_theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+}
+
+/* ==========================================================================
+   2. DYNAMIC THEME IMAGES (Auto swap between Dark & Light assets)
+   ========================================================================== */
+function updateThemeImages(theme) {
+    const themeImages = document.querySelectorAll('.theme-dynamic-img');
+    themeImages.forEach(img => {
+        const darkSrc = img.getAttribute('data-dark-src');
+        const lightSrc = img.getAttribute('data-light-src');
+        
+        if (theme === 'dark' && darkSrc) {
+            img.src = darkSrc;
+        } else if (theme === 'light' && lightSrc) {
+            img.src = lightSrc;
+        }
+    });
+}
+
+function initDynamicImages() {
+    const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+    updateThemeImages(theme);
+}
+
+/* ==========================================================================
+   3. MOBILE NAVIGATION (Accessible Hamburger Menu)
+   ========================================================================== */
+function initMobileNav() {
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (!hamburgerBtn || !mobileMenu) return;
+
+    hamburgerBtn.addEventListener('click', () => {
+        const isExpanded = hamburgerBtn.getAttribute('aria-expanded') === 'true';
+        hamburgerBtn.setAttribute('aria-expanded', !isExpanded);
+        mobileMenu.setAttribute('aria-hidden', isExpanded);
+        mobileMenu.classList.toggle('open');
+    });
+
+    // Close menu when clicking a link inside
+    const mobileLinks = mobileMenu.querySelectorAll('a, .btn-link');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            hamburgerBtn.setAttribute('aria-expanded', 'false');
+            mobileMenu.setAttribute('aria-hidden', 'true');
+            mobileMenu.classList.remove('open');
+        });
+    });
+}
+
+/* ==========================================================================
+   4. FAQ ACCORDION
+   ========================================================================== */
+function initFAQ() {
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(item => {
+        const questionBtn = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+
+        if (!questionBtn || !answer) return;
+
+        questionBtn.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+
+            // Close other items
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                    const otherBtn = otherItem.querySelector('.faq-question');
+                    const otherAns = otherItem.querySelector('.faq-answer');
+                    if (otherBtn) otherBtn.setAttribute('aria-expanded', 'false');
+                    if (otherAns) otherAns.style.maxHeight = null;
                 }
-                
-                el.classList.add('active');
-                revealObserver.unobserve(el);
-            }
-        });
-    }, { threshold: 0.15 });
+            });
 
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-    // Section Observer for Three.js Background changes
-    const sectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const sectionId = entry.target.id || 'home';
-                window.activeSection = sectionId;
-                
-                // Update body class for CSS glow color transitions
-                document.body.className = document.body.className.replace(/\bsection-\S+/g, '');
-                document.body.classList.add(`section-${sectionId}`);
-            }
-        });
-    }, { threshold: 0.3 }); // 30% of the section must be visible
-    
-    document.querySelectorAll('section').forEach(sec => sectionObserver.observe(sec));
-
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                // Close mobile menu if open
-                document.querySelector('.nav-links').classList.remove('open');
-                document.querySelector('.mobile-menu-btn').classList.remove('open');
-                
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
+            // Toggle current
+            if (isActive) {
+                item.classList.remove('active');
+                questionBtn.setAttribute('aria-expanded', 'false');
+                answer.style.maxHeight = null;
+            } else {
+                item.classList.add('active');
+                questionBtn.setAttribute('aria-expanded', 'true');
+                answer.style.maxHeight = answer.scrollHeight + 'px';
             }
         });
     });
+}
 
-    // --- Mobile Menu Toggle ---
-    const menuBtn = document.querySelector('.mobile-menu-btn');
-    const navLinks = document.querySelector('.nav-links');
-    
-    if (menuBtn && navLinks) {
-        menuBtn.addEventListener('click', () => {
-            navLinks.classList.toggle('open');
-            menuBtn.classList.toggle('open');
+/* ==========================================================================
+   5. SUPPORT MODAL (With secure mailto fallback)
+   ========================================================================== */
+function initSupportModal() {
+    const modal = document.getElementById('supportModal');
+    const closeBtn = document.getElementById('closeSupportModalBtn');
+    const openBtns = [
+        document.getElementById('openSupportBtnNav'),
+        document.getElementById('openSupportBtnMobile'),
+        document.getElementById('openSupportBtnContact'),
+        document.getElementById('openSupportBtnFooter'),
+        document.getElementById('openSupportBtnPage')
+    ].filter(Boolean);
+
+    const supportForm = document.getElementById('supportForm');
+
+    function openModal() {
+        if (!modal) return;
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        if (!modal) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    openBtns.forEach(btn => {
+        btn.addEventListener('click', openModal);
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
         });
     }
 
-    // --- Support Modal Logic ---
-    const supportBtns = document.querySelectorAll('.support-btn, .footer-support-btn');
-    const modal = document.getElementById('supportModal');
-    const closeBtn = document.querySelector('.modal-close');
-    const cancelBtn = document.getElementById('cancelSupport');
-    const submitBtn = document.getElementById('submitSupport');
-    const messageInput = document.getElementById('supportMessage');
-    const errorMsg = document.getElementById('supportError');
-    const formContainer = document.getElementById('supportFormContainer');
-    const successContainer = document.getElementById('supportSuccessMessage');
-    const closeSuccessBtn = document.getElementById('closeSuccess');
-
-    const openModal = () => {
-        // Reset state
-        formContainer.style.display = 'block';
-        successContainer.style.display = 'none';
-        messageInput.value = '';
-        errorMsg.textContent = '';
-        
-        modal.classList.add('open');
-        document.body.classList.add('modal-open');
-        
-        // Close mobile menu if open
-        if (navLinks.classList.contains('open')) {
-            navLinks.classList.remove('open');
-            menuBtn.classList.remove('open');
-        }
-    };
-
-    const closeModal = () => {
-        modal.classList.remove('open');
-        document.body.classList.remove('modal-open');
-    };
-
-    supportBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal();
-        });
-    });
-
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    closeSuccessBtn.addEventListener('click', closeModal);
-
-    // Close on outside click
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Close on ESC key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('open')) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
             closeModal();
         }
     });
 
-    // Submit logic (mailto fallback)
-    submitBtn.addEventListener('click', () => {
-        const message = messageInput.value.trim();
-        if (!message) {
-            errorMsg.textContent = 'Please describe your update or request before sending.';
-            return;
-        }
+    if (supportForm) {
+        supportForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const type = document.getElementById('supportType').value;
+            const message = document.getElementById('supportMessage').value;
 
-        errorMsg.textContent = '';
-        
-        // Prepare mailto link
-        const recipient = 'gadityaprasadachary@gmail.com';
-        const subject = encodeURIComponent('WindPad User Update');
-        
-        const date = new Date().toLocaleString();
-        const bodyText = `New WindPad user update/request:\n\n${message}\n\nSource: WindPad Website\nDate: ${date}`;
-        const body = encodeURIComponent(bodyText);
-        
-        const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
-        
-        // Attempt to open email client
-        window.location.href = mailtoLink;
-        
-        // Show success UI
-        formContainer.style.display = 'none';
-        successContainer.style.display = 'block';
-    });
+            const recipient = 'gadityaprasadachary@gmail.com';
+            const subject = encodeURIComponent('WindPad User Update');
+            const body = encodeURIComponent(`Request Type: ${type}\n\nMessage:\n${message}\n\nSent via WindPad Web Client`);
 
-    // --- Tabs Logic ---
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const tabPanes = document.querySelectorAll('.tab-pane');
-
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active from all
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabPanes.forEach(p => p.classList.remove('active'));
-            
-            // Add active to clicked
-            btn.classList.add('active');
-            const target = btn.getAttribute('data-target');
-            document.getElementById(target).classList.add('active');
+            window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+            closeModal();
+            supportForm.reset();
         });
-    });
+    }
+}
 
-});
+/* ==========================================================================
+   6. COPYRIGHT YEAR
+   ========================================================================== */
+function initCopyright() {
+    const copyrightYear = document.getElementById('copyrightYear');
+    if (copyrightYear) {
+        copyrightYear.textContent = new Date().getFullYear();
+    }
+}

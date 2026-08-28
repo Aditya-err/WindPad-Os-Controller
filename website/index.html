@@ -1,475 +1,1136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WindPad — Turn Your Android Phone Into a Bluetooth Mouse & Keyboard</title>
-    <meta name="description" content="WindPad turns your Android phone into a Bluetooth HID mouse, trackpad and keyboard. Works with Windows, macOS, Linux and compatible Smart TVs without a receiver app.">
+    <meta name="description" content="Turn your Android phone into a Bluetooth HID mouse, trackpad and keyboard. Works with Windows, macOS, Linux and compatible Smart TVs without a receiver app.">
     
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="WindPad — Bluetooth Mouse & Keyboard">
-    <meta property="og:description" content="Turn your Android phone into a Bluetooth HID mouse, trackpad and keyboard. No PC receiver app required.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/Aditya-err/WindPad-Os-Controller/main/assets/windpad.png">
+    <!-- Open Graph Meta -->
+    <meta property="og:title" content="WindPad — Turn Your Android Phone Into a Bluetooth Mouse & Keyboard">
+    <meta property="og:description" content="Turn your Android phone into a Bluetooth HID mouse, trackpad and keyboard. Works with Windows, macOS, Linux and compatible Smart TVs without a receiver app.">
     <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/windpad-icon.png">
     
-    <link rel="icon" type="image/png" href="assets/windpad.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/windpad-icon.png">
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Space Grotesk, Manrope, JetBrains Mono, Inter, DM Sans, Plus Jakarta Sans, Sora -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css?v=14.0">
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Static Background -->
-    <div class="bg-static"></div>
-    
-    <!-- Dynamic Glows -->
-    <div class="bg-glow glow-1"></div>
-    <div class="bg-glow glow-2"></div>
 
+    <!-- =======================================================================
+         GLOBAL NAVIGATION
+         ======================================================================= -->
+    <header class="site-header" id="navbar">
+        <div class="container header-container">
+            <a href="#hero" class="brand-logo" aria-label="WindPad Home">
+                <img src="assets/windpad-icon.png" alt="WindPad Logo" class="logo-img" width="32" height="32">
+                <span class="logo-text">WindPad</span>
+            </a>
 
-    <!-- Navigation -->
-    <header class="navbar glass">
-        <div class="container nav-content">
-            <div class="logo">
-                <img src="assets/windpad.png" alt="Windpad Logo">
-                <span>WindPad</span>
-            </div>
-            
-            <button class="mobile-menu-btn" aria-label="Toggle Menu">
-                <span></span><span></span><span></span>
-            </button>
-            
-            <nav class="nav-links">
+            <!-- Desktop Nav -->
+            <nav class="desktop-nav" aria-label="Main Navigation">
                 <a href="#features" class="nav-link">Features</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#showcase" class="nav-link">Showcase</a>
                 <a href="#compatibility" class="nav-link">Compatibility</a>
-                <a href="#setup" class="nav-link">Setup</a>
+                <a href="#use-cases" class="nav-link">Use Cases</a>
                 <a href="#faq" class="nav-link">FAQ</a>
-                <a href="#download" class="nav-link">Download</a>
                 <a href="#contact" class="nav-link">Contact</a>
-                <button class="btn btn-outline support-btn">Support</button>
+            </nav>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <!-- Theme Toggle Button -->
+                <button type="button" class="theme-toggle" id="themeToggleBtn" aria-label="Switch to light mode" title="Toggle theme">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <a href="#download" class="btn btn-sm btn-primary">Download APK</a>
+                
+                <!-- Mobile Menu Button -->
+                <button type="button" class="hamburger-btn" id="hamburgerBtn" aria-label="Open mobile menu" aria-expanded="false">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Menu -->
+        <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+            <nav class="mobile-nav">
+                <a href="#features" class="mobile-nav-link">Features</a>
+                <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
+                <a href="#showcase" class="mobile-nav-link">Showcase</a>
+                <a href="#compatibility" class="mobile-nav-link">Compatibility</a>
+                <a href="#use-cases" class="mobile-nav-link">Use Cases</a>
+                <a href="#faq" class="mobile-nav-link">FAQ</a>
+                <a href="#contact" class="mobile-nav-link">Contact</a>
+                <div class="mobile-menu-actions">
+                    <button type="button" class="theme-toggle-mobile" id="themeToggleMobileBtn">
+                        <span class="theme-text">Theme</span>
+                        <span class="theme-val">🌙 Dark</span>
+                    </button>
+                    <a href="assets/WindPad.apk" download="WindPad.apk" class="btn btn-primary btn-block">Download APK</a>
+                </div>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="container hero-content">
-            <div class="hero-text reveal">
-                <div class="badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Open Source & Free
-                </div>
-                <h1>Turn Your Android Phone<br>Into a <span>Wireless</span><br><span>Mouse & Keyboard</span></h1>
-                <p>Low-latency Bluetooth HID. Works seamlessly with Windows, macOS, Linux, and compatible Smart TVs without any receiver app.</p>
-                
-                <div class="hero-buttons">
-                    <a href="#download" class="btn btn-primary btn-large">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Download APK
-                    </a>
-                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" class="btn btn-secondary btn-large">
-                        <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg>
-                        Star on GitHub
-                    </a>
-                </div>
-                
-                <!-- Integrated Trust Bar -->
-                <div class="trust-bar-integrated">
-                    <span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                        No Ads
-                    </span>
-                    <span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        No Tracking
-                    </span>
-                    <span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                        Bluetooth HID
-                    </span>
-                </div>
-            </div>
-            <div class="hero-image reveal">
-                <div class="hero-image-wrapper">
-                    <img src="assets/home_screen.jpg" alt="WindPad App Home Screen">
-                </div>
-            </div>
-        </div>
-    </section>
+    <main id="main-content">
 
-    <!-- Why WindPad Section (Comparison) -->
-    <section class="why-windpad" id="why-windpad">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Why WindPad?</h2>
-                <p>Built differently from typical remote apps.</p>
-            </div>
-            <div class="comparison-grid reveal">
-                <div class="comparison-card windpad-card glass">
-                    <h3>WindPad</h3>
-                    <ul>
-                        <li>✅ <strong>Bluetooth HID</strong> (Acts like a standard hardware mouse)</li>
-                        <li>✅ <strong>No receiver app required</strong> on the target device</li>
-                        <li>✅ <strong>No Wi-Fi required</strong></li>
-                        <li>✅ <strong>100% Free & Open Source</strong></li>
-                        <li>✅ <strong>No Ads / No Tracking</strong></li>
-                    </ul>
-                </div>
-                <div class="comparison-card competitor-card glass">
-                    <h3>Typical Wi-Fi Remote Apps</h3>
-                    <ul>
-                        <li>❌ Usually require a receiver app installed on every PC</li>
-                        <li>❌ Depend heavily on Wi-Fi/network configuration</li>
-                        <li>❌ May not behave like native HID devices</li>
-                        <li>❌ Often contain ads or premium paywalls</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section (Bento Grid) -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Everything you need, right in your hand.</h2>
-            </div>
-            <div class="bento-grid">
-                
-                <div class="bento-item glass reveal bento-large">
-                    <div class="bento-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        <!-- =======================================================================
+             SECTION 01 — HERO
+             ======================================================================= -->
+        <section class="hero-section" id="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <div class="badge-pill">
+                        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        <span>Standard Bluetooth HID • Zero Drivers</span>
                     </div>
-                    <div class="bento-content">
-                        <h3>Precision Trackpad</h3>
-                        <p>Smooth cursor movement tailored for speed and accuracy. Includes 1-finger move, 2-finger scroll, pinch-to-zoom, and 3-finger swipe.</p>
+                    
+                    <h1 class="hero-title">
+                        Turn Your Android Phone<br>
+                        Into a Wireless<br>
+                        <span class="gradient-text">Mouse & Keyboard.</span>
+                    </h1>
+                    
+                    <p class="hero-subtext">
+                        Use your Android phone as a Bluetooth HID mouse, trackpad and keyboard — without installing a receiver app on your computer.
+                    </p>
+
+                    <div class="hero-cta-group">
+                        <a href="assets/WindPad.apk" download="WindPad.apk" class="btn btn-primary btn-lg">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>Download APK</span>
+                        </a>
+                        <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                            </svg>
+                            <span>View on GitHub</span>
+                        </a>
+                    </div>
+
+                    <div class="hero-footnote">
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>No PC receiver app required. Communicates directly over hardware Bluetooth.</span>
                     </div>
                 </div>
 
-                <div class="bento-item glass reveal bento-medium">
-                    <div class="bento-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <div class="hero-visual">
+                    <div class="device-frame">
+                        <div class="device-screen">
+                            <img src="assets/Dark theme/home page.jpg" 
+                                 data-dark-src="assets/Dark theme/home page.jpg" 
+                                 data-light-src="assets/light theme/Home page.jpg" 
+                                 alt="WindPad Trackpad Interface on Mobile" 
+                                 class="theme-dynamic-img hero-app-preview"
+                                 loading="eager"
+                                 onerror="this.parentElement.classList.add('img-fallback')">
+                            <div class="placeholder-overlay">
+                                <span>WindPad Live Device Preview</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bento-content">
-                        <h3>Quick Action Keys</h3>
-                        <p>Dedicated buttons for Copy, Paste, Cut, Undo, Select All, and Emoji.</p>
-                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 02 — TRUST STRIP
+             ======================================================================= -->
+        <section class="trust-strip">
+            <div class="container trust-container">
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+                    <span>OPEN SOURCE</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>100% FREE</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                    <span>NO ADS</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>NO TRACKING</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7l10 10-5 5V2l5 5L7 17"/></svg>
+                    <span>BLUETOOTH HID</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 03 — THE CORE IDEA (HOW IT WORKS)
+             ======================================================================= -->
+        <section class="section core-idea-section" id="how-it-works">
+            <div class="container">
+                <div class="section-header text-center">
+                    <span class="section-tag">ARCHITECTURE</span>
+                    <h2 class="section-title">One phone.<br>A complete input device.</h2>
+                    <p class="section-description">
+                        WindPad registers directly with your target operating system using the standard Bluetooth Human Interface Device (HID) protocol.
+                    </p>
                 </div>
 
-                <div class="bento-item glass reveal bento-medium">
-                    <div class="bento-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <div class="flow-diagram-wrapper">
+                    <div class="flow-step">
+                        <div class="flow-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                            </svg>
+                        </div>
+                        <span class="flow-label">Android Phone</span>
+                        <span class="flow-sub">Touch & Gestures</span>
                     </div>
-                    <div class="bento-content">
-                        <h3>Smart Clipboard</h3>
-                        <p>Send text directly from your phone's clipboard to your PC effortlessly.</p>
+
+                    <div class="flow-connector">
+                        <div class="flow-line">
+                            <span class="flow-pulse"></span>
+                        </div>
+                        <div class="flow-protocol-tag">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 7l10 10-5 5V2l5 5L7 17"/>
+                            </svg>
+                            <span>Direct Bluetooth HID</span>
+                        </div>
                     </div>
+
+                    <div class="flow-step">
+                        <div class="flow-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                        <span class="flow-label">Windows • macOS • Linux • TV</span>
+                        <span class="flow-sub">Native Hardware Control</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 04 — NOT ANOTHER REMOTE APP (COMPARISON)
+             ======================================================================= -->
+        <section class="section comparison-section" id="comparison">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">THE DIFFERENCE</span>
+                    <h2 class="section-title">Not another remote app.</h2>
+                    <p class="section-description">
+                        WindPad uses Bluetooth HID, so compatible devices recognize your phone as a standard mouse and keyboard.
+                    </p>
                 </div>
 
-                <div class="bento-item glass reveal bento-wide">
-                    <div class="bento-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                    </div>
-                    <div class="bento-content">
-                        <h3>Universal Compatibility</h3>
-                        <p>Uses standard Bluetooth HID. Connects to devices just like a real mouse.</p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Compatibility Section -->
-    <section class="compatibility" id="compatibility">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Works where you need it.</h2>
-                <p>If your device supports a Bluetooth mouse, it supports WindPad.</p>
-            </div>
-            <div class="compat-table-wrapper glass reveal">
-                <table class="compat-table">
-                    <thead>
-                        <tr>
-                            <th>Platform</th>
-                            <th>Support Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Windows</td><td>✅ Supported</td></tr>
-                        <tr><td>macOS</td><td>✅ Supported</td></tr>
-                        <tr><td>Linux</td><td>✅ Supported</td></tr>
-                        <tr><td>Compatible Smart TVs</td><td>✅ Supported</td></tr>
-                        <tr><td>Android</td><td>📱 Controller Device</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <!-- Use Cases Section -->
-    <section class="use-cases" id="use-cases">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Designed for every situation.</h2>
-            </div>
-            <div class="tabs-container reveal">
-                <div class="tabs-nav">
-                    <button class="tab-btn active" data-target="movie">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        Movie Night
-                    </button>
-                    <button class="tab-btn" data-target="presentations">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
-                        Presentations
-                    </button>
-                    <button class="tab-btn" data-target="broken">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/></svg>
-                        Broken Trackpad
-                    </button>
-                    <button class="tab-btn" data-target="tv">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
-                        Smart TV Control
-                    </button>
-                </div>
-                <div class="tabs-content glass">
-                    <div class="tab-pane active" id="movie">
-                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
-                        <h3>Movie Night</h3>
-                        <p>Control your laptop or Smart TV from your bed. No need to get up to pause or change volume.</p>
-                    </div>
-                    <div class="tab-pane" id="presentations">
-                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></div>
-                        <h3>Presentations</h3>
-                        <p>Walk around the stage freely while controlling your slides right from your phone.</p>
-                    </div>
-                    <div class="tab-pane" id="broken">
-                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 11-1 9"/><path d="m19 11-4-7"/><path d="M2 11h20"/><path d="m3.5 11 1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4"/></svg></div>
-                        <h3>Broken Laptop Trackpad</h3>
-                        <p>Hardware failed? WindPad is the perfect, instant, zero-cost replacement.</p>
-                    </div>
-                    <div class="tab-pane" id="tv">
-                        <div class="tab-pane-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
-                        <h3>Smart TV Control</h3>
-                        <p>Navigate clunky Smart TV interfaces easily using your phone's keyboard and trackpad.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Screenshots Gallery -->
-    <section class="screenshots" id="screenshots">
-        <div class="container" style="max-width: 100%; padding: 0;">
-            <div class="section-header reveal">
-                <h2>Beautiful Interface</h2>
-            </div>
-            <div class="marquee-container reveal">
-                <div class="marquee-track">
-                    <img src="assets/Setting.jpg" alt="Settings Screen" class="gallery-img">
-                    <img src="assets/Options.jpg" alt="Options Screen" class="gallery-img">
-                    <img src="assets/all_shortcut.jpg" alt="Shortcuts Screen" class="gallery-img">
-                    <img src="assets/user_choose.jpg" alt="User Choose Screen" class="gallery-img">
-                    <!-- Duplicate for infinite scroll -->
-                    <img src="assets/Setting.jpg" alt="Settings Screen" class="gallery-img">
-                    <img src="assets/Options.jpg" alt="Options Screen" class="gallery-img">
-                    <img src="assets/all_shortcut.jpg" alt="Shortcuts Screen" class="gallery-img">
-                    <img src="assets/user_choose.jpg" alt="User Choose Screen" class="gallery-img">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Setup Section (Timeline) -->
-    <section class="how-it-works" id="setup">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Setup in seconds.</h2>
-                <p>No messy cables, <strong>no receiver apps needed</strong> on your target device.</p>
-            </div>
-            <div class="timeline-container">
-                <div class="timeline-step reveal">
-                    <div class="timeline-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    </div>
-                    <div class="timeline-content">
-                        <h3>1. Install WindPad</h3>
-                        <p>Download and install the WindPad APK on your Android device.</p>
-                    </div>
-                </div>
-                <div class="timeline-step reveal">
-                    <div class="timeline-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
-                    </div>
-                    <div class="timeline-content">
-                        <h3>2. Pair Devices</h3>
-                        <p>Enable Bluetooth on your computer/TV and pair it with your Android phone.</p>
-                    </div>
-                </div>
-                <div class="timeline-step reveal">
-                    <div class="timeline-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    </div>
-                    <div class="timeline-content">
-                        <h3>3. Start Using</h3>
-                        <p>Open WindPad and instantly start controlling your device like a native Bluetooth mouse!</p>
-                    </div>
-                </div>
-            </div>
-            <div class="setup-note glass reveal">
-                <p><strong>🛠️ Troubleshooting Bluetooth:</strong> If pairing fails, unpair the device from both your phone and PC, restart Bluetooth on both, and try pairing again from your PC's Bluetooth menu.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Privacy Section -->
-    <section class="privacy" id="privacy">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Privacy by Design.</h2>
-                <p>Your data belongs to you.</p>
-            </div>
-            <div class="privacy-content glass reveal">
-                <ul class="privacy-list">
-                    <li><strong>100% Open Source:</strong> Inspect the code yourself on GitHub.</li>
-                    <li><strong>No Ads & No Tracking:</strong> WindPad does not collect analytics or serve ads. It doesn't even require internet permission!</li>
-                    <li><strong>Transparent Permissions:</strong> We only request what is necessary:
-                        <ul>
-                            <li><em>Bluetooth:</em> To discover, pair, and act as a HID device.</li>
-                            <li><em>Foreground Service:</em> To keep the connection alive so your mouse doesn't disconnect when you switch apps.</li>
+                <div class="comparison-grid">
+                    <!-- Old Way -->
+                    <div class="comparison-card legacy-card">
+                        <div class="card-header">
+                            <span class="card-status-pill status-red">Traditional Remote Apps</span>
+                            <h3>Wi-Fi & Companion App Required</h3>
+                        </div>
+                        <ul class="comparison-list">
+                            <li>
+                                <svg class="list-icon icon-red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                <span>Requires background server app installed on PC</span>
+                            </li>
+                            <li>
+                                <svg class="list-icon icon-red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                <span>Both devices must be on the same local Wi-Fi</span>
+                            </li>
+                            <li>
+                                <svg class="list-icon icon-red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                <span>High latency, firewall blocks, network lag</span>
+                            </li>
+                            <li>
+                                <svg class="list-icon icon-red" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                <span>Bloated with ads, subscriptions, and telemetry</span>
+                            </li>
                         </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </section>
+                    </div>
 
-    <!-- FAQ Section -->
-    <section class="faq" id="faq">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Frequently Asked Questions</h2>
-            </div>
-            <div class="faq-list">
-                <div class="faq-item glass reveal">
-                    <h4>Does the computer need a receiver app?</h4>
-                    <p>No! WindPad uses standard Bluetooth HID profiles. Your PC thinks it's a real, physical bluetooth mouse.</p>
-                </div>
-                <div class="faq-item glass reveal">
-                    <h4>Does it require Wi-Fi or Internet?</h4>
-                    <p>No. WindPad operates entirely over Bluetooth. No Wi-Fi or internet connection is required.</p>
-                </div>
-                <div class="faq-item glass reveal">
-                    <h4>Which operating systems are supported?</h4>
-                    <p>It works natively with Windows, macOS, Linux, and compatible Smart TVs.</p>
-                </div>
-                <div class="faq-item glass reveal">
-                    <h4>Is WindPad free and open source?</h4>
-                    <p>Yes, 100% free, open-source, with no ads or tracking.</p>
-                </div>
-                <div class="faq-item glass reveal">
-                    <h4>How does Bluetooth HID work?</h4>
-                    <p>HID stands for Human Interface Device. Android's Bluetooth stack allows the phone to broadcast itself exactly like a standard hardware keyboard or mouse.</p>
-                </div>
-                <div class="faq-item glass reveal">
-                    <h4>What is the "Windows Helper"? Is it required?</h4>
-                    <p>The Helper is completely optional and Windows-only. It provides advanced pointer smoothing. You do <strong>not</strong> need it to use WindPad's core features.</p>
+                    <!-- WindPad Way -->
+                    <div class="comparison-card windpad-card">
+                        <div class="card-header">
+                            <span class="card-status-pill status-blue">The WindPad Standard</span>
+                            <h3>Hardware Bluetooth HID</h3>
+                        </div>
+                        <ul class="comparison-list">
+                            <li>
+                                <svg class="list-icon icon-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span><strong>Zero PC software</strong> — recognized as a physical mouse</span>
+                            </li>
+                            <li>
+                                <svg class="list-icon icon-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span><strong>No Wi-Fi needed</strong> — works 100% offline anywhere</span>
+                            </li>
+                            <li>
+                                <svg class="list-icon icon-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span><strong>Ultra-low latency</strong> direct radio frequency link</span>
+                            </li>
+                            <li>
+                                <svg class="list-icon icon-blue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span><strong>100% Free & Open Source</strong> with zero tracking</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Download Section -->
-    <section class="download" id="download">
-        <div class="container">
-            <div class="section-header reveal">
-                <h2>Ready to take control?</h2>
-            </div>
-            <div class="download-grid">
-                <div class="download-card glass reveal">
-                    <h3>📱 Android APK</h3>
-                    <p>The main application for your phone. Turns your device into a trackpad and keyboard.</p>
-                    <a href="assets/WindPad.apk" class="btn btn-primary" download>Download APK</a>
-                    <p class="download-note"><br/>Prefer verified releases?<br/><a href="https://github.com/Aditya-err/WindPad-Os-Controller/releases" target="_blank">Download from GitHub Releases</a></p>
+        <!-- =======================================================================
+             SECTION 05 — PRODUCT SHOWCASE
+             ======================================================================= -->
+        <section class="section showcase-section" id="showcase">
+            <div class="container">
+                <div class="section-header text-center">
+                    <span class="section-tag">INTERFACE GALLERY</span>
+                    <h2 class="section-title">Engineered for tactile precision.</h2>
+                    <p class="section-description">
+                        Designed with large touch zones, tactile haptic feedback, and instant modifier keys for a frictionless desktop control experience.
+                    </p>
                 </div>
-                <div class="download-card glass reveal">
-                    <h3>💻 Windows Helper</h3>
-                    <p><em>(Optional)</em> A companion app for Windows providing advanced cursor smoothing and filtering.</p>
-                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/tree/main/windpad-server" target="_blank" class="btn btn-secondary">Get Windows Helper</a>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <div class="container">
-            <div class="contact-box glass reveal">
-                <h2>Need help or want to talk to us?</h2>
-                <p>We are always open to feedback and questions.</p>
-                <div class="contact-buttons">
-                    <a href="https://wa.me/918596064717" target="_blank" class="btn btn-whatsapp" aria-label="Chat on WhatsApp">
-                        💬 WhatsApp
+                <div class="showcase-stage">
+                    <div class="showcase-card showcase-main">
+                        <div class="showcase-img-wrap">
+                            <img src="assets/Dark theme/home page.jpg" 
+                                 data-dark-src="assets/Dark theme/home page.jpg" 
+                                 data-light-src="assets/light theme/Home page.jpg" 
+                                 alt="WindPad Main Interface" 
+                                 class="theme-dynamic-img">
+                        </div>
+                        <div class="showcase-caption">
+                            <h4>Precision Dot Grid Trackpad</h4>
+                            <p>Smooth acceleration curve with customizable pointer sensitivity (DPI).</p>
+                        </div>
+                    </div>
+
+                    <div class="showcase-card showcase-sub">
+                        <div class="showcase-img-wrap">
+                            <img src="assets/Dark theme/typing.jpg" 
+                                 data-dark-src="assets/Dark theme/typing.jpg" 
+                                 data-light-src="assets/light theme/Typing.jpg" 
+                                 alt="WindPad Keyboard Interface" 
+                                 class="theme-dynamic-img">
+                        </div>
+                        <div class="showcase-caption">
+                            <h4>Live Keyboard & Shortcuts</h4>
+                            <p>Full desktop keyboard emulation with Win, Esc, Tab, Del, and clipboard injection.</p>
+                        </div>
+                    </div>
+
+                    <div class="showcase-card showcase-sub">
+                        <div class="showcase-img-wrap">
+                            <img src="assets/Dark theme/setting 1.jpg" 
+                                 data-dark-src="assets/Dark theme/setting 1.jpg" 
+                                 data-light-src="assets/light theme/setting 1.jpg" 
+                                 alt="WindPad Settings Screen" 
+                                 class="theme-dynamic-img">
+                        </div>
+                        <div class="showcase-caption">
+                            <h4>Granular Controls</h4>
+                            <p>Adjust scroll speed, invert axes, haptic click feedback, and sleep timeouts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 06 — FEATURES (EDITORIAL SEQUENCE)
+             ======================================================================= -->
+        <section class="section features-editorial-section" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">CAPABILITIES</span>
+                    <h2 class="section-title">Built for daily workflow.</h2>
+                </div>
+
+                <div class="editorial-list">
+                    <!-- 01 -->
+                    <article class="editorial-row">
+                        <div class="editorial-number">01</div>
+                        <div class="editorial-content">
+                            <h3>Precision Trackpad</h3>
+                            <p>Smooth cursor movement tailored for speed and accuracy. Features software acceleration curves calibrated to match native laptop trackpad dynamics.</p>
+                            <div class="editorial-meta-tags">
+                                <span>Adjustable DPI</span>
+                                <span>Tap to Click</span>
+                                <span>Sub-pixel Precision</span>
+                            </div>
+                        </div>
+                        <div class="editorial-visual">
+                            <div class="feature-mockup-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="feature-svg-icon">
+                                    <path d="M12 2a10 10 0 0 0-10 10c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+                                </svg>
+                                <span class="mockup-label">Direct HID Driver Link</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 02 -->
+                    <article class="editorial-row">
+                        <div class="editorial-number">02</div>
+                        <div class="editorial-content">
+                            <h3>Multi-Touch Gestures</h3>
+                            <p>Intuitive multi-finger recognition allowing natural scrolling, pinch-to-zoom magnification, and fluid workspace switching across your monitors.</p>
+                            <div class="editorial-meta-tags">
+                                <span>2-Finger Scroll</span>
+                                <span>Pinch-Zoom</span>
+                                <span>3-Finger Swipe</span>
+                            </div>
+                        </div>
+                        <div class="editorial-visual">
+                            <div class="feature-mockup-box">
+                                <div class="gesture-mini-preview">
+                                    <span class="finger-dot dot-1"></span>
+                                    <span class="finger-dot dot-2"></span>
+                                </div>
+                                <span class="mockup-label">Multi-touch Digitizer</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 03 -->
+                    <article class="editorial-row">
+                        <div class="editorial-number">03</div>
+                        <div class="editorial-content">
+                            <h3>Quick Action Keys</h3>
+                            <p>One-tap dedicated buttons for frequent OS shortcuts: Copy, Paste, Cut, Undo, Select All, and instant Emoji picker without switching tabs.</p>
+                            <div class="editorial-meta-tags">
+                                <span>Ctrl / Cmd</span>
+                                <span>Alt / Option</span>
+                                <span>Windows Key</span>
+                            </div>
+                        </div>
+                        <div class="editorial-visual">
+                            <div class="feature-mockup-box">
+                                <div class="keys-mini-grid">
+                                    <span class="key-pill">Ctrl + C</span>
+                                    <span class="key-pill">Ctrl + V</span>
+                                    <span class="key-pill">Ctrl + Z</span>
+                                </div>
+                                <span class="mockup-label">Modifier Macros</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 04 -->
+                    <article class="editorial-row">
+                        <div class="editorial-number">04</div>
+                        <div class="editorial-content">
+                            <h3>Smart Clipboard</h3>
+                            <p>Send long URLs, paragraphs, or passwords directly from your phone's clipboard straight into your computer's active cursor position seamlessly.</p>
+                            <div class="editorial-meta-tags">
+                                <span>Direct Keystroke Injection</span>
+                                <span>Zero Network Sync</span>
+                            </div>
+                        </div>
+                        <div class="editorial-visual">
+                            <div class="feature-mockup-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="feature-svg-icon">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                                </svg>
+                                <span class="mockup-label">Clipboard Transmitter</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 05 -->
+                    <article class="editorial-row">
+                        <div class="editorial-number">05</div>
+                        <div class="editorial-content">
+                            <h3>Material Theming</h3>
+                            <p>Built strictly according to modern Material Design 3 guidelines. Automatically adapts to your Android system palette with full dark/light mode fidelity.</p>
+                            <div class="editorial-meta-tags">
+                                <span>Material You</span>
+                                <span>AMOLED Dark</span>
+                                <span>Dynamic Colors</span>
+                            </div>
+                        </div>
+                        <div class="editorial-visual">
+                            <div class="feature-mockup-box">
+                                <div class="theme-palette-dots">
+                                    <span class="p-dot p-1"></span>
+                                    <span class="p-dot p-2"></span>
+                                    <span class="p-dot p-3"></span>
+                                </div>
+                                <span class="mockup-label">M3 Color Engine</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- 06 -->
+                    <article class="editorial-row">
+                        <div class="editorial-number">06</div>
+                        <div class="editorial-content">
+                            <h3>Universal Compatibility</h3>
+                            <p>Compatible out of the box with any host operating system that supports standard Bluetooth mice and keyboards. Zero configuration or port mapping required.</p>
+                            <div class="editorial-meta-tags">
+                                <span>Windows</span>
+                                <span>macOS</span>
+                                <span>Linux</span>
+                                <span>Android TV</span>
+                            </div>
+                        </div>
+                        <div class="editorial-visual">
+                            <div class="feature-mockup-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="feature-svg-icon">
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                                </svg>
+                                <span class="mockup-label">Cross-Platform Standard</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 07 — INTERACTIVE GESTURE VISUAL
+             ======================================================================= -->
+        <section class="section gestures-section">
+            <div class="container">
+                <div class="section-header text-center">
+                    <span class="section-tag">GESTURE ENGINE</span>
+                    <h2 class="section-title">Natural multi-touch gestures.</h2>
+                    <p class="section-description">
+                        Every gesture you know from physical trackpads, mapped directly to Bluetooth HID packets.
+                    </p>
+                </div>
+
+                <div class="gesture-grid">
+                    <div class="gesture-card">
+                        <div class="gesture-animation-box anim-cursor">
+                            <div class="touch-point single-touch"></div>
+                            <svg class="cursor-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="3 3 10.07 19.97 12.58 12.58 19.97 10.07 3 3"></polygon>
+                            </svg>
+                        </div>
+                        <h4>1 Finger Move</h4>
+                        <p>Smooth cursor movement & tap to left click</p>
+                    </div>
+
+                    <div class="gesture-card">
+                        <div class="gesture-animation-box anim-scroll">
+                            <div class="touch-point-group">
+                                <span class="touch-point"></span>
+                                <span class="touch-point"></span>
+                            </div>
+                            <div class="scroll-arrow-line"></div>
+                        </div>
+                        <h4>2 Fingers Scroll</h4>
+                        <p>Natural vertical and horizontal scrolling</p>
+                    </div>
+
+                    <div class="gesture-card">
+                        <div class="gesture-animation-box anim-zoom">
+                            <div class="touch-point zoom-p1"></div>
+                            <div class="touch-point zoom-p2"></div>
+                        </div>
+                        <h4>Pinch to Zoom</h4>
+                        <p>Precision zooming on documents, photos & web</p>
+                    </div>
+
+                    <div class="gesture-card">
+                        <div class="gesture-animation-box anim-swipe">
+                            <div class="touch-point-group trio">
+                                <span class="touch-point"></span>
+                                <span class="touch-point"></span>
+                                <span class="touch-point"></span>
+                            </div>
+                        </div>
+                        <h4>3 Fingers Swipe</h4>
+                        <p>Switch virtual desktops or open task view</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 08 — UNIVERSAL COMPATIBILITY
+             ======================================================================= -->
+        <section class="section compatibility-section" id="compatibility">
+            <div class="container">
+                <div class="section-header text-center">
+                    <span class="section-tag">ECOSYSTEM</span>
+                    <h2 class="section-title">Works where you need it.</h2>
+                    <p class="section-description">
+                        No matter what computer or Smart TV you use, WindPad connects instantly over native Bluetooth.
+                    </p>
+                </div>
+
+                <div class="platforms-grid">
+                    <div class="platform-card">
+                        <div class="platform-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+                            </svg>
+                        </div>
+                        <h3>Windows</h3>
+                        <span class="platform-version">Windows 10, 11 & older</span>
+                    </div>
+
+                    <div class="platform-card">
+                        <div class="platform-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-2 0.6-2.65 1.35-.58.66-1.08 1.73-.95 2.76 1.01.08 2.05-.51 2.68-1.26z"/>
+                            </svg>
+                        </div>
+                        <h3>macOS</h3>
+                        <span class="platform-version">macOS Sonoma, Ventura & older</span>
+                    </div>
+
+                    <div class="platform-card">
+                        <div class="platform-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.002 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-1.574 18.238c-.377 0-.742-.149-1.009-.415l-3.328-3.329a1.427 1.427 0 0 1 2.018-2.018l2.319 2.32 5.34-5.341a1.427 1.427 0 1 1 2.018 2.018l-6.349 6.35c-.267.266-.632.415-1.009.415z"/>
+                            </svg>
+                        </div>
+                        <h3>Linux</h3>
+                        <span class="platform-version">Ubuntu, Fedora, Arch & all distros</span>
+                    </div>
+
+                    <div class="platform-card">
+                        <div class="platform-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                                <polyline points="17 2 12 7 7 2"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Smart TVs</h3>
+                        <span class="platform-version">Android TV, Google TV, Fire TV</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 09 — USE CASES
+             ======================================================================= -->
+        <section class="section usecases-section" id="use-cases">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-tag">VERSATILITY</span>
+                    <h2 class="section-title">Designed for every situation.</h2>
+                </div>
+
+                <div class="usecase-grid">
+                    <!-- 01 -->
+                    <div class="usecase-card">
+                        <div class="usecase-badge">01</div>
+                        <div class="usecase-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                        </div>
+                        <h3>Movie Night</h3>
+                        <p>Control your laptop connected to the projector or navigate Smart TV streaming apps from the comfort of your couch without leaving your seat.</p>
+                    </div>
+
+                    <!-- 02 -->
+                    <div class="usecase-card">
+                        <div class="usecase-badge">02</div>
+                        <div class="usecase-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                        <h3>Presentations</h3>
+                        <p>Walk around the stage freely during lectures or pitch meetings while advancing slides and pointing with your smartphone screen.</p>
+                    </div>
+
+                    <!-- 03 -->
+                    <div class="usecase-card">
+                        <div class="usecase-badge">03</div>
+                        <div class="usecase-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                <line x1="4" y1="10" x2="20" y2="10"></line>
+                                <line x1="10" y1="4" x2="10" y2="20"></line>
+                            </svg>
+                        </div>
+                        <h3>Broken Trackpad</h3>
+                        <p>Immediate hardware backup when your laptop trackpad or physical wireless mouse runs out of battery while working on the go.</p>
+                    </div>
+
+                    <!-- 04 -->
+                    <div class="usecase-card">
+                        <div class="usecase-badge">04</div>
+                        <div class="usecase-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                            </svg>
+                        </div>
+                        <h3>Remote Desk Control</h3>
+                        <p>Control background music, audio volume, video pauses, and system sleep from across your desk without reaching for your peripheral devices.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 10 — SETUP TIMELINE
+             ======================================================================= -->
+        <section class="section setup-section" id="setup">
+            <div class="container">
+                <div class="section-header text-center">
+                    <span class="section-tag">GET STARTED</span>
+                    <h2 class="section-title">Setup in seconds.</h2>
+                    <p class="section-description">
+                        No messy cables, no IP addresses to type, and <strong>no receiver apps</strong> needed on your target device.
+                    </p>
+                </div>
+
+                <div class="setup-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="timeline-num">1</span>
+                        </div>
+                        <div class="timeline-card">
+                            <h4>Install WindPad</h4>
+                            <p>Download and install the WindPad APK on your Android device.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="timeline-num">2</span>
+                        </div>
+                        <div class="timeline-card">
+                            <h4>Pair via Bluetooth</h4>
+                            <p>Enable Bluetooth on your computer/TV and select your phone from standard system settings.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="timeline-num">3</span>
+                        </div>
+                        <div class="timeline-card">
+                            <h4>Start Controlling</h4>
+                            <p>Open WindPad and immediately control your cursor and keyboard natively!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 11 — OPTIONAL WINDOWS HELPER
+             ======================================================================= -->
+        <section class="section helper-section">
+            <div class="container">
+                <div class="helper-banner">
+                    <div class="helper-content">
+                        <span class="badge-pill">OPTIONAL COMPANION</span>
+                        <h2>Want even smoother pointer control?</h2>
+                        <p>
+                            For power users on Windows, we provide an optional Windows Helper that implements advanced pointer smoothing interpolation. 
+                            <strong>Basic WindPad HID mouse and keyboard functionality works 100% without it.</strong>
+                        </p>
+                        <div class="helper-actions">
+                            <a href="https://github.com/Aditya-err/WindPad-Os-Controller/releases" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                                <span>Get Windows Helper</span>
+                                <svg class="btn-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="helper-badge-box">
+                        <div class="helper-spec">
+                            <span class="spec-label">Platform</span>
+                            <span class="spec-value">Windows 10/11</span>
+                        </div>
+                        <div class="helper-spec">
+                            <span class="spec-label">Requirement</span>
+                            <span class="spec-value">Strictly Optional</span>
+                        </div>
+                        <div class="helper-spec">
+                            <span class="spec-label">Feature</span>
+                            <span class="spec-value">60FPS Smoothing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 12 — PRIVACY / TRUST
+             ======================================================================= -->
+        <section class="section privacy-section">
+            <div class="container">
+                <div class="privacy-box">
+                    <div class="section-header">
+                        <span class="section-tag">SECURITY & INTEGRITY</span>
+                        <h2 class="section-title">Your device.<br>Your data.</h2>
+                        <p class="section-description">
+                            We believe input devices must be completely private. WindPad does not collect, transmit, or monetize any user data.
+                        </p>
+                    </div>
+
+                    <div class="privacy-points-grid">
+                        <div class="privacy-point">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <h4>100% Offline</h4>
+                            <p>WindPad requires zero internet permissions. Input is sent purely over local Bluetooth hardware.</p>
+                        </div>
+                        <div class="privacy-point">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                            <h4>Zero Telemetry</h4>
+                            <p>No analytics SDKs, no crash trackers, no third-party libraries recording keystrokes or usage.</p>
+                        </div>
+                        <div class="privacy-point">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            <h4>Fully Auditable</h4>
+                            <p>Every single line of code is open-source on GitHub for community inspection and compilation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 13 — FAQ ACCORDION
+             ======================================================================= -->
+        <section class="section faq-section" id="faq">
+            <div class="container faq-container">
+                <div class="section-header text-center">
+                    <span class="section-tag">QUESTIONS & ANSWERS</span>
+                    <h2 class="section-title">Frequently asked questions.</h2>
+                </div>
+
+                <div class="faq-accordion" id="faqAccordion">
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>Does WindPad require a PC app?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>No! WindPad emulates a physical Bluetooth HID mouse and keyboard. Your computer recognizes it natively as hardware without any companion app.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>Does WindPad require Wi-Fi?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>No. WindPad operates completely over Bluetooth. You don't need a Wi-Fi connection, router, or local network setup.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>Does it work without internet?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes, 100% offline. Once installed, WindPad communicates directly between devices via Bluetooth without any internet access.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>Which platforms are supported?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>WindPad works on Windows, macOS, Linux, and compatible Smart TVs (Android TV, Google TV, Fire TV) that support standard Bluetooth HID input peripherals.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>Is WindPad free?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes. WindPad is completely free with no subscriptions, in-app purchases, or locked features.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>Is WindPad open source?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes, the full source code for both the Android application and the website is available on GitHub under the MIT License.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>What is the Windows Helper?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>The Windows Helper is a small, optional utility for Windows users that provides advanced pointer interpolation and smoothing. It is strictly optional.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>Is the Windows Helper required?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>No. Standard mouse and keyboard controls work completely without it on all operating systems.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>How does Bluetooth HID work?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>HID (Human Interface Device) is a universal hardware standard. Android 9+ includes support for creating Bluetooth HID peripheral devices that computers treat identically to physical hardware mice.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <button type="button" class="faq-question" aria-expanded="false">
+                            <span>What should I do if Bluetooth pairing fails?</span>
+                            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Unpair the device on both your phone and PC, turn Bluetooth off and on, and then initiate pairing again from your PC's Bluetooth settings menu.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 14 & 15 — SUPPORT & CONTACT
+             ======================================================================= -->
+        <section class="section contact-section" id="contact">
+            <div class="container">
+                <div class="contact-box">
+                    <div class="contact-text">
+                        <span class="section-tag">GET IN TOUCH</span>
+                        <h2>Need help or want to talk to us?</h2>
+                        <p>We are always open to feedback, feature requests, and bug reports.</p>
+                        <div class="contact-phone-display">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <span>+91 8596064717</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-actions-grid">
+                        <a href="https://wa.me/918596064717?text=Hi%20Aditya,%20I'm%20using%20WindPad" target="_blank" rel="noopener noreferrer" class="btn btn-whatsapp" aria-label="Contact on WhatsApp">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.099.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.155.57 4.175 1.564 5.922l-1.664 6.078 6.25-1.639c1.713.935 3.676 1.467 5.76 1.467 6.627 0 12-5.373 12-12s-5.373-12-12-12z"/>
+                            </svg>
+                            <span>Chat on WhatsApp</span>
+                        </a>
+
+                        <a href="tel:+918596064717" class="btn btn-call" aria-label="Direct Phone Call">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                            <span>Direct Call</span>
+                        </a>
+
+                        <button type="button" class="btn btn-secondary" id="openSupportBtnContact">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>Send Support Request</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =======================================================================
+             SECTION 16 — FINAL CTA
+             ======================================================================= -->
+        <section class="section final-cta-section" id="download">
+            <div class="container text-center">
+                <span class="section-tag">DOWNLOAD NOW</span>
+                <h2 class="cta-title">Your phone is more capable<br>than you think.</h2>
+                <p class="cta-subtitle">Turn it into a trackpad, mouse and keyboard with WindPad.</p>
+
+                <div class="final-cta-buttons">
+                    <a href="assets/WindPad.apk" download="WindPad.apk" class="btn btn-primary btn-xl">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Download WindPad APK</span>
                     </a>
-                    <a href="tel:+918596064717" class="btn btn-call" aria-label="Call Us">
-                        📞 Call Us
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-xl">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                        </svg>
+                        <span>View on GitHub</span>
+                    </a>
+                </div>
+
+                <div class="star-github-box">
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener noreferrer" class="star-link">
+                        <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        <span>Star WindPad on GitHub</span>
                     </a>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container footer-content">
-            <div class="footer-top">
-                <div class="footer-logo">
-                    <img src="assets/windpad.png" alt="Windpad Logo">
+    <!-- =======================================================================
+         SECTION 17 — FOOTER
+         ======================================================================= -->
+    <footer class="site-footer">
+        <div class="container footer-container">
+            <div class="footer-brand">
+                <div class="brand-logo">
+                    <img src="assets/windpad-icon.png" alt="WindPad" width="28" height="28">
                     <span>WindPad</span>
                 </div>
-                <div class="footer-links">
-                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank">GitHub</a>
-                    <a href="#download">Download APK</a>
-                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/tree/main/windpad-server" target="_blank">Windows Helper</a>
-                    <a href="#contact">Contact</a>
-                    <button class="footer-support-btn">Support</button>
+                <p class="footer-desc">Open-source Bluetooth HID input controller turning Android devices into native trackpads and keyboards.</p>
+                <div class="footer-badge">
+                    <span>Developed by Aditya • Made in India 🇮🇳</span>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>Developed by Aditya 🎓 — Made in India 🇮🇳</p>
+
+            <div class="footer-links-grid">
+                <div class="footer-col">
+                    <h5>Navigation</h5>
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#showcase">Showcase</a>
+                    <a href="#compatibility">Compatibility</a>
+                    <a href="#use-cases">Use Cases</a>
+                    <a href="#faq">FAQ</a>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Resources</h5>
+                    <a href="assets/WindPad.apk" download="WindPad.apk">Download APK</a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/releases" target="_blank" rel="noopener noreferrer">Windows Helper</a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Connect</h5>
+                    <button type="button" class="footer-btn-link" id="openSupportBtnFooter">Support Request</button>
+                    <a href="#contact">Contact Us</a>
+                    <a href="https://wa.me/918596064717?text=Hi%20Aditya,%20I'm%20using%20WindPad" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                </div>
             </div>
         </div>
+
+        <div class="container footer-bottom">
+            <p>&copy; <span id="copyrightYear">2026</span> WindPad Project. Open Source under MIT License.</p>
+        </div>
     </footer>
-    
-    <!-- Support Modal -->
-    <div id="supportModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <div class="modal-content glass">
-            <button class="modal-close" aria-label="Close modal">✖</button>
-            <h2 id="modalTitle">WindPad Support</h2>
-            <p class="modal-subtitle">Have an update, improvement, bug report, or feature request? Tell us what you’d like to see in WindPad.</p>
+
+    <!-- =======================================================================
+         SUPPORT MODAL (SECTION 14)
+         ======================================================================= -->
+    <div class="modal-backdrop" id="supportModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">WindPad Support</h3>
+                <button type="button" class="modal-close-btn" id="closeSupportModalBtn" aria-label="Close modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
             
-            <div id="supportFormContainer">
-                <textarea id="supportMessage" placeholder="Describe the update, feature, bug, or improvement you’d like to request..." required aria-required="true"></textarea>
-                <p id="supportError" class="modal-error"></p>
-                <div class="modal-actions">
-                    <button id="cancelSupport" class="btn btn-secondary">Cancel</button>
-                    <button id="submitSupport" class="btn btn-primary">Send Update</button>
+            <p class="modal-description">
+                Have a feature request, improvement, bug report, or update suggestion? Tell us what you would like to see in WindPad.
+            </p>
+
+            <form id="supportForm" class="support-form">
+                <div class="form-group">
+                    <label for="supportType">Request Type</label>
+                    <select id="supportType" class="form-input">
+                        <option value="Feature Request">Feature Request</option>
+                        <option value="Bug Report">Bug Report</option>
+                        <option value="Improvement">Improvement Suggestion</option>
+                        <option value="Other">General Feedback</option>
+                    </select>
                 </div>
-            </div>
-            
-            <div id="supportSuccessMessage" class="modal-success" style="display: none;">
-                <p><strong>Your email client is opening with the update request.</strong></p>
-                <p>Please press Send in your email app to complete the request.</p>
-                <button id="closeSuccess" class="btn btn-primary">Close</button>
-            </div>
+
+                <div class="form-group">
+                    <label for="supportMessage">Message</label>
+                    <textarea id="supportMessage" class="form-input" rows="4" placeholder="Describe your request..." required></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                        <span>Send Update</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="script.js?v=14.0"></script>
+    <script src="script.js"></script>
 </body>
 </html>
