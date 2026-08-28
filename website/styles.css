@@ -589,7 +589,11 @@ footer {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 32px;
+    gap: 24px;
+}
+.footer-content p {
+    margin-bottom: 0;
+    text-align: center;
 }
 .footer-logo { display: flex; align-items: center; gap: 12px; font-weight: 600; }
 .footer-logo img { width: 30px; height: 30px; border-radius: 8px; }
@@ -767,8 +771,8 @@ footer {
     }
     .contact-buttons { flex-direction: column; width: 100%; }
     .contact-buttons .btn { width: 100%; }
-    .footer-content { flex-direction: column; text-align: center; }
-    .footer-links { justify-content: center; flex-direction: column; gap: 16px; }
+    .footer-content { flex-direction: column; text-align: center; gap: 16px; }
+    .footer-links { justify-content: center; flex-direction: row; flex-wrap: wrap; gap: 16px; }
     
     /* Make tables responsive */
     .compat-table-wrapper { overflow-x: auto; border-radius: 8px; }
