@@ -1,24 +1,51 @@
 // Intersection Observer for scroll animations
 document.addEventListener('DOMContentLoaded', () => {
-    const reveals = document.querySelectorAll('.reveal');
-
-    const revealOnScroll = () => {
-        const windowHeight = window.innerHeight;
-        const elementVisible = 100;
-
-        reveals.forEach((reveal) => {
-            const elementTop = reveal.getBoundingClientRect().top;
-            if (elementTop < windowHeight - elementVisible) {
-                reveal.classList.add('active');
+    // Global state for Three.js active section
+    window.activeSection = 'home';
+    
+    // Intersection Observer for scroll animations (Staggered)
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                
+                // Add staggered delay for grid items
+                if (el.classList.contains('feature-card') || 
+                    el.classList.contains('use-card') || 
+                    el.classList.contains('comparison-card') ||
+                    el.classList.contains('faq-item') ||
+                    el.classList.contains('gallery-img') ||
+                    el.classList.contains('download-card')) {
+                    
+                    const parent = el.parentElement;
+                    const siblings = Array.from(parent.children).filter(child => child.classList.contains('reveal'));
+                    const index = siblings.indexOf(el);
+                    el.style.transitionDelay = `${index * 0.15}s`;
+                }
+                
+                el.classList.add('active');
+                revealObserver.unobserve(el);
             }
         });
-    };
+    }, { threshold: 0.15 });
 
-    // Initial check
-    revealOnScroll();
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    // Check on scroll
-    window.addEventListener('scroll', revealOnScroll);
+    // Section Observer for Three.js Background changes
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const sectionId = entry.target.id || 'home';
+                window.activeSection = sectionId;
+                
+                // Update body class for CSS glow color transitions
+                document.body.className = document.body.className.replace(/\bsection-\S+/g, '');
+                document.body.classList.add(`section-${sectionId}`);
+            }
+        });
+    }, { threshold: 0.3 }); // 30% of the section must be visible
+    
+    document.querySelectorAll('section').forEach(sec => sectionObserver.observe(sec));
 
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -245,20 +272,71 @@ document.addEventListener('DOMContentLoaded', () => {
         const animate = () => {
             requestAnimationFrame(animate);
             const elapsedTime = clock.getElapsedTime();
+            
+            // Scroll progression (0 to 1 across the document)
+            const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight || 1);
+            
+            // 1. Fly-through camera effect: move camera forward as we scroll
+            const targetCameraZ = 30 - (scrollPercent * 15);
+            camera.position.z += (targetCameraZ - camera.position.z) * 0.05;
 
+            // 2. Section-specific behaviors
+            let targetRotSpeedY = 0.001;
+            let targetRotSpeedX = 0.0005;
+            let targetFogDensity = 0.001;
+            
+            switch(window.activeSection) {
+                case 'home':
+                    targetRotSpeedY = 0.001;
+                    targetRotSpeedX = 0.0005;
+                    break;
+                case 'why-windpad':
+                case 'features':
+                    targetRotSpeedY = 0.003; // Speed up
+                    targetRotSpeedX = 0.0015;
+                    break;
+                case 'compatibility':
+                case 'use-cases':
+                    targetRotSpeedY = -0.002; // Reverse flow
+                    targetRotSpeedX = 0.001;
+                    break;
+                case 'setup':
+                case 'screenshots':
+                    targetRotSpeedY = 0.004;
+                    targetRotSpeedX = -0.001; 
+                    targetFogDensity = 0.002; // Thicker fog
+                    break;
+                case 'faq':
+                case 'download':
+                case 'contact':
+                    targetRotSpeedY = 0.0005; // Slow down
+                    targetRotSpeedX = 0.0005;
+                    targetFogDensity = 0.003;
+                    break;
+            }
+
+            // Smoothly interpolate fog density
+            scene.fog.density += (targetFogDensity - scene.fog.density) * 0.02;
+
+            // Apply continuous rotation based on section
+            particleMesh.rotation.y += targetRotSpeedY;
+            particleMesh.rotation.x += targetRotSpeedX;
+
+            // 3. Mouse Parallax (Desktop)
             targetX = mouseX * 0.001;
             targetY = mouseY * 0.001;
 
-            particleMesh.rotation.y += 0.001;
-            particleMesh.rotation.x += 0.0005;
-
-            // Only apply parallax if not on mobile (touch devices don't have mousemove generally)
             if (window.innerWidth > 900) {
-                particleMesh.rotation.y += 0.05 * (targetX - particleMesh.rotation.y);
-                particleMesh.rotation.x += 0.05 * (targetY - particleMesh.rotation.x);
+                // Move the entire mesh slightly based on mouse
+                particleMesh.position.x += (targetX * 10 - particleMesh.position.x) * 0.05;
+                // Add vertical float + mouse parallax
+                const targetPosY = (Math.sin(elapsedTime * 0.5) * 2) - (targetY * 10);
+                particleMesh.position.y += (targetPosY - particleMesh.position.y) * 0.05;
+            } else {
+                // Mobile: Gentle float + slight extra rotation on scroll
+                particleMesh.position.y = Math.sin(elapsedTime * 0.5) * 2;
+                particleMesh.rotation.y += (window.scrollY * 0.00001);
             }
-
-            particleMesh.position.y = Math.sin(elapsedTime * 0.5) * 2;
 
             renderer.render(scene, camera);
         };
