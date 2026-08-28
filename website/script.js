@@ -274,7 +274,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const elapsedTime = clock.getElapsedTime();
             
             // Scroll progression (0 to 1 across the document)
-            const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight || 1);
+            const maxScroll = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+            const scrollPercent = maxScroll > 0 ? (window.scrollY / maxScroll) : 0;
             
             // 1. Fly-through camera effect: move camera forward as we scroll
             const targetCameraZ = 30 - (scrollPercent * 15);
