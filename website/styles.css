@@ -5,6 +5,7 @@
    ========================================================================== */
 
 /* --- ROOT DESIGN TOKENS (DARK THEME - USER PALETTE) --- */
+/* --- ROOT DESIGN TOKENS (DARK THEME - USER PALETTE) --- */
 :root, [data-theme="dark"] {
     --deep-twilight: #03045E;
     --french-blue: #023E8A;
@@ -17,46 +18,46 @@
     --light-cyan: #CAF0F8;
 
     /* Base & Surface mappings */
-    --bg-base: #02033B;
-    --bg-surface: #03064A;
-    --bg-surface-elevated: #040A5E;
-    --bg-surface-hover: #061175;
+    --bg-base: #023E8A;
+    --bg-surface: #03045E;
+    --bg-surface-elevated: #021E50;
+    --bg-surface-hover: #042E70;
     
-    /* 8 Distinct Section Backgrounds (Dark) */
-    --section-01-bg: radial-gradient(circle at 50% 15%, #023E8A 0%, #03045E 65%, #02033B 100%);
-    --section-02-bg: linear-gradient(90deg, #022660 0%, #023E8A 50%, #022660 100%);
-    --section-03-bg: #03045E;
-    --section-04-bg: #021E50;
-    --section-05-bg: #020B38;
-    --section-06-bg: #03045E;
-    --section-07-bg: #021844;
-    --section-08-bg: #020E30;
-    --section-footer-bg: #010424;
+    /* 8 Distinct Section Backgrounds (Dark Theme) */
+    --section-01-bg: #023E8A; /* Page 1: french-blue */
+    --section-02-bg: #0077B6; /* Page 2: bright-teal-blue */
+    --section-03-bg: #0096C7; /* Page 3: blue-green */
+    --section-04-bg: #00B4D8; /* Page 4: turquoise-surf */
+    --section-05-bg: #48CAE4; /* Page 5: sky-aqua */
+    --section-06-bg: #90E0EF; /* Page 6: frosted-blue */
+    --section-07-bg: #ADE8F4; /* Page 7: frosted-blue-2 */
+    --section-08-bg: #CAF0F8; /* Page 8: light-cyan */
+    --section-footer-bg: #021844;
 
-    --border-subtle: rgba(144, 224, 239, 0.15);
-    --border-strong: rgba(72, 202, 228, 0.32);
-    --border-accent: rgba(0, 180, 216, 0.55);
+    --border-subtle: rgba(144, 224, 239, 0.2);
+    --border-strong: rgba(72, 202, 228, 0.38);
+    --border-accent: rgba(0, 180, 216, 0.6);
 
-    --text-primary: #CAF0F8;
+    --text-primary: #FFFFFF;
     --text-secondary: #ADE8F4;
     --text-muted: #90E0EF;
-    --text-inverse: #03045E;
+    --text-inverse: #021844;
 
     --accent-primary: #00B4D8;
     --accent-primary-hover: #48CAE4;
-    --accent-primary-glow: rgba(0, 180, 216, 0.28);
+    --accent-primary-glow: rgba(0, 180, 216, 0.35);
     
     --accent-violet: #7209B7;
     --accent-green: #10B981;
     --accent-red: #EF4444;
 
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
-    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
-    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
-    --shadow-glow: 0 0 32px rgba(0, 180, 216, 0.25);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+    --shadow-glow: 0 0 32px rgba(0, 180, 216, 0.28);
 
-    --modal-backdrop: rgba(1, 4, 36, 0.85);
-    --code-bg: rgba(0, 180, 216, 0.08);
+    --modal-backdrop: rgba(2, 24, 68, 0.85);
+    --code-bg: rgba(0, 180, 216, 0.12);
 
     --radius-sm: 6px;
     --radius-md: 10px;
@@ -84,58 +85,56 @@
 
 /* --- LIGHT THEME TOKENS (USER PALETTE) --- */
 [data-theme="light"] {
-    --powder-blush: #FEC5BB;
     --almond-silk: #FCD5CE;
     --soft-blush: #FAE1DD;
     --seashell: #F8EDEB;
     --alabaster-grey: #E8E8E4;
     --alabaster-grey-2: #D8E2DC;
-    --linen: #ECE4DB;
-    --powder-petal: #FFE5D9;
-    --peach-fuzz: #FFD7BA;
-    --peach-glow: #FEC89A;
+    --light-blue: #BEE1E6;
+    --parchment: #F0EFEB;
+    --lavender: #DFE7FD;
 
     /* Base & Surface mappings */
-    --bg-base: #F8EDEB;
+    --bg-base: #FCD5CE;
     --bg-surface: #FFFFFF;
     --bg-surface-elevated: #FFF9F7;
     --bg-surface-hover: #FAE1DD;
     
-    /* 8 Distinct Section Backgrounds (Light) */
-    --section-01-bg: radial-gradient(circle at 50% 10%, #FFE5D9 0%, #F8EDEB 70%, #FAE1DD 100%);
-    --section-02-bg: linear-gradient(90deg, #ECE4DB 0%, #D8E2DC 50%, #ECE4DB 100%);
-    --section-03-bg: #FFFFFF;
-    --section-04-bg: #E8E8E4;
-    --section-05-bg: #ECE4DB;
-    --section-06-bg: #FFFFFF;
-    --section-07-bg: #FAE1DD;
-    --section-08-bg: #F8EDEB;
-    --section-footer-bg: #ECE4DB;
+    /* 8 Distinct Section Backgrounds (Light Theme) */
+    --section-01-bg: #FCD5CE; /* Page 1: almond-silk */
+    --section-02-bg: #FAE1DD; /* Page 2: soft-blush */
+    --section-03-bg: #F8EDEB; /* Page 3: seashell */
+    --section-04-bg: #E8E8E4; /* Page 4: alabaster-grey */
+    --section-05-bg: #D8E2DC; /* Page 5: alabaster-grey-2 */
+    --section-06-bg: #BEE1E6; /* Page 6: light-blue */
+    --section-07-bg: #F0EFEB; /* Page 7: parchment */
+    --section-08-bg: #DFE7FD; /* Page 8: lavender */
+    --section-footer-bg: #D8E2DC;
 
-    --border-subtle: rgba(254, 197, 187, 0.45);
-    --border-strong: rgba(254, 200, 154, 0.65);
-    --border-accent: rgba(254, 197, 187, 0.9);
+    --border-subtle: rgba(45, 35, 33, 0.12);
+    --border-strong: rgba(45, 35, 33, 0.22);
+    --border-accent: rgba(217, 107, 84, 0.45);
 
     --text-primary: #2D2321;
-    --text-secondary: #6B5550;
-    --text-muted: #9C837E;
+    --text-secondary: #5C4A46;
+    --text-muted: #8A726E;
     --text-inverse: #FFFFFF;
 
     --accent-primary: #D96B54;
     --accent-primary-hover: #C5533C;
-    --accent-primary-glow: rgba(254, 197, 187, 0.45);
+    --accent-primary-glow: rgba(217, 107, 84, 0.35);
     
-    --accent-violet: #9D4EDD;
+    --accent-violet: #7209B7;
     --accent-green: #059669;
     --accent-red: #DC2626;
 
-    --shadow-sm: 0 2px 8px rgba(107, 85, 80, 0.06);
-    --shadow-md: 0 8px 24px rgba(107, 85, 80, 0.09);
-    --shadow-lg: 0 16px 40px rgba(107, 85, 80, 0.12);
-    --shadow-glow: 0 0 32px rgba(254, 197, 187, 0.3);
+    --shadow-sm: 0 2px 8px rgba(45, 35, 33, 0.06);
+    --shadow-md: 0 8px 24px rgba(45, 35, 33, 0.09);
+    --shadow-lg: 0 16px 40px rgba(45, 35, 33, 0.12);
+    --shadow-glow: 0 0 32px rgba(217, 107, 84, 0.25);
 
     --modal-backdrop: rgba(45, 35, 33, 0.65);
-    --code-bg: rgba(254, 197, 187, 0.25);
+    --code-bg: rgba(217, 107, 84, 0.15);
 }
 
 /* --- CSS RESET & BASE STYLES --- */
@@ -1069,6 +1068,52 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .comparison-section .section-title, .comparison-card h3 {
     font-family: var(--font-sec4-head);
+}
+
+/* Contrast Tuning for Dark Mode Sections 04-08 */
+[data-theme="dark"] .comparison-section .section-title,
+[data-theme="dark"] .showcase-section .section-title,
+[data-theme="dark"] .features-editorial-section .section-title,
+[data-theme="dark"] .gestures-section .section-title,
+[data-theme="dark"] .compatibility-section .section-title,
+[data-theme="dark"] .usecases-section .section-title,
+[data-theme="dark"] .setup-section .section-title,
+[data-theme="dark"] .helper-content h2,
+[data-theme="dark"] .privacy-box h2,
+[data-theme="dark"] .faq-section .section-title,
+[data-theme="dark"] .contact-text h2,
+[data-theme="dark"] .cta-title {
+    color: #021844;
+}
+
+[data-theme="dark"] .comparison-section .section-description,
+[data-theme="dark"] .showcase-section .section-description,
+[data-theme="dark"] .features-editorial-section .section-description,
+[data-theme="dark"] .gestures-section .section-description,
+[data-theme="dark"] .compatibility-section .section-description,
+[data-theme="dark"] .usecases-section .section-description,
+[data-theme="dark"] .setup-section .section-description,
+[data-theme="dark"] .helper-content p,
+[data-theme="dark"] .privacy-box p,
+[data-theme="dark"] .faq-section .section-description,
+[data-theme="dark"] .contact-text p,
+[data-theme="dark"] .cta-subtitle {
+    color: #022F6E;
+}
+
+[data-theme="dark"] .comparison-section .section-tag,
+[data-theme="dark"] .showcase-section .section-tag,
+[data-theme="dark"] .features-editorial-section .section-tag,
+[data-theme="dark"] .gestures-section .section-tag,
+[data-theme="dark"] .compatibility-section .section-tag,
+[data-theme="dark"] .usecases-section .section-tag,
+[data-theme="dark"] .setup-section .section-tag,
+[data-theme="dark"] .faq-section .section-tag,
+[data-theme="dark"] .contact-tag {
+    color: #021844;
+    background-color: rgba(2, 24, 68, 0.15);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
 }
 
 .comparison-grid {
