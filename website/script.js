@@ -1,11 +1,10 @@
 /**
  * WindPad — Global Core JavaScript Engine
- * Theme Management, Interactive Canvas Dotted Matrix, Hero Trackpad Simulator,
+ * Interactive Canvas Dotted Matrix, Hero Trackpad Simulator,
  * Card Spotlight Physics, Scroll Reveals, Mobile Nav & Support Modal.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
     initDynamicImages();
     initMobileNav();
     initFAQ();
@@ -18,81 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   1. THEME ENGINE (Dark / Light with User Specified Palettes)
+   1. DYNAMIC THEME IMAGES (Default Dark High-Res Assets)
    ========================================================================== */
-function initTheme() {
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
-    const themeToggleMobileBtn = document.getElementById('themeToggleMobileBtn');
-    const themeValMobile = document.querySelector('.theme-val');
-    
-    const savedTheme = localStorage.getItem('windpad_theme');
-    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    let currentTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-    applyTheme(currentTheme);
-
-    function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('windpad_theme', theme);
-        
-        if (themeToggleBtn) {
-            themeToggleBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-            themeToggleBtn.setAttribute('title', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-        }
-
-        if (themeValMobile) {
-            themeValMobile.textContent = theme === 'dark' ? '🌙 Dark' : '☀️ Light';
-        }
-
-        updateThemeImages(theme);
-        
-        // Notify canvas to redraw with new theme palette
-        if (window.updateDottedCanvasTheme) {
-            window.updateDottedCanvasTheme(theme);
-        }
-    }
-
-    function toggleTheme() {
-        const active = document.documentElement.getAttribute('data-theme') || 'dark';
-        const next = active === 'dark' ? 'light' : 'dark';
-        applyTheme(next);
-    }
-
-    if (themeToggleBtn) {
-        themeToggleBtn.addEventListener('click', toggleTheme);
-    }
-
-    if (themeToggleMobileBtn) {
-        themeToggleMobileBtn.addEventListener('click', toggleTheme);
-    }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('windpad_theme')) {
-            applyTheme(e.matches ? 'dark' : 'light');
-        }
-    });
-}
-
-/* ==========================================================================
-   2. DYNAMIC THEME IMAGES (Auto swap between Dark & Light assets)
-   ========================================================================== */
-function updateThemeImages(theme) {
+function initDynamicImages() {
     const themeImages = document.querySelectorAll('.theme-dynamic-img');
     themeImages.forEach(img => {
         const darkSrc = img.getAttribute('data-dark-src');
-        const lightSrc = img.getAttribute('data-light-src');
-        
-        if (theme === 'dark' && darkSrc) {
+        if (darkSrc) {
             img.src = darkSrc;
-        } else if (theme === 'light' && lightSrc) {
-            img.src = lightSrc;
         }
     });
-}
-
-function initDynamicImages() {
-    const theme = document.documentElement.getAttribute('data-theme') || 'dark';
-    updateThemeImages(theme);
 }
 
 /* ==========================================================================
@@ -252,13 +186,13 @@ function initDottedWindpadCanvas() {
     let animationFrameId;
     let mouse = { x: -1000, y: -1000, radius: 90 };
 
-    const DOT_SPACING = 8;
-    const DOT_RADIUS = 1.8;
+    const DOT_SPACING = 6.5;
+    const DOT_RADIUS = 2.0;
 
     function resize() {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         width = container.clientWidth;
-        height = Math.max(140, Math.min(220, window.innerHeight * 0.22));
+        height = Math.max(160, Math.min(240, window.innerHeight * 0.25));
 
         canvas.width = width * dpr;
         canvas.height = height * dpr;
@@ -266,13 +200,22 @@ function initDottedWindpadCanvas() {
         canvas.style.height = `${height}px`;
 
         ctx.scale(dpr, dpr);
-        initDots();
+        
+        if (document.fonts) {
+            document.fonts.load('120px Slackey').then(() => {
+                initDots();
+            }).catch(() => {
+                initDots();
+            });
+        } else {
+            initDots();
+        }
     }
 
     function initDots() {
         dots = [];
 
-        // Offscreen canvas for font text rendering mask
+        // Offscreen canvas for Slackey font text rendering mask
         const offCanvas = document.createElement('canvas');
         offCanvas.width = width;
         offCanvas.height = height;
@@ -281,23 +224,23 @@ function initDottedWindpadCanvas() {
         offCtx.fillStyle = '#000000';
         offCtx.fillRect(0, 0, width, height);
 
-        // Responsive font calculation
-        const fontSize = Math.min(width * 0.17, height * 0.85);
-        offCtx.font = `900 ${fontSize}px "Space Grotesk", "Outfit", sans-serif`;
+        // Responsive font calculation for Slackey
+        const fontSize = Math.min(width * 0.175, height * 0.78);
+        offCtx.font = `400 ${fontSize}px "Slackey", cursive, sans-serif`;
         offCtx.textAlign = 'center';
         offCtx.textBaseline = 'middle';
         offCtx.fillStyle = '#FFFFFF';
-        offCtx.letterSpacing = '0.04em';
-        offCtx.fillText('WINDPAD', width / 2, height / 2);
+        offCtx.letterSpacing = '0.02em';
+        offCtx.fillText('WindPad', width / 2, height / 2);
 
         const imgData = offCtx.getImageData(0, 0, width, height).data;
 
         for (let y = 0; y < height; y += DOT_SPACING) {
             for (let x = 0; x < width; x += DOT_SPACING) {
-                const index = (y * width + x) * 4;
+                const index = (Math.floor(y) * width + Math.floor(x)) * 4;
                 const brightness = imgData[index]; // White text = 255
 
-                if (brightness > 120) {
+                if (brightness > 90) {
                     dots.push({
                         originX: x,
                         originY: y,
@@ -364,18 +307,10 @@ function initDottedWindpadCanvas() {
             ctx.beginPath();
             ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
 
-            if (isDark) {
-                // Dark Theme: Deep Twilight to Cyan Glow
-                const colorGlow = dist < mouse.radius ? '#CAF0F8' : (wave > 0.5 ? '#00B4D8' : '#48CAE4');
-                ctx.fillStyle = colorGlow;
-                ctx.globalAlpha = dot.alpha;
-            } else {
-                // Light Theme: Rich Terracotta / Coral Glow for high contrast
-                const colorGlow = dist < mouse.radius ? '#9C3825' : (wave > 0.5 ? '#C5533C' : '#D96B54');
-                ctx.fillStyle = colorGlow;
-                ctx.globalAlpha = dot.alpha;
-            }
-
+            // Glowing peach-to-cyan dot colors matching Grabient footer
+            const colorGlow = dist < mouse.radius ? '#FFFFFF' : (wave > 0.5 ? '#FFC695' : '#48CAE4');
+            ctx.fillStyle = colorGlow;
+            ctx.globalAlpha = dot.alpha;
             ctx.fill();
         }
 
