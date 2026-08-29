@@ -18,12 +18,12 @@
 
     /* Base & Surface mappings */
     --bg-base: #000116;
-    --bg-surface: rgba(3, 4, 94, 0.82);
-    --bg-surface-elevated: rgba(4, 46, 112, 0.75);
-    --bg-surface-hover: rgba(0, 119, 182, 0.65);
+    --bg-surface: rgba(4, 20, 56, 0.85);
+    --bg-surface-elevated: rgba(6, 30, 80, 0.78);
+    --bg-surface-hover: rgba(0, 150, 199, 0.65);
     
-    /* 8 Distinct Section Backgrounds (Grabient Palettes) */
-    /* Page 1 (Hero): Grabient warm-to-midnight horizon */
+    /* 8 Distinct Section Backgrounds (User Grabient Palettes) */
+    /* Page 1 (Hero): Grabient warm bronze to deep midnight horizon */
     --section-01-bg: linear-gradient(90deg, #a47451 0.000%, #9c9881 16.667%, #73a09d 33.333%, #3b899a 50.000%, #095b79 66.667%, #002847 83.333%, #000116 100.000%);
     
     /* Page 2 (Trust): Deep cosmic bridge */
@@ -32,23 +32,21 @@
     /* Page 3 (Architecture / Core Idea): Electric blueprint circuit */
     --section-03-bg: linear-gradient(135deg, #00122e 0.000%, #022b68 50.000%, #003bff 100.000%);
     
-    /* Page 4 (Comparison): Grabient ultra blue-to-ice cascade */
-    --section-04-bg: linear-gradient(180deg, #003bff 0.000%, #004bff 8.333%, #125cff 16.667%, #2b6cff 25.000%, #447bff 33.333%, #5d8bff 41.667%, #7499ff 50.000%, #8aa7ff 58.333%, #9db3ff 66.667%, #adbfff 75.000%, #b9c9ff 83.333%, #c2d2ff 91.667%, #c6d9ff 100.000%);
+    /* Page 4 (Comparison): Conic Gradient Steel/Slate */
+    --section-04-bg: conic-gradient(from 90deg, #988f92 0.000deg, #8f8c92 25.714deg, #858891 51.429deg, #7b8491 77.143deg, #727f90 102.857deg, #687b8e 128.571deg, #5e768d 154.286deg, #54708b 180.000deg, #4b6b89 205.714deg, #426586 231.429deg, #3a6083 257.143deg, #335a80 282.857deg, #2c547d 308.571deg, #264e79 334.286deg, #214875 360.000deg);
     
-    /* Page 5 (Product Interface / Showcase): Grabient slate-to-aquamarine */
-    --section-05-bg: linear-gradient(90deg, #273d51 0.000%, #214973 16.667%, #226098 33.333%, #2b7eb8 50.000%, #399dcd 66.667%, #49b8d1 83.333%, #59c9c4 100.000%);
+    /* Page 5 (Product Interface / Showcase): Grabient deep royal to cyan */
+    --section-05-bg: linear-gradient(180deg, #003c87 0.000%, #005aaa 20.000%, #007ad7 40.000%, #009afb 60.000%, #00b9ff 80.000%, #00d8ef 100.000%);
     
-    /* Page 6 (Bento Grid / Capabilities): Grabient earth-to-deep-navy */
-    --section-06-bg: linear-gradient(180deg, #918c7f 0.000%, #676d92 50.000%, #063e80 100.000%);
+    /* Page 6 (Bento Grid / Capabilities): Grabient ice-blue to royal */
+    --section-06-bg: linear-gradient(180deg, #cedefd 0.000%, #b1d7f5 20.000%, #8fc6ed 40.000%, #6daae4 60.000%, #4b87dc 80.000%, #2e5ed4 100.000%);
     
-    /* Page 7 (Gestures): Dynamic cyan-twilight sweep */
-    --section-07-bg: linear-gradient(135deg, #063e80 0.000%, #162447 50.000%, #1f4068 100.000%);
+    /* Page 7 (Gestures): Grabient lavender-apricot */
+    --section-07-bg: linear-gradient(180deg, #989ecb 0.000%, #8ca4c6 16.667%, #92a9be 33.333%, #a7acb4 50.000%, #c4afa8 66.667%, #dfaf9d 83.333%, #eeae93 100.000%);
     
-    /* Page 8 (Ecosystem, Setup, FAQ, Contact): Deep midnight space */
-    --section-08-bg: linear-gradient(180deg, #162447 0.000%, #1b1b2f 50.000%, #0a0a14 100.000%);
-    
-    /* Footer Last Page: Grabient peach-to-deep-navy */
-    --section-footer-bg: linear-gradient(135deg, #ffc695 0.000%, #636676 50.000%, #001426 100.000%);
+    /* Last Page (Ecosystem, Setup, FAQ, Contact, Footer): Grabient taupe to ocean */
+    --section-08-bg: linear-gradient(180deg, #918c7f 0.000%, #676d92 50.000%, #063e80 100.000%);
+    --section-footer-bg: transparent;
 
     --border-subtle: rgba(144, 224, 239, 0.22);
     --border-strong: rgba(72, 202, 228, 0.42);
@@ -63,9 +61,11 @@
     --accent-primary-hover: #48CAE4;
     --accent-primary-glow: rgba(0, 180, 216, 0.4);
     
-    --accent-violet: #7209B7;
+    --accent-violet: #8B5CF6;
     --accent-green: #10B981;
     --accent-red: #EF4444;
+    --accent-amber: #F59E0B;
+    --accent-coral: #FF6B6B;
 
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
@@ -81,17 +81,31 @@
     --radius-xl: 22px;
     --radius-full: 9999px;
 
-    /* Font Family Definitions (8 Unique Typographies) */
-    --font-sec1: 'Space Grotesk', -apple-system, sans-serif;
-    --font-sec2: 'Manrope', -apple-system, sans-serif;
+    /* Distinct Typography System for Headings & Body */
+    --font-sec1-head: 'Space Grotesk', -apple-system, sans-serif;
+    --font-sec1-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+
+    --font-sec2: 'Plus Jakarta Sans', -apple-system, sans-serif;
+
+    --font-sec3-head: 'Syne', -apple-system, sans-serif;
     --font-sec3-mono: 'JetBrains Mono', monospace;
-    --font-sec3-sans: 'Manrope', -apple-system, sans-serif;
-    --font-sec4-head: 'Space Grotesk', -apple-system, sans-serif;
-    --font-sec4-body: 'Manrope', -apple-system, sans-serif;
-    --font-sec5: 'Inter', -apple-system, sans-serif;
-    --font-sec6: 'DM Sans', -apple-system, sans-serif;
-    --font-sec7: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    --font-sec8: 'Sora', -apple-system, sans-serif;
+    --font-sec3-body: 'Inter', -apple-system, sans-serif;
+
+    --font-sec4-head: 'Outfit', -apple-system, sans-serif;
+    --font-sec4-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+
+    --font-sec5-head: 'Sora', -apple-system, sans-serif;
+    --font-sec5-body: 'Inter', -apple-system, sans-serif;
+
+    --font-sec6-head: 'Space Grotesk', -apple-system, sans-serif;
+    --font-sec6-body: 'DM Sans', -apple-system, sans-serif;
+
+    --font-sec7-head: 'Syne', -apple-system, sans-serif;
+    --font-sec7-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+
+    --font-sec8-head: 'Outfit', -apple-system, sans-serif;
+    --font-sec8-body: 'Inter', -apple-system, sans-serif;
+
     --font-display: 'Slackey', cursive, sans-serif;
 
     --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -243,32 +257,29 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--bright-teal-blue) 0%, var(--turquoise-surf) 100%);
+    background: linear-gradient(135deg, #00B4D8 0%, #0077B6 100%);
     color: #FFFFFF;
-    box-shadow: 0 4px 14px var(--accent-primary-glow);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-[data-theme="light"] .btn-primary {
-    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-hover) 100%);
-    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(0, 180, 216, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px var(--accent-primary-glow);
+    background: linear-gradient(135deg, #48CAE4 0%, #0096C7 100%);
+    box-shadow: 0 6px 20px rgba(0, 180, 216, 0.6);
+    transform: translateY(-2px);
 }
 
 .btn-secondary {
-    background-color: var(--bg-surface);
-    color: var(--text-primary);
-    border: 1px solid var(--border-strong);
+    background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(144, 224, 239, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 .btn-secondary:hover {
-    background-color: var(--bg-surface-elevated);
-    border-color: var(--accent-primary);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #2E1065 0%, #4338CA 100%);
+    border-color: #00B4D8;
+    transform: translateY(-2px);
 }
 
 .btn-sm {
@@ -320,21 +331,29 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     transform: translateX(2px);
 }
 
-/* --- GLOBAL NAVIGATION --- */
+/* --- GLOBAL NAVIGATION (FULLY TRANSPARENT HEADER) --- */
 .site-header {
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color: rgba(3, 4, 94, 0.85);
-    border-bottom: 1px solid var(--border-subtle);
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    transition: background-color var(--transition-base), border-color var(--transition-base);
-    font-family: var(--font-sec5);
+    transition: background var(--transition-base), border-color var(--transition-base);
+    font-family: var(--font-sec5-body);
 }
 
-[data-theme="light"] .site-header {
-    background-color: rgba(248, 237, 235, 0.88);
+.site-header .btn-primary {
+    background: linear-gradient(135deg, #00D8EF 0%, #005AAA 100%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 3px 12px rgba(0, 216, 239, 0.4);
+}
+
+.site-header .btn-primary:hover {
+    background: linear-gradient(135deg, #48CAE4 0%, #007AD7 100%);
+    box-shadow: 0 4px 18px rgba(0, 216, 239, 0.6);
+    transform: translateY(-1px);
 }
 
 .header-container {
@@ -515,17 +534,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
         radial-gradient(rgba(0, 180, 216, 0.12) 1px, transparent 1px),
         var(--section-01-bg);
     background-size: 24px 24px, 100% 100%;
-    font-family: var(--font-sec1);
+    font-family: var(--font-sec1-body);
     padding-top: clamp(2.5rem, 4.5vw, 4rem);
     padding-bottom: clamp(2.5rem, 4.5vw, 4rem);
     position: relative;
     overflow: hidden;
-}
-
-[data-theme="light"] .hero-section {
-    background-image: 
-        radial-gradient(rgba(217, 107, 84, 0.12) 1px, transparent 1px),
-        var(--section-01-bg);
 }
 
 .hero-grid {
@@ -550,19 +563,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     backdrop-filter: blur(8px);
 }
 
-[data-theme="light"] .badge-pill {
-    background-color: #FFFFFF;
-    color: var(--accent-primary);
-}
-
 .badge-icon {
     width: 12px;
     height: 12px;
 }
 
 .hero-title {
+    font-family: var(--font-sec1-head);
     font-size: clamp(2rem, 3.8vw, 3rem);
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.1;
     letter-spacing: -0.025em;
     color: var(--text-primary);
@@ -809,19 +818,41 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     flex: 1;
     font-family: var(--font-sec3-mono);
     font-size: 0.65rem;
-    font-weight: 600;
+    font-weight: 700;
     padding: 0.35rem 0.2rem;
-    background-color: var(--bg-surface-elevated);
-    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
-    color: var(--text-secondary);
     transition: all var(--transition-fast);
 }
 
+.hero-mod-key.mod-win {
+    background: rgba(0, 180, 216, 0.22);
+    color: #CAF0F8;
+    border: 1px solid rgba(0, 180, 216, 0.5);
+}
+.hero-mod-key.mod-ctrl {
+    background: rgba(139, 92, 246, 0.22);
+    color: #E9D5FF;
+    border: 1px solid rgba(139, 92, 246, 0.5);
+}
+.hero-mod-key.mod-alt {
+    background: rgba(16, 185, 129, 0.22);
+    color: #A7F3D0;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+.hero-mod-key.mod-copy {
+    background: rgba(245, 158, 11, 0.22);
+    color: #FDE68A;
+    border: 1px solid rgba(245, 158, 11, 0.5);
+}
+.hero-mod-key.mod-paste {
+    background: rgba(244, 63, 94, 0.22);
+    color: #FECDD3;
+    border: 1px solid rgba(244, 63, 94, 0.5);
+}
+
 .hero-mod-key:hover, .hero-mod-key.active-key {
-    background-color: var(--blue-green);
-    border-color: var(--turquoise-surf);
-    color: #FFFFFF;
+    filter: brightness(1.35);
+    transform: scale(0.96);
 }
 
 /* Input Bar */
@@ -892,7 +923,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ==========================================================================
-   SECTION 03 — THE CORE IDEA / ARCHITECTURE (FONT: JetBrains Mono + Manrope)
+   SECTION 03 — THE CORE IDEA / ARCHITECTURE (FONT: Syne + JetBrains Mono + Inter)
    Background: Electric Blueprint Circuit Matrix
    ========================================================================== */
 .core-idea-section {
@@ -901,7 +932,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
         linear-gradient(to right, rgba(0, 180, 216, 0.08) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(0, 180, 216, 0.08) 1px, transparent 1px);
     background-size: 32px 32px;
-    font-family: var(--font-sec3-sans);
+    font-family: var(--font-sec3-body);
+}
+
+.core-idea-section .section-title {
+    font-family: var(--font-sec3-head);
 }
 
 .core-idea-section .section-tag {
@@ -928,9 +963,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     width: 58px;
     height: 58px;
     border-radius: var(--radius-md);
-    background: var(--bg-surface);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-strong);
+    background: rgba(2, 24, 68, 0.85);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(0, 180, 216, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -951,6 +986,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .flow-label {
+    font-family: var(--font-sec3-head);
     font-size: 0.9375rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -1015,8 +1051,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ==========================================================================
-   SECTION 04 — NOT ANOTHER REMOTE APP (FONT: Space Grotesk + Manrope)
-   Background: Grabient Ultra Blue Cascade
+   SECTION 04 — NOT ANOTHER REMOTE APP (FONT: Outfit + Plus Jakarta Sans)
+   Background: Conic Gradient Steel/Slate
    ========================================================================== */
 .comparison-section {
     background: var(--section-04-bg);
@@ -1034,10 +1070,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .comparison-card {
-    background: var(--bg-surface);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--border-subtle);
+    background: rgba(14, 24, 44, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(144, 224, 239, 0.3);
     border-radius: var(--radius-lg);
     padding: 1.75rem;
     box-shadow: var(--shadow-sm);
@@ -1051,9 +1087,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .windpad-card {
-    border-color: var(--border-accent);
-    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-elevated) 100%);
-    box-shadow: var(--shadow-glow);
+    border-color: var(--turquoise-surf);
+    background: linear-gradient(145deg, rgba(16, 38, 78, 0.92) 0%, rgba(8, 20, 48, 0.96) 100%);
+    box-shadow: 0 8px 32px rgba(0, 180, 216, 0.25);
 }
 
 .card-status-pill {
@@ -1112,12 +1148,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ==========================================================================
-   SECTION 05 — PRODUCT SHOWCASE / GALLERY (FONT: Inter)
-   Background: Obsidian Gallery
+   SECTION 05 — PRODUCT SHOWCASE / GALLERY (FONT: Sora + Inter)
+   Background: Grabient Deep Royal to Cyan
    ========================================================================== */
 .showcase-section {
     background: var(--section-05-bg);
-    font-family: var(--font-sec5);
+    font-family: var(--font-sec5-body);
+}
+
+.showcase-section .section-title, .showcase-h-content h3 {
+    font-family: var(--font-sec5-head);
 }
 
 .showcase-horizontal-grid {
@@ -1127,8 +1167,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .showcase-h-card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
+    background: rgba(2, 16, 48, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 216, 239, 0.35);
     border-radius: var(--radius-lg);
     padding: 1.25rem;
     display: flex;
@@ -1140,7 +1182,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .showcase-h-card:hover {
     transform: translateY(-2px);
-    border-color: var(--border-strong);
+    border-color: var(--turquoise-surf);
 }
 
 .showcase-h-img {
@@ -1173,14 +1215,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     display: inline-block;
     font-size: 0.7rem;
     font-weight: 700;
-    color: var(--turquoise-surf);
+    color: #00D8EF;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 0.35rem;
-}
-
-[data-theme="light"] .showcase-h-badge {
-    color: var(--accent-primary);
 }
 
 .showcase-h-content h3 {
@@ -1222,12 +1260,33 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ==========================================================================
-   SECTION 06 — FEATURES (BENTO GRID) (FONT: DM Sans)
-   Background: Modular Bento Surface
+   SECTION 06 — FEATURES (BENTO GRID) (FONT: Space Grotesk + DM Sans)
+   Background: Grabient Ice Blue to Royal
    ========================================================================== */
 .features-editorial-section {
     background: var(--section-06-bg);
-    font-family: var(--font-sec6);
+    font-family: var(--font-sec6-body);
+}
+
+.features-editorial-section .section-tag {
+    color: #022B68;
+    background: rgba(255, 255, 255, 0.45);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+}
+
+.features-editorial-section .section-title {
+    font-family: var(--font-sec6-head);
+    color: #021844;
+}
+
+.features-editorial-section .section-description {
+    color: #14356E;
+    font-weight: 500;
+}
+
+.bento-body h3 {
+    font-family: var(--font-sec6-head);
 }
 
 .bento-grid {
@@ -1237,21 +1296,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .bento-card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
+    background: rgba(6, 22, 58, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(173, 232, 244, 0.3);
     border-radius: var(--radius-lg);
     padding: 1.35rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .bento-card:hover {
     transform: translateY(-2px);
-    border-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
+    border-color: #00B4D8;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 .bento-span-1 {
@@ -1283,11 +1344,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     font-family: var(--font-sec3-mono);
     font-size: 0.95rem;
     font-weight: 700;
-    color: var(--turquoise-surf);
-}
-
-[data-theme="light"] .bento-num {
-    color: var(--accent-primary);
+    color: #48CAE4;
 }
 
 .bento-category {
@@ -1295,7 +1352,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: #ADE8F4;
 }
 
 .bento-icon-wrap {
@@ -1315,20 +1372,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     object-fit: contain;
 }
 
-[data-theme="dark"] .bento-svg-icon {
-    filter: brightness(0) saturate(100%) invert(80%) sepia(20%) saturate(1000%) hue-rotate(185deg);
-}
-
 .bento-body h3 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #FFFFFF;
     margin-bottom: 0.35rem;
 }
 
 .bento-body p {
     font-size: 0.8125rem;
-    color: var(--text-secondary);
+    color: #D6E4FF;
     line-height: 1.45;
     margin-bottom: 0.85rem;
 }
@@ -1558,12 +1611,33 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ==========================================================================
-   SECTION 07 — INTERACTIVE GESTURE VISUAL (FONT: Plus Jakarta Sans)
-   Background: Cybernetic Glass
+   SECTION 07 — INTERACTIVE GESTURE VISUAL (FONT: Syne + Plus Jakarta Sans)
+   Background: Grabient Lavender to Apricot
    ========================================================================== */
 .gestures-section {
     background: var(--section-07-bg);
-    font-family: var(--font-sec7);
+    font-family: var(--font-sec7-body);
+}
+
+.gestures-section .section-tag {
+    color: #03045E;
+    background: rgba(255, 255, 255, 0.45);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+}
+
+.gestures-section .section-title {
+    font-family: var(--font-sec7-head);
+    color: #021844;
+}
+
+.gestures-section .section-description {
+    color: #1A2254;
+    font-weight: 500;
+}
+
+.gesture-card h4 {
+    font-family: var(--font-sec7-head);
 }
 
 .gesture-grid {
@@ -1573,24 +1647,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .gesture-card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
+    background: rgba(20, 24, 52, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(238, 174, 147, 0.4);
     border-radius: var(--radius-lg);
     padding: 1.5rem 1.25rem;
     text-align: center;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     transition: transform var(--transition-fast), border-color var(--transition-fast);
 }
 
 .gesture-card:hover {
     transform: translateY(-2px);
-    border-color: var(--border-strong);
+    border-color: #EEAE93;
 }
 
 .gesture-animation-box {
     width: 100%;
     height: 90px;
-    background-color: var(--bg-surface-elevated);
+    background-color: rgba(6, 12, 36, 0.6);
     border-radius: var(--radius-md);
     margin-bottom: 1rem;
     position: relative;
@@ -1604,13 +1680,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: var(--turquoise-surf);
-    box-shadow: 0 0 10px var(--turquoise-surf);
-}
-
-[data-theme="light"] .touch-point {
-    background-color: var(--accent-primary);
-    box-shadow: 0 0 8px var(--accent-primary);
+    background-color: #EEAE93;
+    box-shadow: 0 0 10px #EEAE93;
 }
 
 .touch-point-group {
@@ -1689,12 +1760,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ==========================================================================
-   SECTION 08 — COMPATIBILITY, USE CASES, SETUP, PRIVACY, FAQ (FONT: Sora)
-   Background: Monolith Architectural Palette
+   SECTION 08 — COMPATIBILITY, USE CASES, SETUP, PRIVACY, FAQ, CONTACT, CTA (FONT: Outfit + Inter)
+   Background: Grabient Taupe to Ocean
    ========================================================================== */
 .compatibility-section, .usecases-section, .setup-section, .helper-section, .privacy-section, .faq-section, .contact-section, .final-cta-section {
     background: var(--section-08-bg);
-    font-family: var(--font-sec8);
+    font-family: var(--font-sec8-body);
+}
+
+.compatibility-section .section-title,
+.usecases-section .section-title,
+.setup-section .section-title,
+.faq-section .section-title,
+.contact-section .section-title,
+.platform-card h3,
+.usecase-card h3,
+.setup-step-card h3,
+.helper-content h2,
+.privacy-box h2,
+.contact-text h2,
+.cta-title {
+    font-family: var(--font-sec8-head);
 }
 
 .platforms-grid {
@@ -1704,13 +1790,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .platform-card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
+    background: rgba(6, 20, 52, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(145, 140, 127, 0.35);
     border-radius: var(--radius-lg);
     padding: 1.5rem 1.25rem;
     text-align: center;
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-fast);
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.platform-card:hover {
+    transform: translateY(-2px);
+    border-color: #48CAE4;
 }
 
 .platform-card:hover {
@@ -2042,8 +2135,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .contact-box {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
+    background: rgba(6, 20, 52, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(145, 140, 127, 0.35);
     border-radius: var(--radius-lg);
     padding: clamp(1.25rem, 3vw, 1.75rem);
     display: grid;
@@ -2074,14 +2169,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     font-family: var(--font-sec3-mono);
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--turquoise-surf);
+    color: #48CAE4;
     padding: 0.25rem 0.6rem;
-    background-color: var(--bg-surface-elevated);
+    background-color: rgba(0, 180, 216, 0.15);
+    border: 1px solid rgba(0, 180, 216, 0.3);
     border-radius: var(--radius-sm);
-}
-
-[data-theme="light"] .contact-phone-display {
-    color: var(--accent-primary);
 }
 
 .contact-phone-display svg {
@@ -2105,36 +2197,52 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .btn-whatsapp {
-    background-color: #25D366;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
     color: #FFFFFF;
-    font-weight: 600;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
 }
 
 .btn-whatsapp:hover {
-    background-color: #1EBE5D;
-    color: #FFFFFF;
+    background: linear-gradient(135deg, #2EE673 0%, #179E8F 100%);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.55);
+    transform: translateY(-2px);
 }
 
 .btn-call {
-    background-color: var(--blue-green);
+    background: linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%);
     color: #FFFFFF;
-    font-weight: 600;
-}
-
-[data-theme="light"] .btn-call {
-    background-color: var(--accent-primary);
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 14px rgba(238, 82, 83, 0.35);
 }
 
 .btn-call:hover {
-    background-color: var(--bright-teal-blue);
+    background: linear-gradient(135deg, #FF8787 0%, #FF5252 100%);
+    box-shadow: 0 6px 20px rgba(238, 82, 83, 0.55);
+    transform: translateY(-2px);
+}
+
+.contact-actions-wrap > .btn-outline {
+    background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
     color: #FFFFFF;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+}
+
+.contact-actions-wrap > .btn-outline:hover {
+    background: linear-gradient(135deg, #A78BFA 0%, #4F46E5 100%);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.55);
+    transform: translateY(-2px);
 }
 
 /* Final CTA */
 .final-cta-section {
     padding-top: clamp(3rem, 6vw, 4.5rem);
     padding-bottom: clamp(3rem, 6vw, 4.5rem);
-    background: radial-gradient(circle at center, var(--accent-primary-glow) 0%, transparent 70%);
+    background: transparent;
 }
 
 .cta-title {
@@ -2159,6 +2267,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     margin-bottom: 1.5rem;
 }
 
+.final-cta-buttons .btn-primary {
+    background: linear-gradient(135deg, #FF7E5F 0%, #FEB47B 100%);
+    color: #03045E;
+    font-weight: 800;
+    border: none;
+    box-shadow: 0 4px 20px rgba(255, 126, 95, 0.45);
+}
+
+.final-cta-buttons .btn-primary:hover {
+    background: linear-gradient(135deg, #FF9074 0%, #FFC192 100%);
+    box-shadow: 0 6px 28px rgba(255, 126, 95, 0.65);
+    transform: translateY(-2px);
+}
+
 .star-github-box {
     display: flex;
     justify-content: center;
@@ -2173,14 +2295,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     color: var(--text-secondary);
     padding: 0.4rem 0.85rem;
     border-radius: var(--radius-full);
-    border: 1px solid var(--border-subtle);
-    background-color: var(--bg-surface);
+    border: 1px solid rgba(144, 224, 239, 0.3);
+    background: rgba(6, 20, 52, 0.85);
+    backdrop-filter: blur(12px);
     transition: all var(--transition-fast);
 }
 
 .star-link:hover {
     color: var(--text-primary);
-    border-color: var(--border-strong);
+    border-color: var(--turquoise-surf);
+    transform: translateY(-1px);
 }
 
 .star-icon {
@@ -2190,11 +2314,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ==========================================================================
-   SECTION 17 — FOOTER & GRAND DOTTED "WINDPAD" MATRIX BANNER
+   SECTION 17 — FOOTER & GRAND DOTTED "WINDPAD" MATRIX BANNER (FULLY TRANSPARENT)
    ========================================================================== */
 .site-footer {
-    background: var(--section-footer-bg);
-    border-top: 1px solid var(--border-subtle);
+    background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 3.5rem;
     padding-bottom: 2rem;
     position: relative;
