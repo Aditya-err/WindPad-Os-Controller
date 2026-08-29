@@ -15,10 +15,10 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/windpad-icon.png">
     
-    <!-- Google Fonts: Space Grotesk, Manrope, JetBrains Mono, Inter, DM Sans, Plus Jakarta Sans, Sora -->
+    <!-- Google Fonts: Space Grotesk, Manrope, JetBrains Mono, Inter, DM Sans, Plus Jakarta Sans, Sora, Outfit, Syne -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=Sora:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
@@ -149,15 +149,58 @@
                 <div class="hero-visual">
                     <div class="device-frame">
                         <div class="device-screen">
-                            <img src="assets/Dark theme/home page.jpg" 
-                                 data-dark-src="assets/Dark theme/home page.jpg" 
-                                 data-light-src="assets/light theme/Home page.jpg" 
-                                 alt="WindPad Trackpad Interface on Mobile" 
-                                 class="theme-dynamic-img hero-app-preview"
-                                 loading="eager"
-                                 onerror="this.parentElement.classList.add('img-fallback')">
-                            <div class="placeholder-overlay">
-                                <span>WindPad Live Device Preview</span>
+                            <!-- Interactive Live Trackpad Mockup Interface -->
+                            <div class="hero-live-app" id="heroLiveApp">
+                                <!-- App Top Status Bar -->
+                                <div class="app-top-bar">
+                                    <div class="app-status-badge">
+                                        <span class="status-indicator-dot"></span>
+                                        <span id="heroTrackpadStatus">● Live HID</span>
+                                    </div>
+                                    <div class="app-coords" id="heroTrackpadCoords">X: 960 Y: 540</div>
+                                    <div class="app-dpi-pill">1200 DPI</div>
+                                </div>
+
+                                <!-- Interactive Touchpad Surface -->
+                                <div class="app-trackpad-zone" id="heroTrackpadInteractive" title="Move cursor / Tap on trackpad!">
+                                    <div class="trackpad-dots-matrix">
+                                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                                    </div>
+                                    <div class="app-virtual-cursor" id="heroTrackpadCursor">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2l16 8-8 3-3 8z"/></svg>
+                                    </div>
+                                    <div class="trackpad-hint-text">Touch / Drag to move cursor</div>
+                                </div>
+
+                                <!-- Mouse Click Buttons -->
+                                <div class="app-clicks-row">
+                                    <button type="button" class="app-click-btn left-click" id="heroLeftClickBtn">
+                                        <span class="click-label">LEFT CLICK</span>
+                                    </button>
+                                    <button type="button" class="app-click-btn right-click" id="heroRightClickBtn">
+                                        <span class="click-label">RIGHT CLICK</span>
+                                    </button>
+                                </div>
+
+                                <!-- Modifier Keys Grid -->
+                                <div class="app-modifiers-grid">
+                                    <button type="button" class="hero-mod-key">Win</button>
+                                    <button type="button" class="hero-mod-key">Ctrl</button>
+                                    <button type="button" class="hero-mod-key">Alt</button>
+                                    <button type="button" class="hero-mod-key">Copy</button>
+                                    <button type="button" class="hero-mod-key">Paste</button>
+                                </div>
+
+                                <!-- Quick Keystroke Preview Bar -->
+                                <div class="app-bottom-input-bar">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="keyboard-icon">
+                                        <rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6.01" y2="8"/><line x1="10" y1="8" x2="10.01" y2="8"/><line x1="14" y1="8" x2="14.01" y2="8"/><line x1="18" y1="8" x2="18.01" y2="8"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="10" y1="12" x2="10.01" y2="12"/><line x1="14" y1="12" x2="14.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/><line x1="8" y1="16" x2="16" y2="16"/>
+                                    </svg>
+                                    <span>Type text or shortcuts...</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1155,6 +1198,15 @@
                     <button type="button" class="footer-btn-link" id="openSupportBtnFooter">Support Request</button>
                     <a href="#contact">Contact Us</a>
                     <a href="https://wa.me/918596064717?text=Hi%20Aditya,%20I'm%20using%20WindPad" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRAND INTERACTIVE DOTTED WINDPAD DISPLAY BANNER -->
+        <div class="footer-dotted-brand-wrap">
+            <div class="container text-center">
+                <div class="dotted-canvas-container" id="dottedCanvasContainer" title="Interactive WindPad Matrix — Hover cursor over the dots!">
+                    <canvas id="dottedWindpadCanvas"></canvas>
                 </div>
             </div>
         </div>

@@ -1,55 +1,67 @@
 /* ==========================================================================
-   WINDPAD COMPACT DESIGN SYSTEM
-   Multi-Typography (8 Fonts), Custom Section Themes & Compact Proportions
+   WINDPAD ULTIMATE DESIGN & MOTION SYSTEM
+   Multi-Typography (8 Fonts), Custom User Palettes (Dark/Light), 8 Distinct
+   Section Backgrounds, Hero Interactive Trackpad & Dotted Matrix Typography
    ========================================================================== */
 
-/* --- ROOT DESIGN TOKENS (DARK THEME - DEFAULT) --- */
+/* --- ROOT DESIGN TOKENS (DARK THEME - USER PALETTE) --- */
 :root, [data-theme="dark"] {
-    --bg-base: #070A10;
-    --bg-surface: #0E131E;
-    --bg-surface-elevated: #141C2B;
-    --bg-surface-hover: #1A2538;
+    --deep-twilight: #03045E;
+    --french-blue: #023E8A;
+    --bright-teal-blue: #0077B6;
+    --blue-green: #0096C7;
+    --turquoise-surf: #00B4D8;
+    --sky-aqua: #48CAE4;
+    --frosted-blue: #90E0EF;
+    --frosted-blue-2: #ADE8F4;
+    --light-cyan: #CAF0F8;
+
+    /* Base & Surface mappings */
+    --bg-base: #02033B;
+    --bg-surface: #03064A;
+    --bg-surface-elevated: #040A5E;
+    --bg-surface-hover: #061175;
     
-    /* Per-Section Subtle Background Tint Colors (Dark) */
-    --section-01-bg: #070A10;
-    --section-02-bg: #0A0E17;
-    --section-03-bg: #0C121E;
-    --section-04-bg: #080C14;
-    --section-05-bg: #0B101A;
-    --section-06-bg: #080B12;
-    --section-07-bg: #0D1321;
-    --section-08-bg: #080C14;
-    --section-footer-bg: #06080E;
+    /* 8 Distinct Section Backgrounds (Dark) */
+    --section-01-bg: radial-gradient(circle at 50% 15%, #023E8A 0%, #03045E 65%, #02033B 100%);
+    --section-02-bg: linear-gradient(90deg, #022660 0%, #023E8A 50%, #022660 100%);
+    --section-03-bg: #03045E;
+    --section-04-bg: #021E50;
+    --section-05-bg: #020B38;
+    --section-06-bg: #03045E;
+    --section-07-bg: #021844;
+    --section-08-bg: #020E30;
+    --section-footer-bg: #010424;
 
-    --border-subtle: rgba(255, 255, 255, 0.07);
-    --border-strong: rgba(255, 255, 255, 0.14);
-    --border-accent: rgba(59, 130, 246, 0.3);
+    --border-subtle: rgba(144, 224, 239, 0.15);
+    --border-strong: rgba(72, 202, 228, 0.32);
+    --border-accent: rgba(0, 180, 216, 0.55);
 
-    --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --text-muted: #64748B;
-    --text-inverse: #070A10;
+    --text-primary: #CAF0F8;
+    --text-secondary: #ADE8F4;
+    --text-muted: #90E0EF;
+    --text-inverse: #03045E;
 
-    --accent-primary: #3B82F6;
-    --accent-primary-hover: #2563EB;
-    --accent-primary-glow: rgba(59, 130, 246, 0.18);
+    --accent-primary: #00B4D8;
+    --accent-primary-hover: #48CAE4;
+    --accent-primary-glow: rgba(0, 180, 216, 0.28);
     
-    --accent-violet: #8B5CF6;
+    --accent-violet: #7209B7;
     --accent-green: #10B981;
     --accent-red: #EF4444;
 
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
-    --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
-    --shadow-glow: 0 0 24px rgba(59, 130, 246, 0.12);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.7);
+    --shadow-glow: 0 0 32px rgba(0, 180, 216, 0.25);
 
-    --modal-backdrop: rgba(3, 5, 9, 0.8);
-    --code-bg: rgba(255, 255, 255, 0.05);
+    --modal-backdrop: rgba(1, 4, 36, 0.85);
+    --code-bg: rgba(0, 180, 216, 0.08);
 
-    --radius-sm: 5px;
-    --radius-md: 9px;
-    --radius-lg: 14px;
-    --radius-xl: 18px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 22px;
     --radius-full: 9999px;
 
     /* Font Family Definitions */
@@ -63,54 +75,67 @@
     --font-sec6: 'DM Sans', -apple-system, sans-serif;
     --font-sec7: 'Plus Jakarta Sans', -apple-system, sans-serif;
     --font-sec8: 'Sora', -apple-system, sans-serif;
+    --font-display: 'Outfit', 'Space Grotesk', sans-serif;
 
     --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* --- LIGHT THEME TOKENS --- */
+/* --- LIGHT THEME TOKENS (USER PALETTE) --- */
 [data-theme="light"] {
-    --bg-base: #F8FAFC;
+    --powder-blush: #FEC5BB;
+    --almond-silk: #FCD5CE;
+    --soft-blush: #FAE1DD;
+    --seashell: #F8EDEB;
+    --alabaster-grey: #E8E8E4;
+    --alabaster-grey-2: #D8E2DC;
+    --linen: #ECE4DB;
+    --powder-petal: #FFE5D9;
+    --peach-fuzz: #FFD7BA;
+    --peach-glow: #FEC89A;
+
+    /* Base & Surface mappings */
+    --bg-base: #F8EDEB;
     --bg-surface: #FFFFFF;
-    --bg-surface-elevated: #F1F5F9;
-    --bg-surface-hover: #E2E8F0;
+    --bg-surface-elevated: #FFF9F7;
+    --bg-surface-hover: #FAE1DD;
     
-    /* Per-Section Subtle Background Tint Colors (Light) */
-    --section-01-bg: #F8FAFC;
-    --section-02-bg: #F1F5F9;
+    /* 8 Distinct Section Backgrounds (Light) */
+    --section-01-bg: radial-gradient(circle at 50% 10%, #FFE5D9 0%, #F8EDEB 70%, #FAE1DD 100%);
+    --section-02-bg: linear-gradient(90deg, #ECE4DB 0%, #D8E2DC 50%, #ECE4DB 100%);
     --section-03-bg: #FFFFFF;
-    --section-04-bg: #F8FAFC;
-    --section-05-bg: #F1F5F9;
+    --section-04-bg: #E8E8E4;
+    --section-05-bg: #ECE4DB;
     --section-06-bg: #FFFFFF;
-    --section-07-bg: #F8FAFC;
-    --section-08-bg: #FFFFFF;
-    --section-footer-bg: #F1F5F9;
+    --section-07-bg: #FAE1DD;
+    --section-08-bg: #F8EDEB;
+    --section-footer-bg: #ECE4DB;
 
-    --border-subtle: rgba(0, 0, 0, 0.06);
-    --border-strong: rgba(0, 0, 0, 0.12);
-    --border-accent: rgba(37, 99, 235, 0.2);
+    --border-subtle: rgba(254, 197, 187, 0.45);
+    --border-strong: rgba(254, 200, 154, 0.65);
+    --border-accent: rgba(254, 197, 187, 0.9);
 
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #64748B;
+    --text-primary: #2D2321;
+    --text-secondary: #6B5550;
+    --text-muted: #9C837E;
     --text-inverse: #FFFFFF;
 
-    --accent-primary: #2563EB;
-    --accent-primary-hover: #1D4ED8;
-    --accent-primary-glow: rgba(37, 99, 235, 0.1);
+    --accent-primary: #D96B54;
+    --accent-primary-hover: #C5533C;
+    --accent-primary-glow: rgba(254, 197, 187, 0.45);
     
-    --accent-violet: #7C3AED;
+    --accent-violet: #9D4EDD;
     --accent-green: #059669;
     --accent-red: #DC2626;
 
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.03);
-    --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.07);
-    --shadow-glow: 0 0 24px rgba(37, 99, 235, 0.06);
+    --shadow-sm: 0 2px 8px rgba(107, 85, 80, 0.06);
+    --shadow-md: 0 8px 24px rgba(107, 85, 80, 0.09);
+    --shadow-lg: 0 16px 40px rgba(107, 85, 80, 0.12);
+    --shadow-glow: 0 0 32px rgba(254, 197, 187, 0.3);
 
-    --modal-backdrop: rgba(15, 23, 42, 0.55);
-    --code-bg: rgba(0, 0, 0, 0.04);
+    --modal-backdrop: rgba(45, 35, 33, 0.65);
+    --code-bg: rgba(254, 197, 187, 0.25);
 }
 
 /* --- CSS RESET & BASE STYLES --- */
@@ -122,7 +147,7 @@
 
 html {
     scroll-behavior: smooth;
-    font-size: 15px; /* Compact base sizing */
+    font-size: 15px; /* Compact & balanced base sizing */
     -webkit-text-size-adjust: 100%;
 }
 
@@ -161,7 +186,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     outline-offset: 2px;
 }
 
-/* --- LAYOUT CONTAINER (COMPACT) --- */
+/* --- LAYOUT CONTAINER --- */
 .container {
     width: 100%;
     max-width: 1040px;
@@ -175,22 +200,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     padding-top: clamp(2.75rem, 5vw, 4.5rem);
     padding-bottom: clamp(2.75rem, 5vw, 4.5rem);
     position: relative;
-    transition: background-color var(--transition-base);
+    transition: background var(--transition-base);
 }
 
 .text-center {
     text-align: center;
 }
 
-/* --- TYPOGRAPHY HIERARCHY (COMPACT) --- */
+/* --- SCROLL REVEAL ANIMATIONS --- */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- TYPOGRAPHY HIERARCHY --- */
 .section-tag {
     display: inline-block;
     font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--accent-primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
 }
 
 .section-title {
@@ -216,36 +253,49 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-violet) 100%);
+    background: linear-gradient(135deg, var(--turquoise-surf) 0%, var(--sky-aqua) 50%, var(--light-cyan) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
-/* --- BUTTONS (COMPACT) --- */
+[data-theme="light"] .gradient-text {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, #E76F51 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- BUTTONS --- */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-    padding: 0.6rem 1.15rem;
+    padding: 0.55rem 1.15rem;
     font-size: 0.875rem;
     font-weight: 600;
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
     white-space: nowrap;
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
-    background-color: var(--accent-primary);
+    background: linear-gradient(135deg, var(--bright-teal-blue) 0%, var(--turquoise-surf) 100%);
     color: #FFFFFF;
-    box-shadow: 0 3px 10px var(--accent-primary-glow);
+    box-shadow: 0 4px 14px var(--accent-primary-glow);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="light"] .btn-primary {
+    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-primary-hover) 100%);
+    color: #FFFFFF;
 }
 
 .btn-primary:hover {
-    background-color: var(--accent-primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 5px 16px var(--accent-primary-glow);
+    box-shadow: 0 6px 20px var(--accent-primary-glow);
 }
 
 .btn-secondary {
@@ -256,22 +306,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .btn-secondary:hover {
     background-color: var(--bg-surface-elevated);
-    border-color: var(--text-secondary);
+    border-color: var(--accent-primary);
     transform: translateY(-1px);
 }
 
 .btn-sm {
-    padding: 0.4rem 0.85rem;
+    padding: 0.35rem 0.75rem;
     font-size: 0.8125rem;
 }
 
 .btn-lg {
-    padding: 0.75rem 1.4rem;
+    padding: 0.7rem 1.35rem;
     font-size: 0.9375rem;
 }
 
 .btn-xl {
-    padding: 0.85rem 1.65rem;
+    padding: 0.8rem 1.6rem;
     font-size: 1rem;
 }
 
@@ -314,19 +364,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color: var(--bg-surface);
+    background-color: rgba(3, 4, 94, 0.85);
     border-bottom: 1px solid var(--border-subtle);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition: background-color var(--transition-base), border-color var(--transition-base);
     font-family: var(--font-sec5);
+}
+
+[data-theme="light"] .site-header {
+    background-color: rgba(248, 237, 235, 0.88);
 }
 
 .header-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 56px; /* Compact navbar */
+    height: 56px;
 }
 
 .brand-logo {
@@ -492,12 +546,25 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ==========================================================================
    SECTION 01 — HERO (FONT: Space Grotesk)
+   Background: Radial Cosmic Mesh with Dotted Grid
    ========================================================================== */
 .hero-section {
-    background-color: var(--section-01-bg);
+    background: var(--section-01-bg);
+    background-image: 
+        radial-gradient(rgba(0, 180, 216, 0.12) 1px, transparent 1px),
+        var(--section-01-bg);
+    background-size: 24px 24px, 100% 100%;
     font-family: var(--font-sec1);
     padding-top: clamp(2.5rem, 4.5vw, 4rem);
     padding-bottom: clamp(2.5rem, 4.5vw, 4rem);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="light"] .hero-section {
+    background-image: 
+        radial-gradient(rgba(217, 107, 84, 0.12) 1px, transparent 1px),
+        var(--section-01-bg);
 }
 
 .hero-grid {
@@ -512,13 +579,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     align-items: center;
     gap: 0.4rem;
     padding: 0.3rem 0.75rem;
-    background-color: var(--bg-surface);
+    background-color: rgba(3, 4, 94, 0.6);
     border: 1px solid var(--border-accent);
     border-radius: var(--radius-full);
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--accent-primary);
+    color: var(--sky-aqua);
     margin-bottom: 1rem;
+    backdrop-filter: blur(8px);
+}
+
+[data-theme="light"] .badge-pill {
+    background-color: #FFFFFF;
+    color: var(--accent-primary);
 }
 
 .badge-icon {
@@ -566,7 +639,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     flex-shrink: 0;
 }
 
-/* Compact Device Mockup */
+/* Hero Interactive Mockup Visual */
 .hero-visual {
     display: flex;
     justify-content: center;
@@ -574,14 +647,24 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .device-frame {
     width: 100%;
-    max-width: 260px; /* Scaled down */
-    background-color: var(--bg-surface);
-    border: 6px solid var(--bg-surface-elevated);
-    border-radius: 30px;
+    max-width: 270px;
+    background: #020324;
+    border: 6px solid #070D4D;
+    border-radius: 32px;
     box-shadow: var(--shadow-lg), var(--shadow-glow);
     overflow: hidden;
     position: relative;
-    aspect-ratio: 9 / 18.5;
+    aspect-ratio: 9 / 18.8;
+    transition: transform var(--transition-smooth);
+}
+
+[data-theme="light"] .device-frame {
+    background: #FFFFFF;
+    border-color: var(--alabaster-grey-2);
+}
+
+.device-frame:hover {
+    transform: translateY(-4px);
 }
 
 .device-screen {
@@ -591,37 +674,226 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     background-color: var(--bg-surface);
 }
 
-.hero-app-preview {
-    width: 100%;
+/* Interactive Phone App Widget */
+.hero-live-app {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    object-fit: cover;
+    padding: 0.85rem;
+    font-family: var(--font-sec5);
+    user-select: none;
 }
 
-.placeholder-overlay {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background-color: var(--bg-surface-elevated);
+.app-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.65rem;
+}
+
+.app-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--turquoise-surf);
+    background-color: rgba(0, 180, 216, 0.15);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-full);
+}
+
+.status-indicator-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--accent-green);
+    box-shadow: 0 0 6px var(--accent-green);
+}
+
+.app-coords {
+    font-family: var(--font-sec3-mono);
+    font-size: 0.65rem;
     color: var(--text-muted);
+}
+
+.app-dpi-pill {
+    font-size: 0.65rem;
+    font-weight: 700;
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+}
+
+/* Interactive Touchpad Zone */
+.app-trackpad-zone {
+    flex: 1;
+    background: linear-gradient(180deg, rgba(7, 13, 122, 0.4) 0%, rgba(3, 4, 94, 0.7) 100%);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 500;
+    box-shadow: inset 0 0 15px rgba(0, 180, 216, 0.08);
 }
 
-.img-fallback .placeholder-overlay {
+[data-theme="light"] .app-trackpad-zone {
+    background: linear-gradient(180deg, #FFF9F7 0%, #FAE1DD 100%);
+    border-color: var(--powder-blush);
+}
+
+.trackpad-dots-matrix {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.trackpad-dots-matrix span {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background-color: var(--turquoise-surf);
+}
+
+[data-theme="light"] .trackpad-dots-matrix span {
+    background-color: var(--accent-primary);
+}
+
+.app-virtual-cursor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--light-cyan);
+    pointer-events: none;
+    transform: translate(110px, 90px);
+    transition: transform 0.06s ease-out;
+    filter: drop-shadow(0 0 6px var(--turquoise-surf));
+}
+
+[data-theme="light"] .app-virtual-cursor {
+    color: var(--accent-primary);
+    filter: drop-shadow(0 0 4px var(--accent-primary));
+}
+
+.trackpad-hint-text {
+    position: absolute;
+    bottom: 6px;
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    letter-spacing: 0.04em;
+}
+
+.trackpad-touch-ripple {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    margin-top: -12px;
+    border-radius: 50%;
+    background: rgba(0, 180, 216, 0.45);
+    border: 1px solid var(--light-cyan);
+    pointer-events: none;
+    animation: rippleAnim 0.55s ease-out forwards;
+}
+
+@keyframes rippleAnim {
+    0% { transform: scale(0.3); opacity: 1; }
+    100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Click Row */
+.app-clicks-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+}
+
+.app-click-btn {
+    padding: 0.45rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.app-click-btn:hover, .app-click-btn.clicking {
+    background-color: var(--turquoise-surf);
+    color: #FFFFFF;
+    transform: scale(0.97);
+}
+
+/* Modifiers */
+.app-modifiers-grid {
     display: flex;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+}
+
+.hero-mod-key {
+    flex: 1;
+    font-family: var(--font-sec3-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.35rem 0.2rem;
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.hero-mod-key:hover, .hero-mod-key.active-key {
+    background-color: var(--blue-green);
+    border-color: var(--turquoise-surf);
+    color: #FFFFFF;
+}
+
+/* Input Bar */
+.app-bottom-input-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    background-color: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.keyboard-icon {
+    width: 12px;
+    height: 12px;
+    color: var(--turquoise-surf);
 }
 
 /* ==========================================================================
    SECTION 02 — TRUST STRIP (FONT: Manrope)
+   Background: Frosted Ribbon Palette
    ========================================================================== */
 .trust-strip {
-    background-color: var(--section-02-bg);
+    background: var(--section-02-bg);
     font-family: var(--font-sec2);
     border-top: 1px solid var(--border-subtle);
     border-bottom: 1px solid var(--border-subtle);
     padding: 0.9rem 0;
+    position: relative;
 }
 
 .trust-container {
@@ -638,13 +910,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     gap: 0.45rem;
     font-size: 0.75rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     color: var(--text-secondary);
 }
 
 .trust-item svg {
     width: 14px;
     height: 14px;
+    color: var(--turquoise-surf);
+}
+
+[data-theme="light"] .trust-item svg {
     color: var(--accent-primary);
 }
 
@@ -656,10 +932,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ==========================================================================
    SECTION 03 — THE CORE IDEA / ARCHITECTURE (FONT: JetBrains Mono + Manrope)
+   Background: Blueprint Circuit Matrix
    ========================================================================== */
 .core-idea-section {
     background-color: var(--section-03-bg);
+    background-image: 
+        linear-gradient(to right, rgba(0, 180, 216, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 180, 216, 0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
     font-family: var(--font-sec3-sans);
+}
+
+[data-theme="light"] .core-idea-section {
+    background-image: 
+        linear-gradient(to right, rgba(217, 107, 84, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(217, 107, 84, 0.05) 1px, transparent 1px);
 }
 
 .core-idea-section .section-tag {
@@ -691,9 +978,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
     box-shadow: var(--shadow-sm);
     margin-bottom: 0.75rem;
+    transition: transform var(--transition-fast);
+}
+
+.flow-step:hover .flow-icon-box {
+    transform: scale(1.06);
+    border-color: var(--accent-primary);
 }
 
 .flow-icon-box svg {
@@ -737,7 +1030,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     left: -30%;
     width: 30%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+    background: linear-gradient(90deg, transparent, var(--turquoise-surf), transparent);
     animation: flowPulseAnim 2s infinite ease-in-out;
 }
 
@@ -756,7 +1049,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     border-radius: var(--radius-full);
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
     font-family: var(--font-sec3-mono);
 }
 
@@ -767,6 +1060,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ==========================================================================
    SECTION 04 — NOT ANOTHER REMOTE APP (FONT: Space Grotesk + Manrope)
+   Background: Diagonal Matrix Hatch
    ========================================================================== */
 .comparison-section {
     background-color: var(--section-04-bg);
@@ -789,11 +1083,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     border-radius: var(--radius-lg);
     padding: 1.75rem;
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-fast);
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+    position: relative;
 }
 
 .comparison-card:hover {
     transform: translateY(-2px);
+    border-color: var(--border-strong);
 }
 
 .windpad-card {
@@ -814,12 +1110,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .status-red {
-    background-color: rgba(239, 68, 68, 0.12);
+    background-color: rgba(239, 68, 68, 0.15);
     color: var(--accent-red);
 }
 
 .status-blue {
-    background-color: rgba(59, 130, 246, 0.15);
+    background-color: rgba(0, 180, 216, 0.18);
+    color: var(--turquoise-surf);
+}
+
+[data-theme="light"] .status-blue {
+    background-color: var(--powder-blush);
     color: var(--accent-primary);
 }
 
@@ -854,6 +1155,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ==========================================================================
    SECTION 05 — PRODUCT SHOWCASE / GALLERY (FONT: Inter)
+   Background: Obsidian Gallery
    ========================================================================== */
 .showcase-section {
     background-color: var(--section-05-bg);
@@ -913,10 +1215,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     display: inline-block;
     font-size: 0.7rem;
     font-weight: 700;
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 0.35rem;
+}
+
+[data-theme="light"] .showcase-h-badge {
+    color: var(--accent-primary);
 }
 
 .showcase-h-content h3 {
@@ -949,12 +1255,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .showcase-h-features li span {
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
     font-weight: bold;
+}
+
+[data-theme="light"] .showcase-h-features li span {
+    color: var(--accent-primary);
 }
 
 /* ==========================================================================
    SECTION 06 — FEATURES (BENTO GRID) (FONT: DM Sans)
+   Background: Modular Bento Surface
    ========================================================================== */
 .features-editorial-section {
     background-color: var(--section-06-bg);
@@ -1014,6 +1325,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     font-family: var(--font-sec3-mono);
     font-size: 0.95rem;
     font-weight: 700;
+    color: var(--turquoise-surf);
+}
+
+[data-theme="light"] .bento-num {
     color: var(--accent-primary);
 }
 
@@ -1077,7 +1392,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     color: var(--text-secondary);
 }
 
-/* Bento Visuals */
+/* Bento Mini Visuals */
 .bento-visual-trackpad {
     display: flex;
     align-items: center;
@@ -1111,7 +1426,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .trackpad-grid-dots span {
     width: 2px;
     height: 2px;
-    background-color: var(--accent-primary);
+    background-color: var(--turquoise-surf);
     border-radius: 50%;
 }
 
@@ -1119,9 +1434,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: var(--accent-primary);
+    background-color: var(--turquoise-surf);
     position: absolute;
-    box-shadow: 0 0 6px var(--accent-primary);
+    box-shadow: 0 0 6px var(--turquoise-surf);
     animation: moveIndicator 2.5s infinite ease-in-out;
 }
 
@@ -1152,8 +1467,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    background-color: var(--turquoise-surf);
+    box-shadow: 0 0 6px var(--turquoise-surf);
+}
+
+[data-theme="light"] .b-dot {
     background-color: var(--accent-primary);
-    box-shadow: 0 0 6px var(--accent-primary);
 }
 
 .bento-visual-keys {
@@ -1223,10 +1542,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     height: 12px;
     border-radius: 50%;
 }
-.bp-1 { background-color: #3B82F6; }
-.bp-2 { background-color: #8B5CF6; }
-.bp-3 { background-color: #10B981; }
-.bp-4 { background-color: #F59E0B; }
+.bp-1 { background-color: var(--bright-teal-blue); }
+.bp-2 { background-color: var(--turquoise-surf); }
+.bp-3 { background-color: var(--sky-aqua); }
+.bp-4 { background-color: var(--light-cyan); }
 
 /* Bento Highlight Card (Span 3) */
 .bento-highlight {
@@ -1282,6 +1601,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ==========================================================================
    SECTION 07 — INTERACTIVE GESTURE VISUAL (FONT: Plus Jakarta Sans)
+   Background: Cybernetic Glass
    ========================================================================== */
 .gestures-section {
     background-color: var(--section-07-bg);
@@ -1301,11 +1621,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     padding: 1.5rem 1.25rem;
     text-align: center;
     box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.gesture-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
 }
 
 .gesture-animation-box {
     width: 100%;
-    height: 90px; /* Scaled down */
+    height: 90px;
     background-color: var(--bg-surface-elevated);
     border-radius: var(--radius-md);
     margin-bottom: 1rem;
@@ -1320,8 +1646,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     width: 12px;
     height: 12px;
     border-radius: 50%;
+    background-color: var(--turquoise-surf);
+    box-shadow: 0 0 10px var(--turquoise-surf);
+}
+
+[data-theme="light"] .touch-point {
     background-color: var(--accent-primary);
-    box-shadow: 0 0 10px var(--accent-primary);
+    box-shadow: 0 0 8px var(--accent-primary);
 }
 
 .touch-point-group {
@@ -1336,7 +1667,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .anim-cursor .cursor-svg {
     width: 18px;
     height: 18px;
-    color: var(--text-primary);
+    color: var(--light-cyan);
     position: absolute;
     animation: moveCursorSvg 3s infinite ease-in-out;
 }
@@ -1401,8 +1732,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* ==========================================================================
    SECTION 08 — COMPATIBILITY, USE CASES, SETUP, PRIVACY, FAQ (FONT: Sora)
+   Background: Monolith Architectural Palette
    ========================================================================== */
-.compatibility-section, .usecases-section, .setup-section, .helper-section, .privacy-section, .faq-section, .contact-section, .final-cta-section, .site-footer {
+.compatibility-section, .usecases-section, .setup-section, .helper-section, .privacy-section, .faq-section, .contact-section, .final-cta-section {
     background-color: var(--section-08-bg);
     font-family: var(--font-sec8);
 }
@@ -1425,6 +1757,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .platform-card:hover {
     transform: translateY(-2px);
+    border-color: var(--border-strong);
 }
 
 .platform-icon-wrap {
@@ -1436,6 +1769,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     align-items: center;
     justify-content: center;
     margin: 0 auto 0.85rem auto;
+    color: var(--turquoise-surf);
+}
+
+[data-theme="light"] .platform-icon-wrap {
     color: var(--accent-primary);
 }
 
@@ -1470,6 +1807,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     padding: 1.5rem;
     position: relative;
     box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast);
+}
+
+.usecase-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-strong);
 }
 
 .usecase-badge {
@@ -1490,8 +1833,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
     margin-bottom: 1rem;
+}
+
+[data-theme="light"] .usecase-icon-box {
+    color: var(--accent-primary);
 }
 
 .usecase-icon-box svg {
@@ -1532,16 +1879,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     height: 42px;
     border-radius: 50%;
     background-color: var(--bg-surface);
-    border: 2px solid var(--accent-primary);
+    border: 2px solid var(--turquoise-surf);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-sec3-mono);
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
     margin-bottom: 1rem;
     box-shadow: 0 0 12px var(--accent-primary-glow);
+}
+
+[data-theme="light"] .timeline-marker {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
 }
 
 .timeline-card {
@@ -1624,7 +1976,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .spec-value {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
 }
 
 /* Privacy */
@@ -1764,10 +2116,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     font-family: var(--font-sec3-mono);
     font-size: 0.8125rem;
     font-weight: 600;
-    color: var(--accent-primary);
+    color: var(--turquoise-surf);
     padding: 0.25rem 0.6rem;
     background-color: var(--bg-surface-elevated);
     border-radius: var(--radius-sm);
+}
+
+[data-theme="light"] .contact-phone-display {
+    color: var(--accent-primary);
 }
 
 .contact-phone-display svg {
@@ -1802,13 +2158,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .btn-call {
-    background-color: var(--accent-primary);
+    background-color: var(--blue-green);
     color: #FFFFFF;
     font-weight: 600;
 }
 
+[data-theme="light"] .btn-call {
+    background-color: var(--accent-primary);
+}
+
 .btn-call:hover {
-    background-color: var(--accent-primary-hover);
+    background-color: var(--bright-teal-blue);
     color: #FFFFFF;
 }
 
@@ -1871,19 +2231,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     color: #EAB308;
 }
 
-/* Site Footer */
+/* ==========================================================================
+   SECTION 17 — FOOTER & GRAND DOTTED "WINDPAD" MATRIX BANNER
+   ========================================================================== */
 .site-footer {
     background-color: var(--section-footer-bg);
     border-top: 1px solid var(--border-subtle);
-    padding-top: 3rem;
+    padding-top: 3.5rem;
     padding-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
 }
 
 .footer-container {
     display: grid;
     grid-template-columns: 1.4fr 2fr;
     gap: 3rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .footer-brand .brand-logo {
@@ -1934,9 +2298,44 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     color: var(--text-primary);
 }
 
-.footer-bottom {
+/* Grand Interactive Dotted WindPad Matrix Banner */
+.footer-dotted-brand-wrap {
+    width: 100%;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
     border-top: 1px solid var(--border-subtle);
-    padding-top: 1.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    background: radial-gradient(circle at center, rgba(0, 180, 216, 0.08) 0%, transparent 80%);
+}
+
+.dotted-canvas-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+#dottedWindpadCanvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.dotted-text-fallback {
+    display: none;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    color: var(--turquoise-surf);
+    text-transform: uppercase;
+}
+
+.footer-bottom {
+    padding-top: 1rem;
     text-align: center;
     font-size: 0.75rem;
     color: var(--text-muted);
@@ -1948,7 +2347,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     position: fixed;
     inset: 0;
     background-color: var(--modal-backdrop);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -2036,11 +2435,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .form-input:focus {
-    border-color: var(--accent-primary);
+    border-color: var(--turquoise-surf);
 }
 
 /* ==========================================================================
-   RESPONSIVE MEDIA QUERIES (COMPACT)
+   RESPONSIVE MEDIA QUERIES
    ========================================================================== */
 @media (max-width: 1024px) {
     .desktop-nav {
@@ -2163,6 +2562,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
     .final-cta-buttons .btn {
         width: 100%;
+    }
+
+    .contact-buttons-row {
+        flex-direction: column;
     }
 }
 
