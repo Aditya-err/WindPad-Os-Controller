@@ -90,10 +90,10 @@
                         <span>Standard Bluetooth HID • Zero Drivers</span>
                     </div>
                     
-                    <h1 class="hero-title">
-                        Turn Your Android Phone<br>
-                        Into a Wireless<br>
-                        <span class="gradient-text">Mouse & Keyboard.</span>
+                    <h1 class="hero-title" data-aos="fade-up">
+                        <span class="hero-title-main">Turn Your Android Phone<br/>Into a Wireless</span>
+                        <br/>
+                        <span class="hero-title-highlight">Mouse &amp; Keyboard.</span>
                     </h1>
                     
                     <p class="hero-subtext">
@@ -101,7 +101,7 @@
                     </p>
 
                     <div class="hero-cta-group">
-                        <a href="assets/WindPad.apk" download="WindPad.apk" class="btn btn-primary btn-lg">
+                        <a href="assets/WindPad.apk" download="WindPad.apk" class="btn btn-hero-primary btn-lg">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -109,7 +109,7 @@
                             </svg>
                             <span>Download APK</span>
                         </a>
-                        <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-lg">
+                        <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener noreferrer" class="btn btn-hero-secondary btn-lg">
                             <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                             </svg>
@@ -126,63 +126,7 @@
                 </div>
 
                 <div class="hero-visual">
-                    <div class="device-frame">
-                        <div class="device-screen">
-                            <!-- Interactive Live Trackpad Mockup Interface -->
-                            <div class="hero-live-app" id="heroLiveApp">
-                                <!-- App Top Status Bar -->
-                                <div class="app-top-bar">
-                                    <div class="app-status-badge">
-                                        <span class="status-indicator-dot"></span>
-                                        <span id="heroTrackpadStatus">● Live HID</span>
-                                    </div>
-                                    <div class="app-coords" id="heroTrackpadCoords">X: 960 Y: 540</div>
-                                    <div class="app-dpi-pill">1200 DPI</div>
-                                </div>
-
-                                <!-- Interactive Touchpad Surface -->
-                                <div class="app-trackpad-zone" id="heroTrackpadInteractive" title="Move cursor / Tap on trackpad!">
-                                    <div class="trackpad-dots-matrix">
-                                        <span></span><span></span><span></span><span></span><span></span><span></span>
-                                        <span></span><span></span><span></span><span></span><span></span><span></span>
-                                        <span></span><span></span><span></span><span></span><span></span><span></span>
-                                        <span></span><span></span><span></span><span></span><span></span><span></span>
-                                    </div>
-                                    <div class="app-virtual-cursor" id="heroTrackpadCursor">
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2l16 8-8 3-3 8z"/></svg>
-                                    </div>
-                                    <div class="trackpad-hint-text">Touch / Drag to move cursor</div>
-                                </div>
-
-                                <!-- Mouse Click Buttons -->
-                                <div class="app-clicks-row">
-                                    <button type="button" class="app-click-btn left-click" id="heroLeftClickBtn">
-                                        <span class="click-label">LEFT CLICK</span>
-                                    </button>
-                                    <button type="button" class="app-click-btn right-click" id="heroRightClickBtn">
-                                        <span class="click-label">RIGHT CLICK</span>
-                                    </button>
-                                </div>
-
-                                <!-- Modifier Keys Grid -->
-                                <div class="app-modifiers-grid">
-                                    <button type="button" class="hero-mod-key mod-win">Win</button>
-                                    <button type="button" class="hero-mod-key mod-ctrl">Ctrl</button>
-                                    <button type="button" class="hero-mod-key mod-alt">Alt</button>
-                                    <button type="button" class="hero-mod-key mod-copy">Copy</button>
-                                    <button type="button" class="hero-mod-key mod-paste">Paste</button>
-                                </div>
-
-                                <!-- Quick Keystroke Preview Bar -->
-                                <div class="app-bottom-input-bar">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="keyboard-icon">
-                                        <rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6.01" y2="8"/><line x1="10" y1="8" x2="10.01" y2="8"/><line x1="14" y1="8" x2="14.01" y2="8"/><line x1="18" y1="8" x2="18.01" y2="8"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="10" y1="12" x2="10.01" y2="12"/><line x1="14" y1="12" x2="14.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/><line x1="8" y1="16" x2="16" y2="16"/>
-                                    </svg>
-                                    <span>Type text or shortcuts...</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <img src="assets/Dark theme/home page.jpg" alt="WindPad App Interface" class="hero-device-img" style="border-radius: 32px; border: 6px solid #2C2C2C; max-width: 250px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
                 </div>
             </div>
         </section>
