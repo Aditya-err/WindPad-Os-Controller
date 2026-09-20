@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/Aditya-err/WindPad-Os-Controller/main/assets/windpad.png" alt="Windpad Logo" width="200" height="200">
+  <img src="assets/icon/windpad.png" alt="Windpad Logo" width="200" height="200">
   
   # WindPad
   
