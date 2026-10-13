@@ -35,18 +35,18 @@
     /* Page 4 (Comparison): Conic Gradient Steel/Slate */
     --section-04-bg: conic-gradient(from 90deg, #988f92 0.000deg, #8f8c92 25.714deg, #858891 51.429deg, #7b8491 77.143deg, #727f90 102.857deg, #687b8e 128.571deg, #5e768d 154.286deg, #54708b 180.000deg, #4b6b89 205.714deg, #426586 231.429deg, #3a6083 257.143deg, #335a80 282.857deg, #2c547d 308.571deg, #264e79 334.286deg, #214875 360.000deg);
     
-    /* Page 5 (Product Interface / Showcase): Grabient deep royal to cyan */
-    --section-05-bg: linear-gradient(180deg, #003c87 0.000%, #005aaa 20.000%, #007ad7 40.000%, #009afb 60.000%, #00b9ff 80.000%, #00d8ef 100.000%);
+    /* Page 5 (Product Interface / Showcase): Minimalist Deep Obsidian */
+    --section-05-bg: #090B10;
     
-    /* Page 6 (Bento Grid / Capabilities): Grabient ice-blue to royal */
-    --section-06-bg: linear-gradient(180deg, #cedefd 0.000%, #b1d7f5 20.000%, #8fc6ed 40.000%, #6daae4 60.000%, #4b87dc 80.000%, #2e5ed4 100.000%);
+    /* Page 6 (Bento Grid / Capabilities): Minimalist Deep Slate */
+    --section-06-bg: #0C0F17;
     
-    /* Page 7 (Gestures): Grabient lavender-apricot */
-    --section-07-bg: linear-gradient(180deg, #989ecb 0.000%, #8ca4c6 16.667%, #92a9be 33.333%, #a7acb4 50.000%, #c4afa8 66.667%, #dfaf9d 83.333%, #eeae93 100.000%);
+    /* Page 7 (Gestures): Minimalist Dark Canvas */
+    --section-07-bg: #080A0F;
     
-    /* Last Page (Ecosystem, Setup, FAQ, Contact, Footer): Grabient taupe to ocean */
-    --section-08-bg: linear-gradient(180deg, #918c7f 0.000%, #676d92 50.000%, #063e80 100.000%);
-    --section-footer-bg: transparent;
+    /* Last Page (Ecosystem, Setup, FAQ, Contact, Footer): Minimalist Charcoal/Obsidian */
+    --section-08-bg: #0A0C13;
+    --section-footer-bg: #06070B;
 
     --border-subtle: rgba(144, 224, 239, 0.22);
     --border-strong: rgba(72, 202, 228, 0.42);
@@ -1420,10 +1420,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
    Background: Grabient Deep Royal to Cyan
    ========================================================================== */
 .showcase-section {
-    background: linear-gradient(180deg, #000b21 0.000%, #000f22 3.030%, #001324 6.061%, #001725 9.091%, #001b27 12.121%, #041f28 15.152%, #0a222a 18.182%, #10262b 21.212%, #152a2d 24.242%, #1b2e2e 27.273%, #213230 30.303%, #273631 33.333%, #2d3a33 36.364%, #333e34 39.394%, #394236 42.424%, #3f4637 45.455%, #464a39 48.485%, #4c4e3a 51.515%, #52523c 54.545%, #58563e 57.576%, #5e5a3f 60.606%, #645e41 63.636%, #6a6242 66.667%, #706644 69.697%, #776a45 72.727%, #7d6e47 75.758%, #837249 78.788%, #89764a 81.818%, #8f7a4c 84.848%, #957e4d 87.879%, #9b824f 90.909%, #a18650 93.939%, #a88952 96.970%, #ae8d53 100.000%);
+    background: var(--section-05-bg);
     font-family: var(--font-body);
     padding-top: clamp(5rem, 8vw, 8rem);
     padding-bottom: clamp(5rem, 8vw, 8rem);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .showcase-grid {
@@ -1557,29 +1558,31 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
    Background: Grabient Ice Blue to Royal
    ========================================================================== */
 .features-editorial-section {
-    background: var(--section-03-bg);
+    background: var(--section-06-bg);
     background-image: 
-        linear-gradient(to right, rgba(0, 180, 216, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 180, 216, 0.08) 1px, transparent 1px);
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
     background-size: 32px 32px;
     font-family: var(--font-body);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .features-editorial-section .section-tag {
-    color: #022B68;
-    background: rgba(255, 255, 255, 0.45);
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     padding: 0.2rem 0.55rem;
     border-radius: var(--radius-sm);
 }
 
 .features-editorial-section .section-title {
     font-family: var(--font-heading);
-    color: #021844;
+    color: #FFFFFF;
 }
 
 .features-editorial-section .section-description {
-    color: #14356E;
-    font-weight: 500;
+    color: #94A3B8;
+    font-weight: 400;
 }
 
 .bento-body h3 {
@@ -1914,27 +1917,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .gestures-section {
     background: var(--section-07-bg);
     font-family: var(--font-body);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .gestures-section .section-tag {
-    color: #03045E;
-    background: rgba(255, 255, 255, 0.45);
+    color: #38BDF8;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
     padding: 0.2rem 0.55rem;
     border-radius: var(--radius-sm);
 }
 
 .gestures-section .section-title {
     font-family: var(--font-heading);
-    color: #021844;
+    color: #FFFFFF;
 }
 
 .gestures-section .section-description {
-    color: #1A2254;
-    font-weight: 500;
+    color: #94A3B8;
+    font-weight: 400;
 }
 
 .gesture-card h4 {
     font-family: var(--font-heading);
+    color: #FFFFFF;
+}
+
+.gesture-card p {
+    color: #94A3B8;
 }
 
 .gesture-grid {
@@ -1944,8 +1954,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .bento-card.gesture-card {
-    background: rgba(45, 25, 20, 0.9); /* Charcoal/Orange */
-    border-color: rgba(238, 174, 147, 0.3);
+    background: rgba(17, 24, 39, 0.75);
+    border-color: rgba(255, 255, 255, 0.08);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -1954,13 +1964,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .bento-card.gesture-card:hover {
-    border-color: #EEAE93;
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(17, 24, 39, 0.95);
 }
 
 .gesture-animation-box {
     width: 100%;
     height: 90px;
-    background-color: rgba(6, 12, 36, 0.6);
+    background-color: rgba(8, 12, 22, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-md);
     margin-bottom: 1rem;
     position: relative;
@@ -1974,8 +1986,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background-color: #EEAE93;
-    box-shadow: 0 0 10px #EEAE93;
+    background-color: #38BDF8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
 }
 
 .touch-point-group {
@@ -2060,6 +2072,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .compatibility-section, .usecases-section, .setup-section, .helper-section, .privacy-section, .faq-section, .contact-section, .final-cta-section {
     background: var(--section-08-bg);
     font-family: var(--font-body);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .compatibility-section .section-title,
@@ -2075,29 +2088,37 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .contact-text h2,
 .cta-title {
     font-family: var(--font-heading);
+    color: #FFFFFF;
+}
+
+.compatibility-section .section-description,
+.usecases-section .section-description,
+.setup-section .section-description,
+.faq-section .section-description {
+    color: #94A3B8;
 }
 
 .platforms-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 1.25rem;
 }
 
 .bento-card.platform-card {
-    background: rgba(10, 45, 40, 0.9); /* Teal/Emerald */
-    border-color: rgba(72, 202, 228, 0.3);
+    background: rgba(17, 24, 39, 0.75);
+    border-color: rgba(255, 255, 255, 0.08);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 1.5rem 1rem;
 }
 
 .bento-card.platform-card:hover {
-    border-color: #48CAE4;
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(17, 24, 39, 0.95);
 }
-
-
 
 .platform-icon-wrap {
     width: 44px;
@@ -2108,14 +2129,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
     align-items: center;
     justify-content: center;
     margin: 0 auto 0.85rem auto;
-    color: var(--turquoise-surf);
+    color: #38BDF8;
 }
 
 [data-theme="light"] .platform-icon-wrap {
     color: var(--accent-primary);
 }
 
-.platform-icon-wrap svg {
+.platform-icon-wrap svg,
+.platform-icon-wrap img {
     width: 22px;
     height: 22px;
 }
@@ -2140,12 +2162,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .bento-card.usecase-card {
-    background: rgba(35, 35, 35, 0.9); /* Slate Grey */
-    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(17, 24, 39, 0.75);
+    border-color: rgba(255, 255, 255, 0.08);
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.bento-card.usecase-card:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(17, 24, 39, 0.95);
 }
 
 .bento-card.usecase-card:hover {
@@ -2252,15 +2279,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* Windows Helper */
 .helper-banner {
-    background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-surface-elevated) 100%);
-    border: 1px solid var(--border-accent);
+    background: rgba(17, 24, 39, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
     padding: clamp(1.75rem, 3.5vw, 2.5rem);
     display: grid;
     grid-template-columns: 1.4fr 0.8fr;
     gap: 2rem;
     align-items: center;
-    box-shadow: var(--shadow-glow);
+    box-shadow: var(--shadow-sm);
 }
 
 .helper-content h2 {
@@ -2418,10 +2445,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .contact-box {
-    background: rgba(6, 20, 52, 0.92);
+    background: rgba(17, 24, 39, 0.75);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(145, 140, 127, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--radius-lg);
     padding: clamp(1.25rem, 3vw, 1.75rem);
     display: grid;
@@ -2551,17 +2578,17 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 .final-cta-buttons .btn-primary {
-    background: linear-gradient(135deg, #FF7E5F 0%, #FEB47B 100%);
-    color: #03045E;
-    font-weight: 800;
+    background: #FFFFFF;
+    color: #08090C;
+    font-weight: 700;
     border: none;
-    box-shadow: 0 4px 20px rgba(255, 126, 95, 0.45);
+    box-shadow: 0 4px 18px rgba(255, 255, 255, 0.15);
 }
 
 .final-cta-buttons .btn-primary:hover {
-    background: linear-gradient(135deg, #FF9074 0%, #FFC192 100%);
-    box-shadow: 0 6px 28px rgba(255, 126, 95, 0.65);
+    background: #EDEDF0;
     transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(255, 255, 255, 0.25);
 }
 
 .star-github-box {
@@ -2984,6 +3011,36 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .hero-section {
+        min-height: auto;
+        padding: 3.5rem 1rem 2.5rem;
+        background-position: center !important;
+    }
+
+    .hero-title {
+        font-size: clamp(1.9rem, 7vw, 2.6rem);
+        line-height: 1.15;
+    }
+
+    .hero-subtext {
+        font-size: 0.92rem;
+    }
+
+    .hero-cta-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .hero-cta-group .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
     .gesture-grid {
         grid-template-columns: 1fr;
     }
