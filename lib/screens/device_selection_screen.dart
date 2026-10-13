@@ -125,6 +125,20 @@ class DeviceSelectionScreen extends StatelessWidget {
                       titleColor: titleColor,
                       subtitleColor: subtitleColor,
                     ),
+
+                    // 5. Smart Projector
+                    _buildDeviceCard(
+                      context: context,
+                      btService: btService,
+                      title: "Smart Projector",
+                      subtitle: "With Air Mouse & Remote",
+                      assetPath: "assets/devices/projector.svg",
+                      isPng: false,
+                      type: DeviceType.projector,
+                      cardBg: cardBgColor,
+                      titleColor: titleColor,
+                      subtitleColor: subtitleColor,
+                    ),
                   ],
                 ),
               ),

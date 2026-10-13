@@ -634,7 +634,7 @@ class _HelpFeedbackScreen extends StatelessWidget {
     {'q': 'How do I disconnect?', 'a': 'Tap "Disconnect connected device" in Settings, or turn off Bluetooth on your phone.'},
     {'q': 'What is Spreadsheet Mode?', 'a': 'When enabled, the Enter key sends Tab (to move right in Excel/Sheets), and Shift+Enter sends Down arrow.'},
     {'q': 'How do I change cursor speed?', 'a': 'Adjust the Pointer Speed slider in Settings > Trackpad.'},
-    {'q': 'Does this work with macOS & Smart TVs?', 'a': 'Yes! Windpad works seamlessly with Windows, macOS, Linux, Android TV, and Smart TVs via standard Bluetooth HID.'},
+    {'q': 'Does this work with macOS, Smart TVs & Projectors?', 'a': 'Yes! Windpad works seamlessly with Windows, macOS, Linux, Smart TVs, and Smart Projectors via standard Bluetooth HID with dedicated remote controls and air mouse pointer.'},
   ];
 
   @override

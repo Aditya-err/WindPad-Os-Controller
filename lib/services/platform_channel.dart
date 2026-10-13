@@ -69,10 +69,40 @@ class PlatformChannel {
     } on PlatformException catch (_) {}
   }
 
+  static Future<bool> startDiscovery() async {
+    try {
+      return await _ch.invokeMethod<bool>('startDiscovery') ?? false;
+    } on PlatformException catch (_) {
+      return false;
+    }
+  }
+
+  static Future<bool> cancelDiscovery() async {
+    try {
+      return await _ch.invokeMethod<bool>('cancelDiscovery') ?? false;
+    } on PlatformException catch (_) {
+      return false;
+    }
+  }
+
   static Future<bool> requestBatteryOptimization() async {
     try {
       return await _ch.invokeMethod<bool>('requestBatteryOptimization') ?? false;
     } on PlatformException catch (_) { return false; }
+  }
+
+  static Future<void> showSystemNotification({
+    required String title,
+    required String message,
+    int? id,
+  }) async {
+    try {
+      await _ch.invokeMethod('showSystemNotification', {
+        'title': title,
+        'message': message,
+        'id': id ?? (DateTime.now().millisecondsSinceEpoch ~/ 1000),
+      });
+    } on PlatformException catch (_) {}
   }
 
   static void setMethodCallHandler(Future<dynamic> Function(MethodCall call) handler) {

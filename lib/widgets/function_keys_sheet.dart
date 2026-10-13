@@ -70,15 +70,18 @@ class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
             Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: cs.outlineVariant, borderRadius: BorderRadius.circular(2)))),
             const SizedBox(height: 16),
 
-            // Tabs (Only for TV)
-            if (widget.btService.deviceType == DeviceType.tv) ...[
+            // Tabs (TV & Projector Remote)
+            if (widget.btService.deviceType == DeviceType.tv || widget.btService.deviceType == DeviceType.projector) ...[
               Row(
                 children: [
                   Expanded(
                     child: SegmentedButton<int>(
-                      segments: const [
-                        ButtonSegment(value: 0, label: Text("Keyboard")),
-                        ButtonSegment(value: 1, label: Text("📺 TV Remote")),
+                      segments: [
+                        const ButtonSegment(value: 0, label: Text("Keyboard")),
+                        ButtonSegment(
+                          value: 1,
+                          label: Text(widget.btService.deviceType == DeviceType.projector ? "📽 Projector Remote" : "📺 TV Remote"),
+                        ),
                       ],
                       selected: {_activeTab},
                       onSelectionChanged: (Set<int> newSelection) {

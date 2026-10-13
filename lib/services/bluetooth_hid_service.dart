@@ -7,7 +7,28 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'platform_channel.dart';
 
 enum BluetoothState { disconnected, scanning, pairing, connected }
-enum DeviceType { tv, pc, mac, linux }
+enum DeviceType { tv, pc, mac, linux, projector }
+enum NotificationType { info, success, warning, error }
+
+class AppNotification {
+  final String id;
+  final String title;
+  final String message;
+  final NotificationType type;
+  final DateTime timestamp;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  AppNotification({
+    required this.id,
+    required this.title,
+    required this.message,
+    this.type = NotificationType.info,
+    DateTime? timestamp,
+    this.actionLabel,
+    this.onAction,
+  }) : timestamp = timestamp ?? DateTime.now();
+}
 
 class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   BluetoothState _state = BluetoothState.disconnected;
@@ -43,6 +64,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   bool _isBluetoothConnected = false;
 
   DeviceType get deviceType => _deviceType;
+  bool get isTvOrProjector => _deviceType == DeviceType.tv || _deviceType == DeviceType.projector;
   BluetoothState get state => _state;
   bool get isBluetoothConnected => _isBluetoothConnected;
   String get connectedDeviceName => _connectedDeviceName;
@@ -80,8 +102,64 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     try {
       PlatformChannel.sendKeyReport(modifier: 0, keys: []);
     } catch (_) {}
+    showNotification(
+      "Paste Stopped",
+      "Text streaming was cancelled immediately",
+      type: NotificationType.warning,
+    );
     notifyListeners();
   }
+
+  // ── Discovery State & Actions ──
+  final List<Map<String, String>> _discoveredDevices = [];
+  List<Map<String, String>> get discoveredDevices => List.unmodifiable(_discoveredDevices);
+  bool _isDiscovering = false;
+  bool get isDiscovering => _isDiscovering;
+
+  Future<void> startDiscovery() async {
+    final granted = await _requestPermissions();
+    if (!granted) return;
+    _discoveredDevices.clear();
+    _isDiscovering = true;
+    notifyListeners();
+    showNotification(
+      "Scanning Nearby Devices",
+      "Searching for active Bluetooth devices nearby...",
+      type: NotificationType.info,
+    );
+    final ok = await PlatformChannel.startDiscovery();
+    if (!ok) {
+      _isDiscovering = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> stopDiscovery() async {
+    _isDiscovering = false;
+    await PlatformChannel.cancelDiscovery();
+    notifyListeners();
+  }
+
+  // ── Notification System (System Notifications Outside App) ──
+  final List<AppNotification> _notifications = [];
+  List<AppNotification> get notifications => List.unmodifiable(_notifications);
+  AppNotification? get activeNotification => null;
+  int get unreadNotificationCount => 0;
+
+  void showNotification(
+    String title,
+    String message, {
+    NotificationType type = NotificationType.info,
+    String? actionLabel,
+    VoidCallback? onAction,
+  }) {
+    // Show real Android system notification outside the app
+    PlatformChannel.showSystemNotification(title: title, message: message);
+  }
+
+  void dismissActiveNotification() {}
+  void clearAllNotifications() {}
+  void markNotificationsAsRead() {}
 
   static const List<Color> trackpadColors = [
     Color(0xFFF0F4F8), // 0: White
@@ -108,7 +186,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     // Initialize Bluetooth HID universally across all device profiles
     await PlatformChannel.initHid();
     await _autoConnect();
-    if (_deviceType == DeviceType.tv) {
+    if (isTvOrProjector) {
       _startGyro();
     }
   }
@@ -137,7 +215,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     _gyroSub?.cancel();
     try {
       _gyroSub = gyroscopeEventStream().listen((event) {
-        if (_state != BluetoothState.connected || _deviceType != DeviceType.tv || _trackpadLocked || !_isAirMouse) return;
+        if (_state != BluetoothState.connected || !isTvOrProjector || _trackpadLocked || !_isAirMouse) return;
         
         double yaw = -event.z;
         double pitch = -event.x;
@@ -179,6 +257,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
         Permission.bluetoothScan,
         Permission.bluetooth,
         Permission.location,
+        Permission.notification,
       ].request();
       final connectStatus = statuses[Permission.bluetoothConnect] ?? await Permission.bluetoothConnect.status;
       return connectStatus.isGranted;
@@ -254,7 +333,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('savedDeviceType', val.toString());
 
-    if (_deviceType == DeviceType.tv) {
+    if (isTvOrProjector) {
       _startGyro();
       if (_state == BluetoothState.disconnected) {
         await PlatformChannel.startAdvertising();
@@ -267,7 +346,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void toggleAirMouse() {
-    if (_deviceType == DeviceType.tv) {
+    if (isTvOrProjector) {
       _isAirMouse = !_isAirMouse;
       if (_isAirMouse) {
         _startGyro();
@@ -279,7 +358,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void setAirMouseEnabled(bool enabled) {
-    if (_deviceType == DeviceType.tv && _isAirMouse != enabled) {
+    if (isTvOrProjector && _isAirMouse != enabled) {
       _isAirMouse = enabled;
       if (_isAirMouse) {
         _startGyro();
@@ -347,11 +426,17 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     final granted = await _requestPermissions();
     if (!granted) {
       _errorMessage = "Bluetooth permissions are required to connect.";
+      showNotification("Permission Required", _errorMessage!, type: NotificationType.error);
       notifyListeners();
       return;
     }
     _errorMessage = null;
     _state = BluetoothState.scanning;
+    showNotification(
+      "Device Discoverable",
+      "Broadcasting BLE HID & Bluetooth. Select this phone on your TV or PC.",
+      type: NotificationType.info,
+    );
     notifyListeners();
     await PlatformChannel.startAdvertising();
   }
@@ -361,11 +446,18 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     final granted = await _requestPermissions();
     if (!granted) {
       _errorMessage = "Bluetooth permissions are required to connect.";
+      showNotification("Permission Required", _errorMessage!, type: NotificationType.error);
       notifyListeners();
       return;
     }
     _errorMessage = null;
     _state = BluetoothState.scanning;
+    _connectedDeviceName = name;
+    showNotification(
+      "Connecting",
+      "Connecting to $name...",
+      type: NotificationType.info,
+    );
     notifyListeners();
     await _saveLastMac(mac);
     await PlatformChannel.connectToDevice(mac);
@@ -373,10 +465,19 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> disconnect() async {
     _connectingTimer?.cancel();
+    final prevName = _connectedDeviceName;
     await PlatformChannel.disconnect();
     _isBluetoothConnected = false;
     _state = BluetoothState.disconnected;
     _connectedDeviceName = "";
+    _stopGyro();
+    showNotification(
+      "Disconnected",
+      prevName.isNotEmpty ? "Disconnected from $prevName" : "Bluetooth connection closed",
+      type: NotificationType.warning,
+      actionLabel: "Reconnect",
+      onAction: () => connect(),
+    );
     notifyListeners();
   }
 
@@ -469,19 +570,27 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> sendText(String text) async {
     if (text.isEmpty || _state != BluetoothState.connected) return;
-    _isTyping = true;
-    _typingTotal = text.length;
-    _typingCurrent = 0;
-    notifyListeners();
+
+    // Only activate isTyping progress state for long pasted blocks (> 5 chars),
+    // so normal keyboard typing never flickers or blips red error banners!
+    final isLongPaste = text.length > 5;
+    if (isLongPaste) {
+      _isTyping = true;
+      _typingTotal = text.length;
+      _typingCurrent = 0;
+      notifyListeners();
+    }
 
     try {
       for (int i = 0; i < text.length; i++) {
-        if (!_isTyping || _state != BluetoothState.connected) {
+        if (isLongPaste && (!_isTyping || _state != BluetoothState.connected)) {
           await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
           break;
         }
-        _typingCurrent = i + 1;
-        if (i % 5 == 0 || i == text.length - 1) notifyListeners();
+        if (isLongPaste) {
+          _typingCurrent = i + 1;
+          if (i % 5 == 0 || i == text.length - 1) notifyListeners();
+        }
 
         final char = text[i];
         if (char == '\n') {
@@ -501,13 +610,15 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
         await Future.delayed(const Duration(milliseconds: 8));
       }
     } finally {
-      _isTyping = false;
-      _typingCurrent = 0;
-      _typingTotal = 0;
+      if (isLongPaste) {
+        _isTyping = false;
+        _typingCurrent = 0;
+        _typingTotal = 0;
+        notifyListeners();
+      }
       try {
         await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
       } catch (_) {}
-      notifyListeners();
     }
   }
 
@@ -555,7 +666,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   bool _volDownIsRight = false;
 
   void _handleVolumeKeyDown(int keyCode) {
-    if (_state != BluetoothState.connected || _deviceType != DeviceType.tv) return;
+    if (_state != BluetoothState.connected || !isTvOrProjector) return;
     if (keyCode == 24) { // Volume Up
       sendMouseButtonDown(1);
     } else if (keyCode == 25) { // Volume Down
@@ -568,7 +679,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void _handleVolumeKeyUp(int keyCode) {
-    if (_state != BluetoothState.connected || _deviceType != DeviceType.tv) return;
+    if (_state != BluetoothState.connected || !isTvOrProjector) return;
     if (keyCode == 24) {
       sendMouseButtonUp();
     } else if (keyCode == 25) {
@@ -599,9 +710,14 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
           final map = call.arguments as Map;
           _connectedDeviceName = map['name'] as String? ?? "Unknown Device";
           final isTv = map['isTv'] as bool? ?? false;
+          final isProjector = map['isProjector'] as bool? ?? false;
           
-          // App automatically detects TV type when connected
-          if (isTv && _deviceType != DeviceType.tv) {
+          if (isProjector && _deviceType != DeviceType.projector) {
+            _deviceType = DeviceType.projector;
+            SharedPreferences.getInstance().then((prefs) {
+              prefs.setString('savedDeviceType', _deviceType.toString());
+            });
+          } else if (isTv && _deviceType != DeviceType.tv) {
             _deviceType = DeviceType.tv;
             SharedPreferences.getInstance().then((prefs) {
               prefs.setString('savedDeviceType', _deviceType.toString());
@@ -611,7 +727,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
           _connectedDeviceName = call.arguments as String? ?? "Unknown Device";
         }
         
-        if (_deviceType == DeviceType.tv) {
+        if (isTvOrProjector) {
           _startGyro();
         } else {
           _stopGyro();
@@ -625,6 +741,15 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
         if (connDevice.isNotEmpty && connDevice['address'] != null) {
           _saveLastMac(connDevice['address']!);
         }
+
+        final modeLabel = _deviceType == DeviceType.projector
+            ? "Projector"
+            : (_deviceType == DeviceType.tv ? "Smart TV" : "PC/Mac");
+        showNotification(
+          "Connected",
+          "Connected to $_connectedDeviceName ($modeLabel Mode)",
+          type: NotificationType.success,
+        );
         notifyListeners();
         break;
       case 'onConnecting':
@@ -639,17 +764,45 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
           if (_state == BluetoothState.scanning || _state == BluetoothState.pairing) {
             disconnect();
             _errorMessage = "Connection timed out. Ensure target device Bluetooth is discoverable.";
+            showNotification("Connection Timeout", _errorMessage!, type: NotificationType.error);
             onConnectionTimeout?.call();
           }
         });
+        showNotification(
+          "Connecting",
+          "Connecting to $_connectedDeviceName...",
+          type: NotificationType.info,
+        );
         notifyListeners();
         break;
       case 'onDisconnected':
         _connectingTimer?.cancel();
+        final prevName = _connectedDeviceName;
         _isBluetoothConnected = false;
         _state = BluetoothState.disconnected;
         _connectedDeviceName = "";
         _stopGyro();
+        showNotification(
+          "Disconnected",
+          prevName.isNotEmpty ? "Disconnected from $prevName" : "Bluetooth connection closed",
+          type: NotificationType.warning,
+          actionLabel: "Reconnect",
+          onAction: () => connect(),
+        );
+        notifyListeners();
+        break;
+      case 'onDeviceDiscovered':
+        if (call.arguments is Map) {
+          final d = Map<String, String>.from(call.arguments as Map);
+          final addr = d['address'] ?? '';
+          if (addr.isNotEmpty && !_discoveredDevices.any((x) => x['address'] == addr)) {
+            _discoveredDevices.add(d);
+            notifyListeners();
+          }
+        }
+        break;
+      case 'onDiscoveryFinished':
+        _isDiscovering = false;
         notifyListeners();
         break;
     }

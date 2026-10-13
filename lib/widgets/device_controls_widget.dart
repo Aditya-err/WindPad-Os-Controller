@@ -18,6 +18,8 @@ class DeviceControlsWidget extends StatelessWidget {
     switch (btService.deviceType) {
       case DeviceType.tv:
         return _buildTvControls(context);
+      case DeviceType.projector:
+        return _buildProjectorControls(context);
       case DeviceType.mac:
         return _buildMacControls(context);
       case DeviceType.linux:
@@ -235,6 +237,77 @@ class DeviceControlsWidget extends StatelessWidget {
             _buildMiniKey("Prime", () => btService.sendMedia(0x0003)),
             _buildMiniKey("Disney+", () => btService.sendMedia(0x0004)),
             _buildMiniKey("Spotify", () => btService.sendMedia(0x0005)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // --- SMART PROJECTOR CONTROLS ---
+  Widget _buildProjectorControls(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // D-pad & Projector Action Buttons
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildDpad(context),
+            Column(
+              children: [
+                _buildMiniKey("🏠 Home", () => btService.sendMedia(0x0223)),
+                const SizedBox(height: 10),
+                _buildMiniKey("🔙 Back", () => btService.sendMedia(0x0224)),
+                const SizedBox(height: 10),
+                _buildMiniKey("⚙️ Settings", () => btService.sendMedia(0x0040)),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Projector Quick Actions
+        _buildSectionHeader("Projector Controls"),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [
+            _buildMiniKey("🔌 HDMI / Source", () => btService.sendMedia(0x0080)),
+            _buildMiniKey("🎯 Focus +", () => btService.sendKey(0, [0x57])), // '+'
+            _buildMiniKey("🎯 Focus −", () => btService.sendKey(0, [0x56])), // '-'
+            _buildMiniKey("📐 Keystone", () => btService.sendMedia(0x0041)),
+            _buildMiniKey("⏻ Power", () => btService.sendMedia(0x0030)),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Volume Controls
+        _buildSectionHeader("Volume"),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [
+            _buildIconBtn(Icons.volume_down, () => btService.sendMedia(0x00EA)),
+            _buildIconBtn(Icons.volume_mute, () => btService.sendMedia(0x00E2)),
+            _buildIconBtn(Icons.volume_up, () => btService.sendMedia(0x00E9)),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Media Controls
+        _buildSectionHeader("Media"),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          alignment: WrapAlignment.center,
+          children: [
+            _buildIconBtn(Icons.play_arrow, () => btService.sendMedia(0x00B0)),
+            _buildIconBtn(Icons.pause, () => btService.sendMedia(0x00B1)),
+            _buildIconBtn(Icons.stop, () => btService.sendMedia(0x00B7)),
+            _buildIconBtn(Icons.skip_previous, () => btService.sendMedia(0x00B6)),
+            _buildIconBtn(Icons.skip_next, () => btService.sendMedia(0x00B5)),
           ],
         ),
       ],

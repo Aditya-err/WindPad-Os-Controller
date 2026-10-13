@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter/services.dart';
 import '../services/bluetooth_hid_service.dart';
-import '../widgets/status_pill.dart';
 import '../widgets/touchpad_widget.dart';
 import '../widgets/quick_keys_widget.dart';
 import '../widgets/keyboard_section.dart';
@@ -35,6 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
         switch (widget.deviceType) {
           case 'tv':
             btService.setDeviceType(DeviceType.tv);
+            break;
+          case 'projector':
+            btService.setDeviceType(DeviceType.projector);
             break;
           case 'mac':
             btService.setDeviceType(DeviceType.mac);
@@ -113,172 +115,120 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // ═══ TOP BAR ═══
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: Row(
-                  children: [
-                    // Device Selection Chip
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => const DeviceSelectionScreen()),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: cs.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            _buildDeviceIcon(btService.deviceType, cs),
-                            const SizedBox(width: 8),
-                            Text(
-                              _deviceName(btService.deviceType),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: cs.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-
-                    // Air/Touch Toggle (Only for Smart TV)
-                    if (btService.deviceType == DeviceType.tv) ...[
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      // Device Selection Chip
                       InkWell(
-                        onTap: () => btService.toggleAirMouse(),
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => const DeviceSelectionScreen()),
+                          );
+                        },
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                           decoration: BoxDecoration(
-                            color: btService.isAirMouse ? cs.primary : cs.surfaceContainerHighest,
+                            color: cs.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             children: [
-                              Text(btService.isAirMouse ? "🌀" : "✋"),
-                              const SizedBox(width: 4),
+                              _buildDeviceIcon(btService.deviceType, cs),
+                              const SizedBox(width: 6),
                               Text(
-                                btService.isAirMouse ? "AIR" : "TOUCH",
+                                _deviceName(btService.deviceType),
                                 style: TextStyle(
-                                  fontSize: 10,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.bold,
-                                  color: btService.isAirMouse ? cs.onPrimary : cs.onSurfaceVariant,
+                                  color: cs.onSurfaceVariant,
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-                    ],
+                      const SizedBox(width: 6),
 
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => _showDevicePicker(context, btService, cs),
-                      child: StatusPill(state: btService.state, deviceName: btService.connectedDeviceName),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => btService.cycleDpi(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: cs.primaryContainer,
-                          borderRadius: BorderRadius.circular(8),
+                      // Air/Touch Toggle (Smart TV & Projector)
+                      if (btService.deviceType == DeviceType.tv || btService.deviceType == DeviceType.projector) ...[
+                        InkWell(
+                          onTap: () => btService.toggleAirMouse(),
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: btService.isAirMouse ? cs.primary : cs.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(btService.isAirMouse ? "🌀" : "✋"),
+                                const SizedBox(width: 3),
+                                Text(
+                                  btService.isAirMouse ? "AIR" : "TOUCH",
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: btService.isAirMouse ? cs.onPrimary : cs.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        child: Text(
-                          "${btService.dpi} DPI",
-                          style: TextStyle(
-                            color: cs.onPrimaryContainer,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                        const SizedBox(width: 6),
+                      ],
+
+                      // ═══ CONNECT BUTTON (Tap to choose/scroll all Bluetooth devices) ═══
+                      _buildConnectButton(context, btService, cs),
+
+                      const SizedBox(width: 6),
+
+                      // ═══ DPI SELECTOR ═══
+                      GestureDetector(
+                        onTap: () => btService.cycleDpi(),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: cs.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            "${btService.dpi} DPI",
+                            style: TextStyle(
+                              color: cs.onSurfaceVariant,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 4),
-                    IconButton(
-                      icon: Icon(Icons.settings_outlined, color: cs.onSurfaceVariant),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SettingsScreen()),
+
+                      const SizedBox(width: 4),
+
+                      // ═══ SETTINGS ═══
+                      IconButton(
+                        icon: Icon(Icons.settings_outlined, color: cs.onSurfaceVariant, size: 21),
+                        tooltip: "Settings",
+                        padding: const EdgeInsets.all(5),
+                        constraints: const BoxConstraints(),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
-              // ═══ ACTIVE PASTE / TYPING BANNER WITH INSTANT ABORT ═══
-              if (btService.isTyping)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFB71C1C),
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFD32F2F).withValues(alpha: 0.35),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              "Pasting Paragraph...",
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                            ),
-                            Text(
-                              "${btService.typingCurrent} of ${btService.typingTotal} characters sent",
-                              style: const TextStyle(color: Colors.white70, fontSize: 11),
-                            ),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFFD32F2F),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          minimumSize: const Size(0, 34),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        ),
-                        onPressed: () {
-                          btService.stopTyping();
-                          HapticFeedback.heavyImpact();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("⏹ Paste stopped immediately"),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.stop, size: 16, color: Color(0xFFD32F2F)),
-                        label: const Text("STOP", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                      ),
-                    ],
-                  ),
-                ),
+
+
 
               // ═══ SCROLLABLE CONTENT ═══
               Expanded(
@@ -288,27 +238,64 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       if (!isConn)
                         InkWell(
-                          onTap: () => _showDevicePicker(context, btService, cs),
-                          borderRadius: BorderRadius.circular(12),
+                          onTap: () => showDevicePickerSheet(context, btService, cs),
+                          borderRadius: BorderRadius.circular(14),
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
                             decoration: BoxDecoration(
-                              color: cs.primaryContainer.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(12),
+                              color: cs.primaryContainer.withValues(alpha: 0.25),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: cs.primary.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.info_outline, size: 16, color: cs.primary),
-                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: cs.primary.withValues(alpha: 0.15),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(Icons.bluetooth_searching, size: 18, color: cs.primary),
+                                ),
+                                const SizedBox(width: 10),
                                 Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Select Bluetooth Device",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: cs.onSurface,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        (btService.deviceType == DeviceType.tv || btService.deviceType == DeviceType.mac)
+                                            ? "Tap here to view devices or pair new TV/Mac"
+                                            : "Choose a paired device or scan for live nearby devices",
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: cs.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: cs.primary,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                   child: Text(
-                                    (btService.deviceType == DeviceType.tv || btService.deviceType == DeviceType.mac)
-                                        ? "TV/Mac: Tap here → 'Pair New Device' to make phone discoverable."
-                                        : "Ready to connect. Tap here or status pill to select device.",
+                                    "CHOOSE",
                                     style: TextStyle(
-                                      fontSize: 12,
-                                      color: cs.onPrimaryContainer,
-                                      fontWeight: FontWeight.w500,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: cs.onPrimary,
+                                      letterSpacing: 0.5,
                                     ),
                                   ),
                                 ),
@@ -514,18 +501,87 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showDevicePicker(BuildContext context, BluetoothHidService btService, ColorScheme cs) {
-    btService.refreshBondedDevices();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: cs.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => ChangeNotifierProvider.value(
-        value: btService,
-        child: Consumer<BluetoothHidService>(
-          builder: (_, bt, __) => DevicePickerSheet(btService: bt),
+  Widget _buildConnectButton(BuildContext context, BluetoothHidService btService, ColorScheme cs) {
+    final isConn = btService.state == BluetoothState.connected;
+    final isScanning = btService.state == BluetoothState.scanning;
+
+    if (isConn) {
+      return Material(
+        color: const Color(0xFF1B5E20).withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: () => showDevicePickerSheet(context, btService, cs),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFF4CAF50).withValues(alpha: 0.5)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF4CAF50),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 85),
+                  child: Text(
+                    btService.connectedDeviceName.isEmpty ? "Connected" : btService.connectedDeviceName,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4CAF50),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.keyboard_arrow_down, size: 14, color: Color(0xFF4CAF50)),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Material(
+      color: isScanning ? cs.primaryContainer : cs.primary,
+      borderRadius: BorderRadius.circular(20),
+      elevation: 1,
+      child: InkWell(
+        onTap: () => showDevicePickerSheet(context, btService, cs),
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isScanning)
+                SizedBox(
+                  width: 13,
+                  height: 13,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: cs.onPrimaryContainer),
+                )
+              else
+                Icon(Icons.bluetooth, size: 15, color: cs.onPrimary),
+              const SizedBox(width: 5),
+              Text(
+                isScanning ? "Connecting..." : "Connect",
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isScanning ? cs.onPrimaryContainer : cs.onPrimary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -535,6 +591,8 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (type) {
       case DeviceType.tv:
         return Image.asset('assets/devices/smart-tv.png', width: 18, height: 18, fit: BoxFit.contain);
+      case DeviceType.projector:
+        return SvgPicture.asset('assets/devices/projector.svg', width: 18, height: 18);
       case DeviceType.mac:
         return SvgPicture.asset('assets/devices/apple.svg', width: 18, height: 18, colorFilter: ColorFilter.mode(cs.onSurfaceVariant, BlendMode.srcIn));
       case DeviceType.linux:
@@ -548,6 +606,8 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (type) {
       case DeviceType.tv:
         return "Smart TV";
+      case DeviceType.projector:
+        return "Projector";
       case DeviceType.mac:
         return "Mac";
       case DeviceType.linux:

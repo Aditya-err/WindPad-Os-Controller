@@ -156,14 +156,19 @@ class BtHidForegroundService : Service() {
                 }
                 onStateChanged?.invoke("onConnected", device?.name, device?.address)
                 updateNotification(device?.name ?: "Unknown Device")
+                showSystemAlert("Windpad Connected", "Connected to ${device?.name ?: "Bluetooth Device"}")
                 startPingTimer()
             } else if (state == BluetoothProfile.STATE_CONNECTING) {
                 onStateChanged?.invoke("onConnecting", device?.name, device?.address)
             } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
+                val lastDevName = hostDevice?.name ?: "Device"
                 hostDevice = null
                 stopPingTimer()
                 onStateChanged?.invoke("onDisconnected", null, null)
                 updateNotification(null)
+                if (!userExplicitlyDisconnected) {
+                    showSystemAlert("Windpad Disconnected", "Disconnected from $lastDevName")
+                }
 
                 // Resume BLE advertising so Smart TVs & hosts can discover and reconnect
                 startBleAdvertising()
@@ -343,6 +348,50 @@ class BtHidForegroundService : Service() {
 
     private fun updateNotification(deviceName: String?) {
         startForegroundServiceWithNotification(deviceName)
+    }
+
+    fun showSystemAlert(title: String, message: String, notificationId: Int = 105) {
+        try {
+            val channelId = "windpad_system_alerts"
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    channelId,
+                    "WindPad Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = "WindPad System Notifications"
+                    enableVibration(true)
+                    setShowBadge(true)
+                    lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                }
+                notificationManager.createNotificationChannel(channel)
+            }
+
+            val openAppIntent = Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val pendingIntent = PendingIntent.getActivity(
+                this,
+                notificationId,
+                openAppIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val builder = NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+
+            notificationManager.notify(notificationId, builder.build())
+        } catch (e: Exception) {
+            Log.e("BtHidService", "showSystemAlert error", e)
+        }
     }
 
     private fun acquireWakeLock() {
@@ -660,6 +709,16 @@ class BtHidForegroundService : Service() {
     @SuppressLint("MissingPermission")
     fun isCurrentDeviceTv(): Boolean {
         val bClass = hostDevice?.bluetoothClass?.majorDeviceClass
-        return bClass == android.bluetooth.BluetoothClass.Device.Major.IMAGING || bClass == android.bluetooth.BluetoothClass.Device.Major.AUDIO_VIDEO || bClass == 1024
+        return bClass == android.bluetooth.BluetoothClass.Device.Major.AUDIO_VIDEO || bClass == 1024
+    }
+
+    @SuppressLint("MissingPermission")
+    fun isCurrentDeviceProjector(): Boolean {
+        val name = (hostDevice?.name ?: "").lowercase()
+        val bClass = hostDevice?.bluetoothClass?.majorDeviceClass
+        return bClass == android.bluetooth.BluetoothClass.Device.Major.IMAGING ||
+               name.contains("projector") || name.contains("nebula") || name.contains("xgimi") ||
+               name.contains("benq") || name.contains("epson") || name.contains("viewsonic") ||
+               name.contains("freestyle") || name.contains("dangbei") || name.contains("formovie")
     }
 }

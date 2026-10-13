@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <!-- Projection Light Beams -->
+  <path d="M42 68 L4 40 L4 96 Z" fill="url(#beamGrad)" opacity="0.45"/>
+  <!-- Outer Projector Body -->
+  <rect x="18" y="44" width="96" height="48" rx="14" fill="#0288D1"/>
+  <rect x="22" y="48" width="88" height="40" rx="10" fill="#03A9F4"/>
+  <!-- Lens Housing -->
+  <circle cx="46" cy="68" r="18" fill="#E1F5FE"/>
+  <circle cx="46" cy="68" r="14" fill="#01579B"/>
+  <circle cx="46" cy="68" r="9" fill="#00E5FF"/>
+  <circle cx="43" cy="65" r="3.5" fill="#FFFFFF" opacity="0.9"/>
+  <!-- Ventilation / Speaker Grille Lines -->
+  <rect x="76" y="58" width="22" height="3.5" rx="1.75" fill="#E1F5FE" opacity="0.85"/>
+  <rect x="76" y="66" width="22" height="3.5" rx="1.75" fill="#E1F5FE" opacity="0.85"/>
+  <rect x="76" y="74" width="22" height="3.5" rx="1.75" fill="#E1F5FE" opacity="0.85"/>
+  <!-- Status Power LED -->
+  <circle cx="102" cy="54" r="3" fill="#00E676"/>
+  <!-- Projector Feet / Stand -->
+  <rect x="32" y="92" width="16" height="6" rx="2" fill="#01579B"/>
+  <rect x="80" y="92" width="16" height="6" rx="2" fill="#01579B"/>
+  <defs>
+    <linearGradient id="beamGrad" x1="46" y1="68" x2="4" y2="68" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+</svg>

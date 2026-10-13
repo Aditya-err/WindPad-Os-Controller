@@ -1,5 +1,8 @@
 package com.windpad.app
 
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothClass
+import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -7,6 +10,10 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import androidx.core.app.NotificationCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -20,6 +27,56 @@ class MainActivity: FlutterActivity() {
             if (intent?.action == "com.windpad.app.DISCONNECT_HID") {
                 BtHidForegroundService.instance?.disconnect()
             }
+        }
+    }
+
+    private val discoveryReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                BluetoothDevice.ACTION_FOUND -> {
+                    val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
+                    if (device != null) {
+                        try {
+                            val name = device.name ?: "Nearby Bluetooth Device"
+                            val address = device.address ?: ""
+                            val type = getDeviceCategory(device)
+                            methodChannel?.invokeMethod("onDeviceDiscovered", mapOf(
+                                "name" to name,
+                                "address" to address,
+                                "type" to type
+                            ))
+                        } catch (e: SecurityException) {}
+                    }
+                }
+                BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
+                    methodChannel?.invokeMethod("onDiscoveryFinished", null)
+                }
+            }
+        }
+    }
+
+    private fun getDeviceCategory(device: BluetoothDevice): String {
+        return try {
+            val name = (device.name ?: "").lowercase()
+            if (name.contains("projector") || name.contains("nebula") || name.contains("xgimi") || name.contains("benq") || name.contains("epson") || name.contains("viewsonic") || name.contains("freestyle") || name.contains("dangbei") || name.contains("formovie")) {
+                "projector"
+            } else {
+                val bClass = device.bluetoothClass?.majorDeviceClass ?: 0
+                when (bClass) {
+                    BluetoothClass.Device.Major.AUDIO_VIDEO, 1024 -> "tv"
+                    BluetoothClass.Device.Major.IMAGING -> "projector"
+                    BluetoothClass.Device.Major.COMPUTER -> "computer"
+                    BluetoothClass.Device.Major.PHONE -> "phone"
+                    BluetoothClass.Device.Major.PERIPHERAL -> "peripheral"
+                    else -> {
+                        if (name.contains("tv") || name.contains("smart") || name.contains("bravia") || name.contains("fire") || name.contains("chromecast")) "tv"
+                        else if (name.contains("pc") || name.contains("desktop") || name.contains("laptop") || name.contains("mac") || name.contains("windows")) "computer"
+                        else "other"
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            "other"
         }
     }
 
@@ -84,25 +141,68 @@ class MainActivity: FlutterActivity() {
                     result.success(true)
                 }
                 "getBondedDevices" -> {
-                    val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()
+                    val adapter = BluetoothAdapter.getDefaultAdapter()
                     val resultList = mutableListOf<Map<String, String>>()
                     if (adapter != null) {
                         try {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                 if (androidx.core.content.ContextCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.BLUETOOTH_CONNECT) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                                     for (device in adapter.bondedDevices) {
-                                        resultList.add(mapOf("name" to (device.name ?: "Unknown"), "address" to device.address))
+                                        resultList.add(mapOf(
+                                            "name" to (device.name ?: "Unknown Device"),
+                                            "address" to device.address,
+                                            "type" to getDeviceCategory(device)
+                                        ))
                                     }
                                 }
                             } else {
                                 for (device in adapter.bondedDevices) {
-                                    resultList.add(mapOf("name" to (device.name ?: "Unknown"), "address" to device.address))
+                                    resultList.add(mapOf(
+                                        "name" to (device.name ?: "Unknown Device"),
+                                        "address" to device.address,
+                                        "type" to getDeviceCategory(device)
+                                    ))
                                 }
                             }
                         } catch (e: SecurityException) {
                         }
                     }
                     result.success(resultList)
+                }
+                "startDiscovery" -> {
+                    val adapter = BluetoothAdapter.getDefaultAdapter()
+                    if (adapter != null) {
+                        try {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                if (androidx.core.content.ContextCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.BLUETOOTH_SCAN) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                                    if (adapter.isDiscovering) adapter.cancelDiscovery()
+                                    val ok = adapter.startDiscovery()
+                                    result.success(ok)
+                                } else {
+                                    result.success(false)
+                                }
+                            } else {
+                                if (adapter.isDiscovering) adapter.cancelDiscovery()
+                                val ok = adapter.startDiscovery()
+                                result.success(ok)
+                            }
+                        } catch (e: SecurityException) {
+                            result.success(false)
+                        }
+                    } else {
+                        result.success(false)
+                    }
+                }
+                "cancelDiscovery" -> {
+                    val adapter = BluetoothAdapter.getDefaultAdapter()
+                    try {
+                        if (adapter?.isDiscovering == true) {
+                            adapter.cancelDiscovery()
+                        }
+                        result.success(true)
+                    } catch (e: SecurityException) {
+                        result.success(false)
+                    }
                 }
                 "connectToDevice" -> {
                     val mac = call.argument<String>("mac")
@@ -148,6 +248,13 @@ class MainActivity: FlutterActivity() {
                         result.success(false)
                     }
                 }
+                "showSystemNotification" -> {
+                    val title = call.argument<String>("title") ?: "WindPad"
+                    val message = call.argument<String>("message") ?: ""
+                    val notifId = call.argument<Int>("id") ?: (System.currentTimeMillis() % 100000).toInt()
+                    showSystemNotification(title, message, notifId)
+                    result.success(true)
+                }
                 else -> result.notImplemented()
             }
         }
@@ -156,6 +263,16 @@ class MainActivity: FlutterActivity() {
             registerReceiver(disconnectReceiver, IntentFilter("com.windpad.app.DISCONNECT_HID"), Context.RECEIVER_NOT_EXPORTED)
         } else {
             registerReceiver(disconnectReceiver, IntentFilter("com.windpad.app.DISCONNECT_HID"))
+        }
+
+        val discFilter = IntentFilter().apply {
+            addAction(BluetoothDevice.ACTION_FOUND)
+            addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(discoveryReceiver, discFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(discoveryReceiver, discFilter)
         }
     }
 
@@ -169,7 +286,8 @@ class MainActivity: FlutterActivity() {
                         prefs.edit().putString("last_device_mac", mac).apply()
                         
                         val isTv = svc.isCurrentDeviceTv()
-                        methodChannel?.invokeMethod(method, mapOf("name" to name, "isTv" to isTv))
+                        val isProjector = svc.isCurrentDeviceProjector()
+                        methodChannel?.invokeMethod(method, mapOf("name" to name, "isTv" to isTv, "isProjector" to isProjector))
                     } else {
                         methodChannel?.invokeMethod(method, name)
                     }
@@ -184,7 +302,8 @@ class MainActivity: FlutterActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(disconnectReceiver)
+        try { unregisterReceiver(disconnectReceiver) } catch (e: Exception) {}
+        try { unregisterReceiver(discoveryReceiver) } catch (e: Exception) {}
     }
 
     override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
@@ -201,5 +320,49 @@ class MainActivity: FlutterActivity() {
             return true
         }
         return super.onKeyUp(keyCode, event)
+    }
+
+    private fun showSystemNotification(title: String, message: String, notificationId: Int) {
+        try {
+            val channelId = "windpad_system_alerts"
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel(
+                    channelId,
+                    "WindPad Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = "WindPad System Notifications"
+                    enableVibration(true)
+                    setShowBadge(true)
+                    lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
+                }
+                notificationManager.createNotificationChannel(channel)
+            }
+
+            val openAppIntent = Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val pendingIntent = PendingIntent.getActivity(
+                this,
+                notificationId,
+                openAppIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val builder = NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+
+            notificationManager.notify(notificationId, builder.build())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

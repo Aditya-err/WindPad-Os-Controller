@@ -148,64 +148,30 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                 ),
               ),
             ),
-            if (btService.isTyping)
-              GestureDetector(
-                onTap: () {
-                  btService.stopTyping();
-                  HapticFeedback.heavyImpact();
-                  setState(() {
-                    _isProgrammaticClear = true;
-                    _controller.clear();
-                    _previousText = "";
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD32F2F),
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFD32F2F).withValues(alpha: 0.4),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.stop, size: 13, color: Colors.white),
-                      SizedBox(width: 3),
-                      Text("STOP PASTE", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ),
-              ),
           ],
         ),
-        if (btService.isTyping)
+        if (btService.isTyping && btService.typingTotal > 5)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFB71C1C).withValues(alpha: 0.25),
+                color: cs.primaryContainer.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE53935)),
+                border: Border.all(color: cs.primary.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
-                  const SizedBox(
+                  SizedBox(
                     width: 14,
                     height: 14,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFFF5252)),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: cs.primary),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       "Pasting text: ${btService.typingCurrent}/${btService.typingTotal} characters...",
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
+                      style: TextStyle(color: cs.onSurface, fontSize: 11, fontWeight: FontWeight.w600),
                     ),
                   ),
                   GestureDetector(
@@ -219,16 +185,16 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                       });
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD32F2F),
+                        color: cs.error,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.stop, size: 12, color: Colors.white),
-                          SizedBox(width: 2),
+                          SizedBox(width: 3),
                           Text("STOP", style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
                         ],
                       ),
@@ -253,8 +219,10 @@ class _KeyboardSectionState extends State<KeyboardSection> {
                 icon: Icon(Icons.emoji_emotions_outlined, color: isDark ? const Color(0xFF8E95A5) : cs.primary, size: 22),
                 padding: const EdgeInsets.all(6),
                 constraints: const BoxConstraints(),
-                onPressed: isConn ? () => btService.sendEmoji() : null,
-                tooltip: "Default Emoji",
+                onPressed: isConn ? () {
+                  _openKeyboard();
+                } : null,
+                tooltip: "Phone Emoji & Keyboard (Gboard)",
               ),
               const SizedBox(width: 4),
               // Dedicated Paste/Stop Button

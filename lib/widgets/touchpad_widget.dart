@@ -195,25 +195,64 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
                                   ),
                                 if (!isConn)
                                   Center(
-                                    child: GestureDetector(
-                                      behavior: HitTestBehavior.opaque,
-                                      onTap: () => showDevicePickerSheet(context, btService, cs),
-                                      child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Opacity(
-                                            opacity: 0.3,
-                                            child: CustomPaint(
-                                              painter: CursorPainter(color: cs.outlineVariant, shadowColor: cs.outline),
-                                              size: const Size(20, 24),
-                                            ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: () => showDevicePickerSheet(context, btService, cs),
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: cs.primaryContainer.withValues(alpha: 0.4),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: Icon(Icons.bluetooth_searching_rounded, color: cs.primary, size: 24),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                                                decoration: BoxDecoration(
+                                                  color: cs.primary,
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: cs.primary.withValues(alpha: 0.25),
+                                                      blurRadius: 6,
+                                                      offset: const Offset(0, 2),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Icon(Icons.bluetooth, size: 15, color: cs.onPrimary),
+                                                    const SizedBox(width: 6),
+                                                    Text(
+                                                      btService.state == BluetoothState.scanning
+                                                          ? "Connecting..."
+                                                          : "Connect Bluetooth Device",
+                                                      style: TextStyle(
+                                                        color: cs.onPrimary,
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(height: 5),
+                                              Text(
+                                                "Tap to view all available devices",
+                                                style: TextStyle(color: cs.outline, fontSize: 11),
+                                              ),
+                                            ],
                                           ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            btService.state == BluetoothState.scanning ? "Connecting via Bluetooth…" : "Tap here to connect device",
-                                            style: TextStyle(color: cs.outline, fontSize: 13, fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   ),
