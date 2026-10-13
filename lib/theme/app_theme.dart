@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeNotifier extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.system;
+  ThemeMode _themeMode = ThemeMode.dark;
   ThemeMode get themeMode => _themeMode;
 
   ThemeNotifier() {
@@ -11,7 +11,7 @@ class ThemeNotifier extends ChangeNotifier {
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final mode = prefs.getString('themeMode') ?? 'system';
+    final mode = prefs.getString('themeMode') ?? 'dark';
     _themeMode = _fromString(mode);
     notifyListeners();
   }
@@ -27,7 +27,7 @@ class ThemeNotifier extends ChangeNotifier {
     switch (s) {
       case 'light': return ThemeMode.light;
       case 'dark': return ThemeMode.dark;
-      default: return ThemeMode.system;
+      default: return ThemeMode.dark;
     }
   }
 
@@ -134,29 +134,33 @@ class AppTheme {
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: const Color(0xFF111318),
+      scaffoldBackgroundColor: const Color(0xFF12141C),
       colorScheme: const ColorScheme(
         brightness: Brightness.dark,
-        primary: Color(0xFF9ECAFF), onPrimary: Color(0xFF003258),
-        primaryContainer: Color(0xFF00497D), onPrimaryContainer: Color(0xFFD1E4FF),
+        primary: Color(0xFF58A6FF), onPrimary: Color(0xFF003258),
+        primaryContainer: Color(0xFF024E75), onPrimaryContainer: Colors.white,
         secondary: Color(0xFFBBC7DB), onSecondary: Color(0xFF253140),
-        secondaryContainer: Color(0xFF3B4858), onSecondaryContainer: Color(0xFFD7E3F7),
-        tertiary: Color(0xFFD6BEE4), onTertiary: Color(0xFF3B2948),
-        tertiaryContainer: Color(0xFF523F5F), onTertiaryContainer: Color(0xFFF2DAFF),
+        secondaryContainer: Color(0xFF222732), onSecondaryContainer: Colors.white,
+        tertiary: Color(0xFF45334E), onTertiary: Colors.white,
+        tertiaryContainer: Color(0xFF45334E), onTertiaryContainer: Colors.white,
         error: Color(0xFFFFB4AB), onError: Color(0xFF690005),
         errorContainer: Color(0xFF93000A), onErrorContainer: Color(0xFFFFDAD6),
-        surface: Color(0xFF111318), onSurface: Color(0xFFE1E2E9),
-        surfaceContainerHighest: Color(0xFF33353B),
-        onSurfaceVariant: Color(0xFFC3C7CF),
-        outline: Color(0xFF8D9199), outlineVariant: Color(0xFF43474E),
+        surface: Color(0xFF12141C), onSurface: Colors.white,
+        surfaceContainerLowest: Color(0xFF0D0F16),
+        surfaceContainerLow: Color(0xFF151822),
+        surfaceContainer: Color(0xFF1A1D27),
+        surfaceContainerHigh: Color(0xFF1F232F),
+        surfaceContainerHighest: Color(0xFF222732),
+        onSurfaceVariant: Color(0xFF8E95A5),
+        outline: Color(0xFF5A6070), outlineVariant: Color(0xFF2E3342),
         inverseSurface: Color(0xFFE1E2E9), onInverseSurface: Color(0xFF2E3036),
         inversePrimary: Color(0xFF0061A4), scrim: Color(0xFF000000),
       ),
       textTheme: const TextTheme(
-        displayLarge: TextStyle(fontWeight: FontWeight.w400, color: Color(0xFFE1E2E9), fontSize: 28, letterSpacing: -0.5),
-        bodyLarge: TextStyle(fontWeight: FontWeight.w500, color: Color(0xFFE1E2E9), fontSize: 14, letterSpacing: 0.1),
-        bodyMedium: TextStyle(fontWeight: FontWeight.w400, color: Color(0xFFC3C7CF), fontSize: 13),
-        labelLarge: TextStyle(fontWeight: FontWeight.w500, color: Color(0xFFC3C7CF), fontSize: 11, letterSpacing: 0.8),
+        displayLarge: TextStyle(fontWeight: FontWeight.w400, color: Colors.white, fontSize: 28, letterSpacing: -0.5),
+        bodyLarge: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 14, letterSpacing: 0.1),
+        bodyMedium: TextStyle(fontWeight: FontWeight.w400, color: Color(0xFF8E95A5), fontSize: 13),
+        labelLarge: TextStyle(fontWeight: FontWeight.w500, color: Color(0xFF8E95A5), fontSize: 11, letterSpacing: 0.8),
       ),
     );
   }

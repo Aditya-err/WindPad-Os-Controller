@@ -69,10 +69,19 @@ class MainActivity: FlutterActivity() {
                         val discoverableIntent = android.content.Intent(android.bluetooth.BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE)
                         discoverableIntent.putExtra(android.bluetooth.BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300)
                         startActivity(discoverableIntent)
+                        svc?.startBleAdvertising()
                         result.success(true)
                     } else {
                         result.error("BLUETOOTH_NULL", "Adapter is null", null)
                     }
+                }
+                "startBleAdvert" -> {
+                    svc?.startBleAdvertising()
+                    result.success(true)
+                }
+                "stopBleAdvert" -> {
+                    svc?.stopBleAdvertising()
+                    result.success(true)
                 }
                 "getBondedDevices" -> {
                     val adapter = android.bluetooth.BluetoothAdapter.getDefaultAdapter()

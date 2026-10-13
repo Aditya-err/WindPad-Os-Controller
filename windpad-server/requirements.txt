@@ -1,7 +1,0 @@
-pynput
-pystray
-zeroconf
-qrcode
-Pillow
-plyer
-pyinstaller

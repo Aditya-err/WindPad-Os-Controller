@@ -86,13 +86,16 @@ class DevicePickerSheet extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (c) => AlertDialog(
-                      title: const Text("Important Pairing Step"),
-                      content: const Text(
-                        "To connect to Smart TVs, iPads, Macs, or Desktop PCs:\n\n"
-                        "1. Stay on this app (Windpad must be running).\n"
-                        "2. Go to your TV/Tablet/Desktop's Bluetooth Settings.\n"
-                        "3. Find your phone in their list and pair from there.\n\n"
-                        "If a PIN dialog appears on your PC/TV, type 0000 and press Enter. After the first successful pairing, it will never ask again.",
+                      title: const Text("How to Connect"),
+                      content: const SingleChildScrollView(
+                        child: Text(
+                          "Important for Smart TVs & Computers:\n\n"
+                          "1. Keep Windpad open and tap 'Make Phone Discoverable' below.\n\n"
+                          "2. Do NOT tap the TV inside your phone's Android Bluetooth menu (that mistakenly triggers Bluetooth Tethering instead of HID).\n\n"
+                          "3. On your Smart TV, use the physical remote to open:\n"
+                          "   Settings ➔ Remotes & Accessories ➔ Add accessory.\n\n"
+                          "4. Select your phone from the TV screen to pair as an accessory remote controller.",
+                        ),
                       ),
                       actions: [
                         TextButton(onPressed: () => Navigator.pop(c), child: const Text("Cancel")),

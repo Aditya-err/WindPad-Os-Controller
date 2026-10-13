@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Features — WindPad</title>
+    <meta name="description" content="Explore WindPad's powerful features: precision mouse control, full keyboard support, quick shortcuts, media controls, system controls, and custom actions.">
+    
+    <!-- Open Graph Meta -->
+    <meta property="og:title" content="Features — WindPad">
+    <meta property="og:description" content="Explore WindPad's powerful features: precision mouse control, full keyboard support, quick shortcuts, media controls, system controls, and custom actions.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/windpad.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/windpad.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/features.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </a>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="features.html" class="nav-link active">Features</a>
+                <a href="how-it-works.html" class="nav-link">How It Works</a>
+                <a href="control-center.html" class="nav-link">Control Center</a>
+                <a href="use-cases.html" class="nav-link">Use Cases</a>
+                <a href="download.html" class="nav-link">Download</a>
+                <a href="about.html" class="nav-link">About</a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Features Header -->
+    <section class="features-header">
+        <div class="features-header-container">
+            <div class="features-header-content">
+                <span class="features-tag">Features</span>
+                <h1 class="features-title">
+                    <span class="features-title-line">Six powerful control modes.</span>
+                    <span class="features-title-line features-title-line--accent">One elegant interface.</span>
+                </h1>
+                <p class="features-subtitle">
+                    WindPad consolidates every input method you need into a single, beautifully designed app. 
+                    Switch between modes instantly and control your PC like never before.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Tabs -->
+    <section class="feature-tabs">
+        <div class="feature-tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="mouse">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L12 12"/>
+                        <path d="M12 12L18 18"/>
+                        <path d="M12 12L6 18"/>
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span>Mouse</span>
+                </button>
+                <button class="tab-btn" data-tab="keyboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M6 8h2M10 8h2M14 8h2M6 12h2M10 12h2M14 12h2M7 16h10"/>
+                    </svg>
+                    <span>Keyboard</span>
+                </button>
+                <button class="tab-btn" data-tab="shortcuts">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>
+                    </svg>
+                    <span>Shortcuts</span>
+                </button>
+                <button class="tab-btn" data-tab="media">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    <span>Media</span>
+                </button>
+                <button class="tab-btn" data-tab="system">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                        <line x1="12" y1="2" x2="12" y2="12"/>
+                    </svg>
+                    <span>System</span>
+                </button>
+                <button class="tab-btn" data-tab="custom">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+                    </svg>
+                    <span>Custom</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature Content -->
+    <section class="feature-content">
+        <div class="feature-content-container">
+            <!-- Mouse Feature -->
+            <div class="feature-panel active" id="mouse">
+                <div class="feature-layout">
+                    <div class="feature-info">
+                        <div class="feature-icon feature-icon--mouse">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L12 12"/>
+                                <path d="M12 12L18 18"/>
+                                <path d="M12 12L6 18"/>
+                                <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                        </div>
+                        <h2>Precision Mouse Control</h2>
+                        <p class="feature-description">
+                            Transform your phone's touchscreen into a high-precision trackpad. 
+                            WindPad's advanced pointer acceleration ensures smooth, accurate cursor movement 
+                            that feels natural and responsive.
+                        </p>
+                        <ul class="feature-list">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Customizable sensitivity and acceleration</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Dedicated left and right click buttons</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Multi-touch gestures support</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Scroll and pinch-to-zoom gestures</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="feature-demo">
+                        <div class="demo-trackpad">
+                            <div class="trackpad-surface">
+                                <div class="trackpad-cursor" id="trackpadCursor"></div>
+                            </div>
+                            <div class="trackpad-buttons">
+                                <div class="trackpad-button trackpad-button--left">Left</div>
+                                <div class="trackpad-button trackpad-button--right">Right</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Feature -->
+            <div class="feature-panel" id="keyboard">
+                <div class="feature-layout">
+                    <div class="feature-info">
+                        <div class="feature-icon feature-icon--keyboard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M6 8h2M10 8h2M14 8h2M6 12h2M10 12h2M14 12h2M7 16h10"/>
+                            </svg>
+                        </div>
+                        <h2>Full Keyboard Support</h2>
+                        <p class="feature-description">
+                            Complete keyboard functionality at your fingertips. WindPad sends individual 
+                            HID keycodes, ensuring perfect compatibility with every application and game.
+                        </p>
+                        <ul class="feature-list">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Full QWERTY layout with modifier keys</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Special characters and symbol input</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Emoji picker and text suggestions</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Smart clipboard paste functionality</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="feature-demo">
+                        <div class="demo-keyboard">
+                            <div class="keyboard-row">
+                                <div class="key">Q</div>
+                                <div class="key">W</div>
+                                <div class="key">E</div>
+                                <div class="key">R</div>
+                                <div class="key">T</div>
+                                <div class="key">Y</div>
+                                <div class="key">U</div>
+                                <div class="key">I</div>
+                                <div class="key">O</div>
+                                <div class="key">P</div>
+                            </div>
+                            <div class="keyboard-row">
+                                <div class="key">A</div>
+                                <div class="key">S</div>
+                                <div class="key">D</div>
+                                <div class="key">F</div>
+                                <div class="key">G</div>
+                                <div class="key">H</div>
+                                <div class="key">J</div>
+                                <div class="key">K</div>
+                                <div class="key">L</div>
+                            </div>
+                            <div class="keyboard-row">
+                                <div class="key key--wide">Shift</div>
+                                <div class="key">Z</div>
+                                <div class="key">X</div>
+                                <div class="key">C</div>
+                                <div class="key">V</div>
+                                <div class="key">B</div>
+                                <div class="key">N</div>
+                                <div class="key">M</div>
+                                <div class="key key--wide">Shift</div>
+                            </div>
+                            <div class="keyboard-row">
+                                <div class="key key--space">Space</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shortcuts Feature -->
+            <div class="feature-panel" id="shortcuts">
+                <div class="feature-layout">
+                    <div class="feature-info">
+                        <div class="feature-icon feature-icon--shortcuts">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>
+                            </svg>
+                        </div>
+                        <h2>Quick Action Shortcuts</h2>
+                        <p class="feature-description">
+                            Access your most-used commands with a single tap. WindPad provides dedicated 
+                            buttons for essential shortcuts like Copy, Paste, Undo, and more.
+                        </p>
+                        <ul class="feature-list">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Copy, Paste, Cut, Undo, Redo</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Select All, Save, Open</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Customizable shortcut buttons</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Smart clipboard integration</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="feature-demo">
+                        <div class="demo-shortcuts">
+                            <div class="shortcut-grid">
+                                <div class="shortcut-btn">
+                                    <span class="shortcut-icon">📋</span>
+                                    <span class="shortcut-label">Copy</span>
+                                    <span class="shortcut-keys">Ctrl+C</span>
+                                </div>
+                                <div class="shortcut-btn">
+                                    <span class="shortcut-icon">📄</span>
+                                    <span class="shortcut-label">Paste</span>
+                                    <span class="shortcut-keys">Ctrl+V</span>
+                                </div>
+                                <div class="shortcut-btn">
+                                    <span class="shortcut-icon">✂️</span>
+                                    <span class="shortcut-label">Cut</span>
+                                    <span class="shortcut-keys">Ctrl+X</span>
+                                </div>
+                                <div class="shortcut-btn">
+                                    <span class="shortcut-icon">↩️</span>
+                                    <span class="shortcut-label">Undo</span>
+                                    <span class="shortcut-keys">Ctrl+Z</span>
+                                </div>
+                                <div class="shortcut-btn">
+                                    <span class="shortcut-icon">⏪</span>
+                                    <span class="shortcut-label">Redo</span>
+                                    <span class="shortcut-keys">Ctrl+Y</span>
+                                </div>
+                                <div class="shortcut-btn">
+                                    <span class="shortcut-icon">✅</span>
+                                    <span class="shortcut-label">Select All</span>
+                                    <span class="shortcut-keys">Ctrl+A</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Feature -->
+            <div class="feature-panel" id="media">
+                <div class="feature-layout">
+                    <div class="feature-info">
+                        <div class="feature-icon feature-icon--media">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"/>
+                            </svg>
+                        </div>
+                        <h2>Media Controls</h2>
+                        <p class="feature-description">
+                            Control your music and video playback without touching your computer. 
+                            WindPad's media controls work with any media player on your system.
+                        </p>
+                        <ul class="feature-list">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Play, Pause, Stop controls</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Volume up and down</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Next and previous track</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Mute toggle</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="feature-demo">
+                        <div class="demo-media">
+                            <div class="media-player">
+                                <div class="media-info">
+                                    <div class="media-track">Now Playing</div>
+                                    <div class="media-status">WindPad Demo Track</div>
+                                </div>
+                                <div class="media-progress">
+                                    <div class="media-progress-bar">
+                                        <div class="media-progress-fill"></div>
+                                    </div>
+                                    <div class="media-time">1:23 / 3:45</div>
+                                </div>
+                                <div class="media-controls">
+                                    <div class="media-btn media-btn--prev">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="19 20 9 12 19 4 19 20"/>
+                                            <line x1="5" y1="19" x2="5" y2="5"/>
+                                        </svg>
+                                    </div>
+                                    <div class="media-btn media-btn--play">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5 3 19 12 5 21 5 3"/>
+                                        </svg>
+                                    </div>
+                                    <div class="media-btn media-btn--next">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5 4 15 12 5 20 5 4"/>
+                                            <line x1="19" y1="5" x2="19" y2="19"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="media-volume">
+                                    <div class="volume-btn">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                                        </svg>
+                                    </div>
+                                    <div class="volume-slider">
+                                        <div class="volume-fill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Feature -->
+            <div class="feature-panel" id="system">
+                <div class="feature-layout">
+                    <div class="feature-info">
+                        <div class="feature-icon feature-icon--system">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                                <line x1="12" y1="2" x2="12" y2="12"/>
+                            </svg>
+                        </div>
+                        <h2>System Controls</h2>
+                        <p class="feature-description">
+                            Access essential system functions from your phone. Power, sleep, and navigation 
+                            controls give you complete command over your computer.
+                        </p>
+                        <ul class="feature-list">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Power, Sleep, and Restart</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Lock screen and logout</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Alt+Tab and window switching</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Task manager and system shortcuts</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="feature-demo">
+                        <div class="demo-system">
+                            <div class="system-controls">
+                                <div class="system-btn system-btn--power">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                                        <line x1="12" y1="2" x2="12" y2="12"/>
+                                    </svg>
+                                    <span>Power</span>
+                                </div>
+                                <div class="system-btn system-btn--sleep">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                    </svg>
+                                    <span>Sleep</span>
+                                </div>
+                                <div class="system-btn system-btn--lock">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                    </svg>
+                                    <span>Lock</span>
+                                </div>
+                                <div class="system-btn system-btn--alttab">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                                        <line x1="8" y1="21" x2="16" y2="21"/>
+                                        <line x1="12" y1="17" x2="12" y2="21"/>
+                                    </svg>
+                                    <span>Alt+Tab</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Feature -->
+            <div class="feature-panel" id="custom">
+                <div class="feature-layout">
+                    <div class="feature-info">
+                        <div class="feature-icon feature-icon--custom">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+                            </svg>
+                        </div>
+                        <h2>Custom Actions</h2>
+                        <p class="feature-description">
+                            Create personalized commands and automate repetitive tasks. 
+                            WindPad's custom action system lets you build your own control workflows.
+                        </p>
+                        <ul class="feature-list">
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Create custom key combinations</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Build action sequences and macros</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Organize actions into custom groups</span>
+                            </li>
+                            <li>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>Share and import action presets</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="feature-demo">
+                        <div class="demo-custom">
+                            <div class="custom-actions">
+                                <div class="custom-action-item">
+                                    <div class="custom-action-icon">⚡</div>
+                                    <div class="custom-action-info">
+                                        <div class="custom-action-name">Launch Browser</div>
+                                        <div class="custom-action-trigger">Ctrl+Shift+B</div>
+                                    </div>
+                                </div>
+                                <div class="custom-action-item">
+                                    <div class="custom-action-icon">🎯</div>
+                                    <div class="custom-action-info">
+                                        <div class="custom-action-name">Screenshot Tool</div>
+                                        <div class="custom-action-trigger">Win+Shift+S</div>
+                                    </div>
+                                </div>
+                                <div class="custom-action-item">
+                                    <div class="custom-action-icon">📝</div>
+                                    <div class="custom-action-info">
+                                        <div class="custom-action-name">Open Notes</div>
+                                        <div class="custom-action-trigger">Ctrl+Alt+N</div>
+                                    </div>
+                                </div>
+                                <div class="custom-action-item custom-action-item--add">
+                                    <div class="custom-action-icon">+</div>
+                                    <div class="custom-action-info">
+                                        <div class="custom-action-name">Add New Action</div>
+                                        <div class="custom-action-trigger">Create custom</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2 class="cta-title">Experience all features today.</h2>
+                <p class="cta-subtitle">
+                    Download WindPad and transform your Android phone into the ultimate control surface.
+                </p>
+                <a href="download.html" class="btn btn-primary btn-large">
+                    <span>Download Now</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-links-column">
+                    <h4>Product</h4>
+                    <a href="features.html">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="control-center.html">Control Center</a>
+                    <a href="download.html">Download</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Resources</h4>
+                    <a href="use-cases.html">Use Cases</a>
+                    <a href="about.html">About</a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener">GitHub</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">License</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 WindPad. Open source and free forever.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/features.js"></script>
+    
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <script>
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.remove();
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>

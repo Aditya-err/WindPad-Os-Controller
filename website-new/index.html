@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WindPad — Transform Your Android Phone Into a Universal Control Surface</title>
+    <meta name="description" content="WindPad turns your Android phone into a wireless universal control surface for your PC — mouse, keyboard, shortcuts, media, system controls, custom actions and more.">
+    
+    <!-- Open Graph Meta -->
+    <meta property="og:title" content="WindPad — Transform Your Android Phone Into a Universal Control Surface">
+    <meta property="og:description" content="WindPad turns your Android phone into a wireless universal control surface for your PC — mouse, keyboard, shortcuts, media, system controls, custom actions and more.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/windpad.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/windpad.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </a>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="features.html" class="nav-link">Features</a>
+                <a href="how-it-works.html" class="nav-link">How It Works</a>
+                <a href="control-center.html" class="nav-link">Control Center</a>
+                <a href="use-cases.html" class="nav-link">Use Cases</a>
+                <a href="download.html" class="nav-link">Download</a>
+                <a href="about.html" class="nav-link">About</a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>Bluetooth HID Protocol</span>
+                    <span class="badge-dot"></span>
+                    <span>Zero Receiver App</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    <span class="hero-title-line">Your Android phone.</span>
+                    <span class="hero-title-line hero-title-line--highlight">Your ultimate control surface.</span>
+                </h1>
+                
+                <p class="hero-subtitle">
+                    Transform your Android device into a wireless universal controller for your PC. 
+                    Mouse, keyboard, shortcuts, media, system controls — all without installing software on your computer.
+                </p>
+                
+                <div class="hero-cta">
+                    <a href="download.html" class="btn btn-primary">
+                        <span>Get WindPad</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="how-it-works.html" class="btn btn-secondary">
+                        <span>See how it works</span>
+                    </a>
+                </div>
+                
+                <div class="hero-trust">
+                    <div class="trust-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        <span>Open Source</span>
+                    </div>
+                    <div class="trust-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M16 8l-8 8M8 8l8 8"/>
+                        </svg>
+                        <span>No Ads</span>
+                    </div>
+                    <div class="trust-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        <span>No Tracking</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="hero-phone">
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-screen-content">
+                                <!-- Dynamic phone content will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-pc">
+                    <div class="pc-frame">
+                        <div class="pc-screen">
+                            <div class="pc-screen-content">
+                                <!-- Dynamic PC content will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-connection">
+                    <svg class="connection-line" viewBox="0 0 200 100" preserveAspectRatio="none">
+                        <path d="M0,50 Q50,20 100,50 T200,50" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="5,5"/>
+                    </svg>
+                    <div class="connection-bluetooth">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 7l10 10-5 5V2l5 5L7 17"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="intro">
+        <div class="intro-container">
+            <div class="intro-content">
+                <h2 class="intro-title">
+                    <span>Not just another remote app.</span>
+                    <span class="intro-title-accent">A paradigm shift.</span>
+                </h2>
+                
+                <p class="intro-text">
+                    WindPad leverages the native Bluetooth HID protocol, making your Android phone 
+                    appear to your computer as a genuine mouse and keyboard. No companion apps, 
+                    no Wi-Fi dependencies, no compromises.
+                </p>
+                
+                <div class="intro-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">0ms</span>
+                        <span class="stat-label">Network latency</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">100%</span>
+                        <span class="stat-label">Offline capable</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">∞</span>
+                        <span class="stat-label">Platform compatible</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Section -->
+    <section class="preview">
+        <div class="preview-container">
+            <div class="preview-header">
+                <span class="preview-tag">Preview</span>
+                <h2 class="preview-title">Everything you need. Nothing you don't.</h2>
+            </div>
+            
+            <div class="preview-grid">
+                <div class="preview-card preview-card--mouse">
+                    <div class="preview-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L12 12"/>
+                            <path d="M12 12L18 18"/>
+                            <path d="M12 12L6 18"/>
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                    </div>
+                    <h3>Precision Mouse</h3>
+                    <p>Full mouse control with customizable acceleration and sensitivity settings.</p>
+                </div>
+                
+                <div class="preview-card preview-card--keyboard">
+                    <div class="preview-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <path d="M6 8h2M10 8h2M14 8h2M6 12h2M10 12h2M14 12h2M7 16h10"/>
+                        </svg>
+                    </div>
+                    <h3>Full Keyboard</h3>
+                    <p>Complete keyboard support with modifier keys, special characters, and emoji input.</p>
+                </div>
+                
+                <div class="preview-card preview-card--shortcuts">
+                    <div class="preview-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/>
+                        </svg>
+                    </div>
+                    <h3>Quick Shortcuts</h3>
+                    <p>One-tap access to Copy, Paste, Undo, Select All, and other essential shortcuts.</p>
+                </div>
+                
+                <div class="preview-card preview-card--media">
+                    <div class="preview-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                    </div>
+                    <h3>Media Controls</h3>
+                    <p>Play, pause, volume, and track controls for your media playback.</p>
+                </div>
+                
+                <div class="preview-card preview-card--system">
+                    <div class="preview-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                            <line x1="12" y1="2" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3>System Controls</h3>
+                    <p>Power, sleep, and system navigation controls at your fingertips.</p>
+                </div>
+                
+                <div class="preview-card preview-card--custom">
+                    <div class="preview-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+                        </svg>
+                    </div>
+                    <h3>Custom Actions</h3>
+                    <p>Create your own custom actions and automate repetitive tasks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compatibility Section -->
+    <section class="compatibility">
+        <div class="compatibility-container">
+            <div class="compatibility-content">
+                <h2 class="compatibility-title">Works everywhere.</h2>
+                <p class="compatibility-subtitle">
+                    Because WindPad uses standard Bluetooth HID, it's compatible with virtually 
+                    any device that accepts mouse and keyboard input.
+                </p>
+                
+                <div class="compatibility-list">
+                    <div class="compatibility-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+                        </svg>
+                        <span>Windows</span>
+                    </div>
+                    <div class="compatibility-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        </svg>
+                        <span>macOS</span>
+                    </div>
+                    <div class="compatibility-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00.11.245c.829.875 2.158.875 3.706.875 1.505 0 3.527-.045 5.388-.611a.422.422 0 00.295-.394V2.93a.424.424 0 00-.446-.423zM10.12 18.324c-1.525 0-2.713-.026-3.39-.694-.403-.398-.363-1.078-.123-1.79.496-1.492 1.575-2.955 2.377-3.903.796-.942 1.136-1.921 1.136-3.149V18.324zm3.09-16.388c.156 0 .316.008.48.021 4.226.333 3.105 4.807 3.17 6.298.076 1.092.3 1.953 1.05 3.02.885 1.051 2.127 2.75 2.716 4.521.278.832.41 1.684.287 2.489a.424.424 0 01-.11.245c-.829.875-2.158.875-3.706.875-1.505 0-3.527-.045-5.388-.611a.422.422 0 01-.295-.394V2.93a.424.424 0 01.446-.423zM14.88 18.324c1.525 0 2.713-.026 3.39-.694.403-.398.363-1.078.123-1.79-.496-1.492-1.575-2.955-2.377-3.903-.796-.942-1.136-1.921-1.136-3.149V18.324z"/>
+                        </svg>
+                        <span>Linux</span>
+                    </div>
+                    <div class="compatibility-item">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/>
+                        </svg>
+                        <span>Smart TVs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to transform your phone?</h2>
+                <p class="cta-subtitle">
+                    Download WindPad and experience the freedom of wireless control.
+                </p>
+                <a href="download.html" class="btn btn-primary btn-large">
+                    <span>Download Now</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-links-column">
+                    <h4>Product</h4>
+                    <a href="features.html">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="control-center.html">Control Center</a>
+                    <a href="download.html">Download</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Resources</h4>
+                    <a href="use-cases.html">Use Cases</a>
+                    <a href="about.html">About</a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener">GitHub</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">License</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 WindPad. Open source and free forever.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <script>
+        // Hide loading screen when page is loaded
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.remove();
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>

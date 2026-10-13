@@ -133,7 +133,7 @@ function initHeroInteractiveTrackpad() {
    4. CARD SPOTLIGHT HOVER EFFECT (Mouse-tracking glow)
    ========================================================================== */
 function initCardSpotlight() {
-    const cards = document.querySelectorAll('.bento-card, .showcase-h-card, .comparison-card, .platform-card, .usecase-card, .helper-banner, .contact-box');
+    const cards = document.querySelectorAll('.bento-card, .showcase-h-card, .comparison-card, .platform-card, .usecase-card, .contact-box');
 
     cards.forEach(card => {
         card.addEventListener('mousemove', (e) => {

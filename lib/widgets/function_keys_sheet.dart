@@ -216,8 +216,11 @@ class _FunctionKeysSheetState extends State<FunctionKeysSheet> {
       shape: const CircleBorder(),
       child: InkWell(
         onTap: () {
-          if (isMedia) widget.btService.sendMedia(hid);
-          else _sendTap(hid);
+          if (isMedia) {
+            widget.btService.sendMedia(hid);
+          } else {
+            _sendTap(hid);
+          }
         },
         customBorder: const CircleBorder(),
         child: Padding(

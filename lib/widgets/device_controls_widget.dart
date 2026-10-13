@@ -23,7 +23,6 @@ class DeviceControlsWidget extends StatelessWidget {
       case DeviceType.linux:
         return _buildLinuxControls(context);
       case DeviceType.pc:
-      default:
         return _buildWindowsControls(context);
     }
   }

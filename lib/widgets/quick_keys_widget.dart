@@ -63,6 +63,9 @@ class QuickKeysWidget extends StatelessWidget {
   }
 
   void _handleAction(String action, BluetoothHidService btService) {
+    if (btService.isTyping) {
+      btService.stopTyping();
+    }
     switch (action) {
       case "copy":
         btService.sendKey(0x01, [0x06]); // Ctrl+C

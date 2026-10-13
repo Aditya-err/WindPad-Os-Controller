@@ -1,8 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import '../services/bluetooth_hid_service.dart';
 import '../services/gesture_detector.dart';
+import 'device_picker_sheet.dart';
 
 class TouchpadWidget extends StatelessWidget {
   const TouchpadWidget({super.key});
@@ -24,27 +26,10 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
   late WindpadGestureDetector _gestureHandler;
   Offset _cursorPos = const Offset(0.5, 0.5);
   final List<RippleData> _ripples = [];
+  double _wheelOffset = 0.0;
+  double _scrollAccumulator = 0.0;
 
 
-  Timer? _scrollTimer;
-
-  void _startAutoScroll(bool up, BluetoothHidService btService) {
-    _scrollTimer?.cancel();
-    _scrollTimer = Timer.periodic(const Duration(milliseconds: 80), (_) {
-      btService.sendScroll(up ? 3 : -3);
-    });
-  }
-
-  void _stopAutoScroll() {
-    _scrollTimer?.cancel();
-    _scrollTimer = null;
-  }
-
-  @override
-  void dispose() {
-    _stopAutoScroll();
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -73,17 +58,11 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
     final activeGest = btService.activeGesture;
     final pinchPop = btService.pinchPop;
     final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [BoxShadow(offset: const Offset(0, 1), blurRadius: 3, color: cs.shadow.withValues(alpha: 0.1))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
           // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -111,146 +90,223 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          // Touchpad Surface
-          Expanded(
+          const SizedBox(height: 10),
+          // Touchpad Surface (Compact AspectRatio ~1.42 matching home page.jpg)
+          AspectRatio(
+            aspectRatio: 1.42,
             child: LayoutBuilder(
               builder: (context, constraints) {
-                return Listener(
-                  onPointerDown: (e) => _gestureHandler.handlePointerDown(e),
-                  onPointerMove: (e) {
-                    _gestureHandler.handlePointerMove(e);
-                    if (isConn) {
-                      final box = context.findRenderObject() as RenderBox;
-                      final localPos = box.globalToLocal(e.position);
-                      setState(() {
-                        _cursorPos = Offset(
-                          localPos.dx.clamp(0.0, box.size.width) / box.size.width,
-                          localPos.dy.clamp(0.0, box.size.height) / box.size.height,
-                        );
-                      });
-                    }
-                  },
-                  onPointerCancel: (e) => _gestureHandler.handlePointerCancel(e),
-                  onPointerUp: (e) {
-                    _gestureHandler.handlePointerUp(e);
-                    if (isConn && activeGest != null && (activeGest == "singleTap" || activeGest == "twoTap")) {
-                      _addRipple(_cursorPos, cs.primary.withValues(alpha: 0.18));
-                    }
-                  },
+                final trackpadWidth = constraints.maxWidth;
+                final trackpadHeight = constraints.maxHeight;
+
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isConn ? btService.trackpadColor : cs.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: isConn ? cs.primaryContainer : cs.outlineVariant, width: 1),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          if (isConn) CustomPaint(painter: DotGridPainter(color: cs.primaryContainer), size: Size.infinite),
-                          ..._ripples.map((r) => Positioned(
-                                left: r.pos.dx * constraints.maxWidth,
-                                top: r.pos.dy * constraints.maxHeight,
-                                child: RippleWidget(color: r.color),
-                              )),
-                          if (isConn) ...[
-                            AnimatedPositioned(
-                              duration: const Duration(milliseconds: 40),
-                              left: _cursorPos.dx * constraints.maxWidth - 24,
-                              top: _cursorPos.dy * constraints.maxHeight - 24,
-                              child: Container(
-                                width: 48, height: 48,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  gradient: RadialGradient(colors: [cs.primary.withValues(alpha: 0.3), Colors.transparent], stops: const [0.0, 0.7]),
-                                ),
-                              ),
-                            ),
-                            AnimatedPositioned(
-                              duration: const Duration(milliseconds: 40),
-                              left: _cursorPos.dx * constraints.maxWidth - 2,
-                              top: _cursorPos.dy * constraints.maxHeight - 2,
-                              child: MouseCursorWidget(color: cs.primary),
-                            ),
-                          ],
-                          if (pinchPop != null)
-                            Center(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: cs.surfaceContainerHighest,
-                                  border: Border.all(color: cs.outline.withValues(alpha: 0.3)),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text("🔍 $pinchPop", style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w500, fontSize: 13)),
-                              ),
-                            ),
-                          if (!isConn)
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Opacity(
-                                    opacity: 0.3,
-                                    child: CustomPaint(painter: CursorPainter(color: cs.outlineVariant, shadowColor: cs.outline), size: const Size(20, 24)),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    btService.state == BluetoothState.scanning ? "Connecting via Bluetooth…" : "Tap Connect to get started",
-                                    style: TextStyle(color: cs.outline, fontSize: 13, fontWeight: FontWeight.w500),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ],
+                      color: isConn ? btService.trackpadColor : (isDark ? const Color(0xFF1B1E28) : cs.surfaceContainerHigh),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: isConn
+                            ? (isDark ? Colors.transparent : cs.outlineVariant)
+                            : (isDark ? const Color(0xFF282C3A) : cs.outlineVariant),
+                        width: 1,
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 10),
-          // Buttons
-          Row(
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // 1. Independent Gesture Pointer Area
+                        Positioned.fill(
+                          child: Listener(
+                        onPointerDown: (e) => _gestureHandler.handlePointerDown(e),
+                        onPointerMove: (e) {
+                          _gestureHandler.handlePointerMove(e);
+                          if (isConn && trackpadWidth > 0 && constraints.maxHeight > 0) {
+                            setState(() {
+                              _cursorPos = Offset(
+                                e.localPosition.dx.clamp(0.0, trackpadWidth) / trackpadWidth,
+                                e.localPosition.dy.clamp(0.0, constraints.maxHeight) / constraints.maxHeight,
+                              );
+                            });
+                          }
+                        },
+                        onPointerCancel: (e) => _gestureHandler.handlePointerCancel(e),
+                        onPointerUp: (e) {
+                          _gestureHandler.handlePointerUp(e);
+                          if (isConn && activeGest != null && (activeGest == "singleTap" || activeGest == "twoTap")) {
+                            _addRipple(_cursorPos, cs.primary.withValues(alpha: 0.18));
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isConn ? btService.trackpadColor : cs.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: isConn ? cs.primaryContainer : cs.outlineVariant, width: 1),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                if (isConn) CustomPaint(painter: DotGridPainter(color: cs.primaryContainer), size: Size.infinite),
+                                ..._ripples.map((r) => Positioned(
+                                      left: r.pos.dx * trackpadWidth,
+                                      top: r.pos.dy * constraints.maxHeight,
+                                      child: RippleWidget(color: r.color),
+                                    )),
+                                if (isConn) ...[
+                                  AnimatedPositioned(
+                                    duration: const Duration(milliseconds: 40),
+                                    left: _cursorPos.dx * trackpadWidth - 24,
+                                    top: _cursorPos.dy * constraints.maxHeight - 24,
+                                    child: Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: RadialGradient(
+                                          colors: [cs.primary.withValues(alpha: 0.3), Colors.transparent],
+                                          stops: const [0.0, 0.7],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  AnimatedPositioned(
+                                    duration: const Duration(milliseconds: 40),
+                                    left: _cursorPos.dx * trackpadWidth - 2,
+                                    top: _cursorPos.dy * constraints.maxHeight - 2,
+                                    child: MouseCursorWidget(color: cs.primary),
+                                  ),
+                                ],
+                                if (pinchPop != null)
+                                  Center(
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: cs.surfaceContainerHighest,
+                                        border: Border.all(color: cs.outline.withValues(alpha: 0.3)),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        "🔍 $pinchPop",
+                                        style: TextStyle(color: cs.onSurface, fontWeight: FontWeight.w500, fontSize: 13),
+                                      ),
+                                    ),
+                                  ),
+                                if (!isConn)
+                                  Center(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: () => showDevicePickerSheet(context, btService, cs),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Opacity(
+                                            opacity: 0.3,
+                                            child: CustomPaint(
+                                              painter: CursorPainter(color: cs.outlineVariant, shadowColor: cs.outline),
+                                              size: const Size(20, 24),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            btService.state == BluetoothState.scanning ? "Connecting via Bluetooth…" : "Tap here to connect device",
+                                            style: TextStyle(color: cs.outline, fontSize: 13, fontWeight: FontWeight.w500),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // 2. Slim (14px) & Compact (64px) Mechanical Mouse Wheel (Docked on Right Edge)
+                    Positioned(
+                      right: 8,
+                      top: (trackpadHeight - 64) / 2,
+                      child: _buildMechanicalMouseWheel(btService, cs, isDark, isConn),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      const SizedBox(height: 10),
+      // 3 Buttons exactly matching user's design: Left Click, Right Click, Up/Down Scroll
+      Row(
             children: [
-              _buildClickBtn("Left Click", "◀", cs.primaryContainer, cs.onPrimaryContainer, () => isConn ? btService.sendMouseClick(1) : null, isConn, cs),
+              _buildClickBtn(
+                "Left Click",
+                "◀",
+                isDark ? const Color(0xFF02538D) : cs.primaryContainer,
+                isDark ? Colors.white : cs.onPrimaryContainer,
+                () => isConn ? btService.sendMouseClick(1) : null,
+                isConn,
+                cs,
+              ),
               const SizedBox(width: 8),
-              _buildClickBtn("Right Click", "▶", cs.tertiaryContainer, cs.onTertiaryContainer, () => isConn ? btService.sendMouseClick(2) : null, isConn, cs),
+              _buildClickBtn(
+                "Right Click",
+                "▶",
+                isDark ? const Color(0xFF45334E) : cs.tertiaryContainer,
+                isDark ? Colors.white : cs.onTertiaryContainer,
+                () => isConn ? btService.sendMouseClick(2) : null,
+                isConn,
+                cs,
+              ),
               const SizedBox(width: 8),
-              _buildScrollBtn(isConn, btService, cs),
+              _buildScrollBtn(isConn, btService, cs, isDark),
             ],
           ),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildClickBtn(String label, String icon, Color bg, Color txt, VoidCallback? onTap, bool isConn, ColorScheme cs) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: SizedBox(
-        height: 76,
+        height: 74,
         child: Material(
-          color: isConn ? bg : cs.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
-          elevation: isConn ? 3 : 0,
-          shadowColor: cs.shadow.withValues(alpha: 0.5),
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
-          ),
+          color: isConn ? bg : (isDark ? const Color(0xFF1B1E28) : cs.surfaceContainerHigh),
+          borderRadius: BorderRadius.circular(18),
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(icon, style: TextStyle(fontSize: 18, color: isConn ? txt : cs.outline)),
-                const SizedBox(height: 4),
-                Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 0.5, color: isConn ? txt : cs.outline)),
+                // Amber/Orange rounded box with arrow matching home page.jpg
+                Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: isConn ? const Color(0xFFFF8F00) : (isDark ? const Color(0xFF333846) : cs.outlineVariant),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Center(
+                    child: Text(
+                      icon,
+                      style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.3,
+                    color: isConn ? Colors.white : (isDark ? const Color(0xFF7E8594) : cs.outline),
+                  ),
+                ),
               ],
             ),
           ),
@@ -259,47 +315,96 @@ class _TouchpadInternalState extends State<_TouchpadInternal> with SingleTickerP
     );
   }
 
-  Widget _buildScrollBtn(bool isConn, BluetoothHidService btService, ColorScheme cs) {
+  // ── Realistic Physical Mechanical Mouse Scroll Wheel (Slim 14px × Compact 64px) ──
+  Widget _buildMechanicalMouseWheel(BluetoothHidService btService, ColorScheme cs, bool isDark, bool isConn) {
+    final wellColor = isDark ? const Color(0xFF13151D) : const Color(0xFFDCE0E8);
+    final borderColor = isDark ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.15);
+
+    return Container(
+      width: 14,
+      height: 64,
+      decoration: BoxDecoration(
+        color: wellColor,
+        borderRadius: BorderRadius.circular(7),
+        border: Border.all(color: borderColor, width: 0.9),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.15),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(7),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (isConn) {
+                btService.sendMouseClick(4); // Middle Click (wheel click)
+                if (btService.hapticFeedback) HapticFeedback.mediumImpact();
+              }
+            },
+            onVerticalDragUpdate: (details) {
+              final delta = details.primaryDelta ?? 0.0;
+              setState(() {
+                _wheelOffset += delta;
+              });
+              if (!isConn) return;
+              _scrollAccumulator += delta;
+              const threshold = 10.0; // 10 pixels per scroll notch
+              if (_scrollAccumulator.abs() >= threshold) {
+                final notches = -(_scrollAccumulator / threshold).toInt();
+                if (notches != 0) {
+                  btService.sendScroll(notches);
+                  if (btService.hapticFeedback) HapticFeedback.selectionClick();
+                  _scrollAccumulator -= (-notches * threshold);
+                }
+              }
+            },
+            onVerticalDragEnd: (_) {
+              _scrollAccumulator = 0.0;
+            },
+            child: CustomPaint(
+              painter: _MechanicalWheelPainter(
+                offset: _wheelOffset,
+                isDark: isDark,
+                primaryColor: cs.primary,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+  Widget _buildScrollBtn(bool isConn, BluetoothHidService btService, ColorScheme cs, bool isDark) {
+    final btnBg = isDark ? const Color(0xFF2A3442) : cs.surfaceContainerHigh;
+    final iconColor = isDark ? Colors.white : cs.onSurfaceVariant;
     return Expanded(
       child: SizedBox(
-        height: 76,
+        height: 74,
         child: Material(
-          color: isConn ? cs.secondaryContainer : cs.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(16),
-          elevation: isConn ? 3 : 0,
-          shadowColor: cs.shadow.withValues(alpha: 0.5),
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: isConn ? cs.outlineVariant.withValues(alpha: 0.5) : Colors.transparent, width: 1),
-          ),
+          color: isConn ? btnBg : (isDark ? const Color(0xFF1B1E28) : cs.surfaceContainerHigh),
+          borderRadius: BorderRadius.circular(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: isConn ? (_) => btService.sendScroll(1) : null,
-                  onLongPressStart: isConn ? (_) => _startAutoScroll(true, btService) : null,
-                  onLongPressEnd: isConn ? (_) => _stopAutoScroll() : null,
-                  onLongPressCancel: isConn ? () => _stopAutoScroll() : null,
-                  child: Container(
-                    decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-                    child: Center(child: Icon(Icons.arrow_drop_up, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                child: InkWell(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                  onTap: isConn ? () => btService.sendScroll(1) : null,
+                  child: Center(
+                    child: Icon(Icons.arrow_drop_up, size: 28, color: isConn ? iconColor : (isDark ? const Color(0xFF7E8594) : cs.outline)),
                   ),
                 ),
               ),
-              Container(height: 1, color: isConn ? cs.onSecondaryContainer.withValues(alpha: 0.15) : cs.outlineVariant),
+              Container(height: 1, color: isDark ? Colors.white.withValues(alpha: 0.12) : cs.outlineVariant),
               Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: isConn ? (_) => btService.sendScroll(-1) : null,
-                  onLongPressStart: isConn ? (_) => _startAutoScroll(false, btService) : null,
-                  onLongPressEnd: isConn ? (_) => _stopAutoScroll() : null,
-                  onLongPressCancel: isConn ? () => _stopAutoScroll() : null,
-                  child: Container(
-                    decoration: const BoxDecoration(borderRadius: BorderRadius.vertical(bottom: Radius.circular(16))),
-                    child: Center(child: Icon(Icons.arrow_drop_down, size: 30, color: isConn ? cs.onSecondaryContainer : cs.outline)),
+                child: InkWell(
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(18)),
+                  onTap: isConn ? () => btService.sendScroll(-1) : null,
+                  child: Center(
+                    child: Icon(Icons.arrow_drop_down, size: 28, color: isConn ? iconColor : (isDark ? const Color(0xFF7E8594) : cs.outline)),
                   ),
                 ),
               ),
@@ -462,3 +567,137 @@ final List<Map<String, dynamic>> kGestureDefinitions = [
   {"id": "pinch", "action": "Zoom In/Out", "icon": "🤏"},
   {"id": "threeSwipe", "action": "App Switch", "icon": "🖖"},
 ];
+
+class _MechanicalWheelPainter extends CustomPainter {
+  final double offset;
+  final bool isDark;
+  final Color primaryColor;
+
+  _MechanicalWheelPainter({
+    required this.offset,
+    required this.isDark,
+    required this.primaryColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double w = size.width;
+    final double h = size.height;
+
+    // Wheel dimensions (Slim & Compact)
+    const double wheelWidth = 16.0;
+    final double left = (w - wheelWidth) / 2;
+    final double right = left + wheelWidth;
+
+    // 1. Wheel Base Cylinder
+    final wheelRect = Rect.fromLTRB(left, 0, right, h);
+    final baseGradient = LinearGradient(
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: isDark
+          ? const [
+              Color(0xFF1E2026),
+              Color(0xFF383B46),
+              Color(0xFF282A33),
+            ]
+          : const [
+              Color(0xFFBEC2CE),
+              Color(0xFFE8EBF2),
+              Color(0xFFCDD1DC),
+            ],
+      stops: const [0.0, 0.45, 1.0],
+    );
+    canvas.drawRect(wheelRect, Paint()..shader = baseGradient.createShader(wheelRect));
+
+    // 2. Left & Right Metallic Edge Rims
+    final rimPaint = Paint()
+      ..color = isDark ? Colors.white.withValues(alpha: 0.15) : Colors.black.withValues(alpha: 0.18)
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(Offset(left + 0.5, 0), Offset(left + 0.5, h), rimPaint);
+    canvas.drawLine(Offset(right - 0.5, 0), Offset(right - 0.5, h), rimPaint);
+
+    // 3. 3D Cylindrical Rubber Traction Ridges (Tire Treads)
+    const double ridgeSpacing = 10.0;
+    final double startY = (offset % ridgeSpacing) - ridgeSpacing;
+    final int count = (h / ridgeSpacing).ceil() + 3;
+
+    final highlightPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4
+      ..strokeCap = StrokeCap.round;
+
+    final groovePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..strokeCap = StrokeCap.round;
+
+    for (int i = 0; i < count; i++) {
+      final double y = startY + i * ridgeSpacing;
+      if (y < -3 || y > h + 3) continue;
+
+      // Cylindrical perspective foreshortening factor (-1 at top, 0 at center, +1 at bottom)
+      final double normalized = ((y - h / 2) / (h / 2)).clamp(-1.0, 1.0);
+      final double perspective = 1.0 - (normalized * normalized * 0.6);
+
+      // Highlight line (upper ridge edge)
+      highlightPaint.color = isDark
+          ? Colors.white.withValues(alpha: 0.28 * perspective)
+          : Colors.white.withValues(alpha: 0.85 * perspective);
+      canvas.drawLine(Offset(left + 2, y), Offset(right - 2, y), highlightPaint);
+
+      // Deep Shadow line (lower groove)
+      groovePaint.color = isDark
+          ? Colors.black.withValues(alpha: 0.75 * perspective)
+          : Colors.black.withValues(alpha: 0.40 * perspective);
+      canvas.drawLine(Offset(left + 2, y + 1.6), Offset(right - 2, y + 1.6), groovePaint);
+    }
+
+    // 4. Center Specular Axis Glow
+    final centerGlowRect = Rect.fromLTRB(left + wheelWidth * 0.35, 0, left + wheelWidth * 0.55, h);
+    final glowPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: isDark ? 0.08 : 0.25),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+      ).createShader(centerGlowRect);
+    canvas.drawRect(centerGlowRect, glowPaint);
+
+    // 5. Top & Bottom Cylindrical Curve Shadow Vignette (Rolling into the mouse cavity)
+    final topShadowRect = Rect.fromLTRB(left, 0, right, 18);
+    final topShadowPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.black.withValues(alpha: isDark ? 0.95 : 0.70),
+          Colors.black.withValues(alpha: isDark ? 0.40 : 0.25),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.55, 1.0],
+      ).createShader(topShadowRect);
+    canvas.drawRect(topShadowRect, topShadowPaint);
+
+    final bottomShadowRect = Rect.fromLTRB(left, h - 18, right, h);
+    final bottomShadowPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.bottomCenter,
+        end: Alignment.topCenter,
+        colors: [
+          Colors.black.withValues(alpha: isDark ? 0.95 : 0.70),
+          Colors.black.withValues(alpha: isDark ? 0.40 : 0.25),
+          Colors.transparent,
+        ],
+        stops: const [0.0, 0.55, 1.0],
+      ).createShader(bottomShadowRect);
+    canvas.drawRect(bottomShadowRect, bottomShadowPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _MechanicalWheelPainter oldDelegate) =>
+      oldDelegate.offset != offset || oldDelegate.isDark != isDark;
+}

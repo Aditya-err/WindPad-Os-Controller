@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — WindPad</title>
+    <meta name="description" content="Learn about WindPad's open source story, vision, roadmap, and how to contribute. Built by developers, for developers.">
+    
+    <!-- Open Graph Meta -->
+    <meta property="og:title" content="About — WindPad">
+    <meta property="og:description" content="Learn about WindPad's open source story, vision, roadmap, and how to contribute. Built by developers, for developers.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/windpad.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/windpad.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/about.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </a>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="features.html" class="nav-link">Features</a>
+                <a href="how-it-works.html" class="nav-link">How It Works</a>
+                <a href="control-center.html" class="nav-link">Control Center</a>
+                <a href="use-cases.html" class="nav-link">Use Cases</a>
+                <a href="download.html" class="nav-link">Download</a>
+                <a href="about.html" class="nav-link active">About</a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Header -->
+    <section class="about-header">
+        <div class="about-header-container">
+            <div class="about-header-content">
+                <span class="about-tag">Open Source</span>
+                <h1 class="about-title">
+                    <span class="about-title-line">Built by developers.</span>
+                    <span class="about-title-line about-title-line--accent">For everyone.</span>
+                </h1>
+                <p class="about-subtitle">
+                    WindPad is 100% open source, free forever, and built with transparency. 
+                    No hidden agendas, no data collection, no compromises — just great software.
+                </p>
+                
+                <div class="about-cta">
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        <span>View on GitHub</span>
+                    </a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/issues" target="_blank" rel="noopener" class="btn btn-secondary">
+                        <span>Report Issues</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="story-section">
+        <div class="story-container">
+            <div class="story-content">
+                <h2 class="story-title">The Story</h2>
+                <div class="story-text">
+                    <p>
+                        WindPad was born from a simple frustration: why should controlling your computer 
+                        require installing yet another background service, dealing with network configurations, 
+                        or relying on proprietary apps that track your data?
+                    </p>
+                    <p>
+                        The answer seemed obvious — leverage the Bluetooth HID protocol that every 
+                        operating system already supports. By making your Android phone appear as a 
+                        standard mouse and keyboard, you eliminate the middleman entirely.
+                    </p>
+                    <p>
+                        What started as a personal project to control a media center PC has evolved into 
+                        a comprehensive input solution used by developers, content creators, students, 
+                        and accessibility users worldwide.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="story-visual">
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <div class="code-block-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span class="code-block-language">README.md</span>
+                    </div>
+                    <div class="code-block-content">
+                        <pre><code># WindPad
+Turn your Android phone into a Bluetooth 
+HID mouse, trackpad and keyboard.
+
+## Why WindPad?
+- No receiver app required
+- Works offline via Bluetooth
+- 100% open source
+- No ads, no tracking
+
+## Getting Started
+1. Download the APK
+2. Install on your Android device
+3. Pair via Bluetooth
+4. Start controlling</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section class="vision-section">
+        <div class="vision-container">
+            <div class="vision-header">
+                <h2 class="vision-title">Our Vision</h2>
+                <p class="vision-subtitle">
+                    Computing should be accessible, flexible, and free from unnecessary barriers.
+                </p>
+            </div>
+            
+            <div class="vision-principles">
+                <div class="principle-card">
+                    <div class="principle-number">01</div>
+                    <h3>Open by Default</h3>
+                    <p>
+                        Every line of code is public. Every decision is transparent. 
+                        No hidden features, no telemetry, no data collection.
+                    </p>
+                </div>
+                
+                <div class="principle-card">
+                    <div class="principle-number">02</div>
+                    <h3>Free Forever</h3>
+                    <p>
+                        WindPad will never have premium features, subscriptions, or paywalls. 
+                        It's free because software freedom matters.
+                    </p>
+                </div>
+                
+                <div class="principle-card">
+                    <div class="principle-number">03</div>
+                    <h3>Community Driven</h3>
+                    <p>
+                        Features, bug fixes, and improvements come from the community. 
+                        Your contributions shape WindPad's future.
+                    </p>
+                </div>
+                
+                <div class="principle-card">
+                    <div class="principle-number">04</div>
+                    <h3>Privacy First</h3>
+                    <p>
+                        Your input stays on your device. No cloud processing, 
+                        no data transmission, no account required.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section class="roadmap-section">
+        <div class="roadmap-container">
+            <div class="roadmap-header">
+                <h2 class="roadmap-title">Roadmap</h2>
+                <p class="roadmap-subtitle">
+                    What's next for WindPad. These are our planned features and improvements.
+                </p>
+            </div>
+            
+            <div class="roadmap-timeline">
+                <div class="roadmap-item roadmap-item--completed">
+                    <div class="roadmap-marker">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-status">Completed</div>
+                        <h3>Bluetooth HID Core</h3>
+                        <p>Full mouse and keyboard support via standard Bluetooth HID protocol.</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item roadmap-item--completed">
+                    <div class="roadmap-marker">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-status">Completed</div>
+                        <h3>Multi-touch Gestures</h3>
+                        <p>Scroll, pinch-to-zoom, and three-finger swipe gestures.</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item roadmap-item--completed">
+                    <div class="roadmap-marker">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-status">Completed</div>
+                        <h3>Smart Clipboard</h3>
+                        <p>Send text directly from phone clipboard to PC.</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item roadmap-item--inprogress">
+                    <div class="roadmap-marker">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6M12 18h.01"/>
+                        </svg>
+                    </div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-status">In Progress</div>
+                        <h3>Custom Gesture Mapping</h3>
+                        <p>Define your own gestures and map them to custom actions.</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item roadmap-item--planned">
+                    <div class="roadmap-marker">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="16"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-status">Planned</div>
+                        <h3>Extended Media Controls</h3>
+                        <p>Additional media keys and platform-specific controls.</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item roadmap-item--planned">
+                    <div class="roadmap-marker">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="16"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-status">Planned</div>
+                        <h3>Additional Keyboard Layouts</h3>
+                        <p>Support for international keyboard layouts and languages.</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item roadmap-item--planned">
+                    <div class="roadmap-marker">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="16"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                        </svg>
+                    </div>
+                    <div class="roadmap-content">
+                        <div class="roadmap-status">Planned</div>
+                        <h3>Platform Testing</h3>
+                        <p>Extended compatibility testing across Windows, macOS, and Linux distributions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contribute Section -->
+    <section class="contribute-section">
+        <div class="contribute-container">
+            <div class="contribute-header">
+                <h2 class="contribute-title">Contribute</h2>
+                <p class="contribute-subtitle">
+                    WindPad is open source and welcomes contributions from developers of all skill levels.
+                </p>
+            </div>
+            
+            <div class="contribute-grid">
+                <div class="contribute-card">
+                    <div class="contribute-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                    </div>
+                    <h3>Report Bugs</h3>
+                    <p>
+                        Found a bug? Report it on GitHub with detailed steps to reproduce. 
+                        Include your Android version and device model.
+                    </p>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/issues" target="_blank" rel="noopener" class="contribute-link">
+                        <span>Open an Issue</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="contribute-card">
+                    <div class="contribute-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3>Submit Code</h3>
+                    <p>
+                        Have a feature idea or bug fix? Fork the repository, create a branch, 
+                        and submit a pull request. We review all contributions.
+                    </p>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/pulls" target="_blank" rel="noopener" class="contribute-link">
+                        <span>Submit PR</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="contribute-card">
+                    <div class="contribute-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                        </svg>
+                    </div>
+                    <h3>Improve Docs</h3>
+                    <p>
+                        Documentation is as important as code. Help improve the README, 
+                        add comments, or create guides for other users.
+                    </p>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/tree/main/docs" target="_blank" rel="noopener" class="contribute-link">
+                        <span>View Docs</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                
+                <div class="contribute-card">
+                    <div class="contribute-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <h3>Answer Questions</h3>
+                    <p>
+                        Help other users by answering questions on GitHub Issues. 
+                        Your experience can help newcomers get started.
+                    </p>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller/issues" target="_blank" rel="noopener" class="contribute-link">
+                        <span>Help Users</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- License Section -->
+    <section class="license-section">
+        <div class="license-container">
+            <div class="license-content">
+                <div class="license-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <h2 class="license-title">Open Source License</h2>
+                <p class="license-text">
+                    WindPad is released under an open source license, allowing you to use, modify, 
+                    and distribute the software freely. Check the repository for the specific license terms.
+                </p>
+                <a href="https://github.com/Aditya-err/WindPad-Os-Controller/blob/main/LICENSE" target="_blank" rel="noopener" class="btn btn-secondary">
+                    <span>View License</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2 class="cta-title">Join the community.</h2>
+                <p class="cta-subtitle">
+                    Star the repository, report issues, or contribute code. Every contribution helps.
+                </p>
+                <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener" class="btn btn-primary btn-large">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>Star on GitHub</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-links-column">
+                    <h4>Product</h4>
+                    <a href="features.html">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="control-center.html">Control Center</a>
+                    <a href="download.html">Download</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Resources</h4>
+                    <a href="use-cases.html">Use Cases</a>
+                    <a href="about.html">About</a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener">GitHub</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">License</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 WindPad. Open source and free forever.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/about.js"></script>
+    
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <script>
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.remove();
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 
 class PlatformChannel {
   static const MethodChannel _ch = MethodChannel('com.windpad/hid');
@@ -23,6 +23,14 @@ class PlatformChannel {
 
   static Future<void> startAdvertising() async {
     try { await _ch.invokeMethod('startAdvert'); } on PlatformException catch (_) {}
+  }
+
+  static Future<void> startBleAdvert() async {
+    try { await _ch.invokeMethod('startBleAdvert'); } on PlatformException catch (_) {}
+  }
+
+  static Future<void> stopBleAdvert() async {
+    try { await _ch.invokeMethod('stopBleAdvert'); } on PlatformException catch (_) {}
   }
 
   static Future<void> disconnect() async {

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works — WindPad</title>
+    <meta name="description" content="Learn how WindPad works: Android phone connects via Bluetooth HID protocol to control your PC without any receiver software.">
+    
+    <!-- Open Graph Meta -->
+    <meta property="og:title" content="How It Works — WindPad">
+    <meta property="og:description" content="Learn how WindPad works: Android phone connects via Bluetooth HID protocol to control your PC without any receiver software.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="assets/windpad.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/windpad.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/how-it-works.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </a>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="features.html" class="nav-link">Features</a>
+                <a href="how-it-works.html" class="nav-link active">How It Works</a>
+                <a href="control-center.html" class="nav-link">Control Center</a>
+                <a href="use-cases.html" class="nav-link">Use Cases</a>
+                <a href="download.html" class="nav-link">Download</a>
+                <a href="about.html" class="nav-link">About</a>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <line x1="12" y1="1" x2="12" y2="3"/>
+                        <line x1="12" y1="21" x2="12" y2="23"/>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                        <line x1="1" y1="12" x2="3" y2="12"/>
+                        <line x1="21" y1="12" x2="23" y2="12"/>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- How It Works Header -->
+    <section class="how-header">
+        <div class="how-header-container">
+            <div class="how-header-content">
+                <span class="how-tag">How It Works</span>
+                <h1 class="how-title">
+                    <span class="how-title-line">The technology behind</span>
+                    <span class="how-title-line how-title-line--accent">the magic.</span>
+                </h1>
+                <p class="how-subtitle">
+                    WindPad leverages the native Bluetooth HID protocol to create a direct, 
+                    hardware-level connection between your Android phone and your computer. 
+                    No middleman. No compromise.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Flow -->
+    <section class="technical-flow">
+        <div class="technical-flow-container">
+            <div class="flow-diagram">
+                <!-- Step 1: Android Phone -->
+                <div class="flow-step flow-step--1">
+                    <div class="flow-device flow-device--phone">
+                        <div class="device-screen">
+                            <div class="device-app-icon">
+                                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                            </div>
+                            <div class="device-status">WindPad</div>
+                            <div class="device-indicator device-indicator--active"></div>
+                        </div>
+                    </div>
+                    <div class="flow-info">
+                        <div class="flow-number">01</div>
+                        <h3>Android Phone</h3>
+                        <p>WindPad app captures touch input and gestures</p>
+                    </div>
+                </div>
+
+                <!-- Connection Arrow -->
+                <div class="flow-connection flow-connection--1">
+                    <div class="connection-line">
+                        <div class="connection-pulse"></div>
+                    </div>
+                    <div class="connection-label">
+                        <span>Bluetooth HID</span>
+                        <span>Protocol</span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Bluetooth -->
+                <div class="flow-step flow-step--2">
+                    <div class="flow-device flow-device--bluetooth">
+                        <div class="bluetooth-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 7l10 10-5 5V2l5 5L7 17"/>
+                            </svg>
+                        </div>
+                        <div class="bluetooth-waves">
+                            <div class="wave wave--1"></div>
+                            <div class="wave wave--2"></div>
+                            <div class="wave wave--3"></div>
+                        </div>
+                    </div>
+                    <div class="flow-info">
+                        <div class="flow-number">02</div>
+                        <h3>Bluetooth Radio</h3>
+                        <p>Direct wireless transmission</p>
+                    </div>
+                </div>
+
+                <!-- Connection Arrow -->
+                <div class="flow-connection flow-connection--2">
+                    <div class="connection-line">
+                        <div class="connection-pulse"></div>
+                    </div>
+                    <div class="connection-label">
+                        <span>Hardware</span>
+                        <span>Level</span>
+                    </div>
+                </div>
+
+                <!-- Step 3: PC -->
+                <div class="flow-step flow-step--3">
+                    <div class="flow-device flow-device--pc">
+                        <div class="pc-screen">
+                            <div class="pc-content">
+                                <div class="pc-recognizer">
+                                    <div class="recognizer-icon">🖱️</div>
+                                    <div class="recognizer-text">HID Device Detected</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flow-info">
+                        <div class="flow-number">03</div>
+                        <h3>Your Computer</h3>
+                        <p>Recognized as standard mouse & keyboard</p>
+                    </div>
+                </div>
+
+                <!-- Connection Arrow -->
+                <div class="flow-connection flow-connection--3">
+                    <div class="connection-line">
+                        <div class="connection-pulse"></div>
+                    </div>
+                    <div class="connection-label">
+                        <span>Native</span>
+                        <span>Input</span>
+                    </div>
+                </div>
+
+                <!-- Step 4: Action -->
+                <div class="flow-step flow-step--4">
+                    <div class="flow-device flow-device--action">
+                        <div class="action-display">
+                            <div class="action-cursor"></div>
+                            <div class="action-click"></div>
+                        </div>
+                    </div>
+                    <div class="flow-info">
+                        <div class="flow-number">04</div>
+                        <h3>System Action</h3>
+                        <p>Instant response, zero latency</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Details -->
+    <section class="technical-details">
+        <div class="technical-details-container">
+            <div class="details-header">
+                <h2 class="details-title">Why Bluetooth HID?</h2>
+                <p class="details-subtitle">
+                    The Human Interface Device protocol is the universal standard for input devices. 
+                    Here's why it matters.
+                </p>
+            </div>
+            
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h3>Universal Compatibility</h3>
+                    <p>
+                        Every modern operating system has built-in HID support. 
+                        WindPad works everywhere without drivers or configuration.
+                    </p>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>Ultra-Low Latency</h3>
+                    <p>
+                        Bluetooth radio operates at hardware level with minimal processing overhead. 
+                        Response times comparable to physical peripherals.
+                    </p>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h3>Secure by Design</h3>
+                    <p>
+                        Bluetooth pairing establishes encrypted communication. 
+                        No data leaves the local connection, ensuring privacy.
+                    </p>
+                </div>
+                
+                <div class="detail-card">
+                    <div class="detail-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                            <line x1="12" y1="2" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3>Zero Network Dependency</h3>
+                    <p>
+                        Works completely offline. No Wi-Fi required, no router configuration, 
+                        no firewall issues. Just pair and control.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="comparison">
+        <div class="comparison-container">
+            <div class="comparison-header">
+                <h2 class="comparison-title">The WindPad Difference</h2>
+                <p class="comparison-subtitle">
+                    See how WindPad compares to traditional remote control apps.
+                </p>
+            </div>
+            
+            <div class="comparison-table">
+                <div class="comparison-row comparison-row--header">
+                    <div class="comparison-cell">Feature</div>
+                    <div class="comparison-cell">WindPad</div>
+                    <div class="comparison-cell">Traditional Apps</div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="comparison-cell">PC Software Required</div>
+                    <div class="comparison-cell comparison-cell--good">No</div>
+                    <div class="comparison-cell comparison-cell--bad">Yes</div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="comparison-cell">Network Dependency</div>
+                    <div class="comparison-cell comparison-cell--good">None</div>
+                    <div class="comparison-cell comparison-cell--bad">Wi-Fi Required</div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="comparison-cell">Latency</div>
+                    <div class="comparison-cell comparison-cell--good">Hardware Level</div>
+                    <div class="comparison-cell comparison-cell--bad">Network Dependent</div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="comparison-cell">Platform Support</div>
+                    <div class="comparison-cell comparison-cell--good">Universal</div>
+                    <div class="comparison-cell comparison-cell--bad">Limited</div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="comparison-cell">Privacy</div>
+                    <div class="comparison-cell comparison-cell--good">100% Local</div>
+                    <div class="comparison-cell comparison-cell--bad">Variable</div>
+                </div>
+                
+                <div class="comparison-row">
+                    <div class="comparison-cell">Cost</div>
+                    <div class="comparison-cell comparison-cell--good">Free Forever</div>
+                    <div class="comparison-cell comparison-cell--bad">Often Paid</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example -->
+    <section class="code-example">
+        <div class="code-example-container">
+            <div class="code-header">
+                <span class="code-tag">Technical</span>
+                <h2 class="code-title">Under the Hood</h2>
+                <p class="code-subtitle">
+                    WindPad uses Android's BluetoothHidDevice API to register as a HID device.
+                </p>
+            </div>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <div class="code-block-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span class="code-block-language">Kotlin</span>
+                </div>
+                <pre class="code-content"><code>// Register WindPad as a Bluetooth HID device
+val hidDevice = bluetoothAdapter.getProfileProxy(context, object : BluetoothHidDevice.Callback() {
+    override fun onAppStatusChanged(pl: BluetoothHidDevice, registered: Boolean) {
+        if (registered) {
+            // WindPad is now recognized as a mouse/keyboard
+            Log.d("WindPad", "HID device registered successfully")
+        }
+    }
+    
+    override fun onConnectionStateChanged(device: BluetoothDevice, state: Int) {
+        when (state) {
+            BluetoothHidDevice.STATE_CONNECTED -> {
+                // Connected to PC - ready to send input
+                Log.d("WindPad", "Connected to ${device.name}")
+            }
+            BluetoothHidDevice.STATE_DISCONNECTED -> {
+                // Connection lost
+                Log.d("WindPad", "Disconnected from ${device.name}")
+            }
+        }
+    }
+}, BluetoothProfile.HID_DEVICE)
+
+// Send mouse movement report
+fun sendMouseMove(x: Int, y: Int) {
+    val report = byteArrayOf(
+        0x01, // Report ID for mouse
+        x.toByte(), // X movement
+        y.toByte(), // Y movement
+        0x00  // Button state
+    )
+    hidDevice.setReport(hostDevice, REPORT_TYPE_OUTPUT, report)
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to experience the technology?</h2>
+                <p class="cta-subtitle">
+                    Download WindPad and see the Bluetooth HID magic in action.
+                </p>
+                <a href="download.html" class="btn btn-primary btn-large">
+                    <span>Download Now</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="assets/windpad.png" alt="WindPad" width="40" height="40">
+                <span>WindPad</span>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-links-column">
+                    <h4>Product</h4>
+                    <a href="features.html">Features</a>
+                    <a href="how-it-works.html">How It Works</a>
+                    <a href="control-center.html">Control Center</a>
+                    <a href="download.html">Download</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Resources</h4>
+                    <a href="use-cases.html">Use Cases</a>
+                    <a href="about.html">About</a>
+                    <a href="https://github.com/Aditya-err/WindPad-Os-Controller" target="_blank" rel="noopener">GitHub</a>
+                </div>
+                <div class="footer-links-column">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">License</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 WindPad. Open source and free forever.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/how-it-works.js"></script>
+    
+    <!-- Loading Screen -->
+    <div class="loading" id="loadingScreen">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <script>
+        window.addEventListener('load', () => {
+            const loadingScreen = document.getElementById('loadingScreen');
+            if (loadingScreen) {
+                loadingScreen.classList.add('hidden');
+                setTimeout(() => {
+                    loadingScreen.remove();
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>

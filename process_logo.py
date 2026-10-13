@@ -1,8 +1,8 @@
 from PIL import Image
 import os
 
-# Load the original logo from windpad-server
-img = Image.open('windpad-server/windpad.png').convert('RGBA')
+# Load the original logo from project root
+img = Image.open('windpad.png').convert('RGBA')
 
 # Resize to 1024x1024 master
 master = img.resize((1024, 1024), Image.LANCZOS)

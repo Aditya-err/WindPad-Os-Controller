@@ -84,13 +84,6 @@ WindPad transforms your Android device into a low-latency, fully functional Blue
 ```
 By leveraging the native `BluetoothHidDevice` API in Android, WindPad communicates exactly like a standard physical mouse or keyboard would, bypassing the need for any proprietary receiver software.
 
-## 🛠️ Windows Helper (Optional)
-
-For users wanting the ultimate experience on Windows, the included **Windpad Helper** (`windpad-server`) is an *optional*, Windows-only companion application.
-- Provides advanced cursor acceleration and low-pass filtering.
-- Enables special quick-keys for power users.
-- *Note: WindPad itself does not require this helper for basic HID functionality.*
-
 ## 🔒 Privacy
 
 WindPad respects your privacy by design:

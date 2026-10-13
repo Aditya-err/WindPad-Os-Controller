@@ -6,6 +6,10 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.bluetooth.*
+import android.bluetooth.le.AdvertiseCallback
+import android.bluetooth.le.AdvertiseData
+import android.bluetooth.le.AdvertiseSettings
+import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,6 +18,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.ParcelUuid
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -37,17 +42,21 @@ class BtHidForegroundService : Service() {
     private var hidDevice: BluetoothHidDevice? = null
     var hostDevice: BluetoothDevice? = null
     private val adapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private var bleAdvertiser: BluetoothLeAdvertiser? = null
+    private var advertiseCallback: AdvertiseCallback? = null
+    private var isAdvertising = false
 
     var onStateChanged: ((String, String?, String?) -> Unit)? = null
 
-    private var reconnectRetries = 0
-    private val maxRetries = 10
+    private var userExplicitlyDisconnected = false
+    private val reconnectHandler = Handler(Looper.getMainLooper())
+    private var reconnectRunnable: Runnable? = null
     private var pingTimer: Timer? = null
 
     private val screenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == Intent.ACTION_SCREEN_ON || intent?.action == Intent.ACTION_USER_PRESENT) {
-                if (hostDevice == null) {
+                if (hostDevice == null && !userExplicitlyDisconnected) {
                     val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
                     val mac = prefs.getString("last_device_mac", "")
                     if (!mac.isNullOrEmpty()) {
@@ -58,16 +67,45 @@ class BtHidForegroundService : Service() {
         }
     }
 
+    private val btStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == BluetoothAdapter.ACTION_STATE_CHANGED) {
+                val state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)
+                if (state == BluetoothAdapter.STATE_TURNING_OFF || state == BluetoothAdapter.STATE_OFF) {
+                    Log.d("BtHidService", "Bluetooth OFF: cancelling reconnect and clearing connection")
+                    cancelAutoReconnect()
+                    stopBleAdvertising()
+                    hostDevice = null
+                    stopPingTimer()
+                    onStateChanged?.invoke("onDisconnected", null, null)
+                    updateNotification(null)
+                } else if (state == BluetoothAdapter.STATE_ON) {
+                    Log.d("BtHidService", "Bluetooth ON: re-initializing profile and auto-connecting")
+                    userExplicitlyDisconnected = false
+                    initProfile()
+                }
+            }
+        }
+    }
+
     private val pairingReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
             if (intent.action == BluetoothDevice.ACTION_PAIRING_REQUEST) {
                 val device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE) ?: return
                 try {
-                    device.javaClass.getMethod("setPairingConfirmation", Boolean::class.java).invoke(device, true)
+                    val method = device.javaClass.getMethod("setPairingConfirmation", Boolean::class.javaPrimitiveType)
+                    method.invoke(device, true)
                     abortBroadcast()
                     Log.d("BtHidService", "Auto-confirmed pairing for ${device.name}")
                 } catch (e: Exception) {
-                    Log.e("BtHidService", "setPairingConfirmation failed", e)
+                    try {
+                        val method = device.javaClass.getMethod("setPairingConfirmation", Boolean::class.java)
+                        method.invoke(device, true)
+                        abortBroadcast()
+                        Log.d("BtHidService", "Auto-confirmed pairing for ${device.name} (boxed)")
+                    } catch (ex: Exception) {
+                        Log.e("BtHidService", "setPairingConfirmation failed", ex)
+                    }
                 }
             }
         }
@@ -94,8 +132,12 @@ class BtHidForegroundService : Service() {
             if (registered) {
                 Log.d("BtHidService", "HID app registered — checking connections")
                 checkAlreadyConnectedDevices()
-                autoConnectLastDevice()
-                tryConnectBondedDevices()
+                if (!userExplicitlyDisconnected) {
+                    autoConnectLastDevice()
+                }
+                if (hostDevice == null) {
+                    startBleAdvertising()
+                }
             }
         }
 
@@ -103,7 +145,9 @@ class BtHidForegroundService : Service() {
             super.onConnectionStateChanged(device, state)
             if (state == BluetoothProfile.STATE_CONNECTED) {
                 hostDevice = device
-                reconnectRetries = 0
+                userExplicitlyDisconnected = false
+                cancelAutoReconnect()
+                stopBleAdvertising()
                 Log.d("BtHidService", "Connected to ${device?.name} (${device?.address})")
                 // Save last connected
                 device?.address?.let { addr ->
@@ -116,23 +160,93 @@ class BtHidForegroundService : Service() {
             } else if (state == BluetoothProfile.STATE_CONNECTING) {
                 onStateChanged?.invoke("onConnecting", device?.name, device?.address)
             } else if (state == BluetoothProfile.STATE_DISCONNECTED) {
-                val isBound = device?.bondState == BluetoothDevice.BOND_BONDED
-                if (isBound && reconnectRetries < maxRetries) {
-                    reconnectRetries++
-                    Log.d("BtHidService", "HID disconnected, retrying... ($reconnectRetries/$maxRetries)")
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        device?.address?.let { reconnectLastDevice(it) }
-                    }, 2000)
+                hostDevice = null
+                stopPingTimer()
+                onStateChanged?.invoke("onDisconnected", null, null)
+                updateNotification(null)
+
+                // Resume BLE advertising so Smart TVs & hosts can discover and reconnect
+                startBleAdvertising()
+
+                // Persistent auto-reconnect: keep connection alive unless user explicitly requested disconnect or BT is off
+                if (!userExplicitlyDisconnected) {
+                    val prefs = getSharedPreferences("WindpadPrefs", Context.MODE_PRIVATE)
+                    val lastMac = prefs.getString("last_device_mac", "") ?: device?.address ?: ""
+                    if (lastMac.isNotEmpty()) {
+                        Log.d("BtHidService", "Connection dropped; starting persistent auto-reconnect to $lastMac")
+                        schedulePersistentReconnect(lastMac)
+                    }
                 } else {
-                    hostDevice = null
-                    reconnectRetries = 0
-                    stopPingTimer()
-                    onStateChanged?.invoke("onDisconnected", null, null)
-                    updateNotification(null)
-                    Log.d("BtHidService", "Disconnected")
+                    Log.d("BtHidService", "User explicitly disconnected; not reconnecting automatically")
                 }
             }
         }
+
+        override fun onGetReport(device: BluetoothDevice?, type: Byte, id: Byte, bufferSize: Int) {
+            super.onGetReport(device, type, id, bufferSize)
+            if (device == null) return
+            val emptyReport = when (id.toInt()) {
+                1 -> byteArrayOf(0, 0, 0, 0)
+                2 -> ByteArray(8)
+                3 -> ByteArray(2)
+                else -> ByteArray(0)
+            }
+            try {
+                hidDevice?.replyReport(device, type, id, emptyReport)
+            } catch (e: Exception) {
+                Log.e("BtHidService", "replyReport failed", e)
+            }
+        }
+
+        override fun onSetReport(device: BluetoothDevice?, type: Byte, id: Byte, data: ByteArray?) {
+            super.onSetReport(device, type, id, data)
+            if (device == null) return
+            try {
+                hidDevice?.reportError(device, BluetoothHidDevice.ERROR_RSP_SUCCESS)
+            } catch (e: Exception) {
+                Log.e("BtHidService", "reportError onSetReport failed", e)
+            }
+        }
+
+        override fun onSetProtocol(device: BluetoothDevice?, protocol: Byte) {
+            super.onSetProtocol(device, protocol)
+            if (device == null) return
+            try {
+                hidDevice?.reportError(device, BluetoothHidDevice.ERROR_RSP_SUCCESS)
+            } catch (e: Exception) {
+                Log.e("BtHidService", "reportError onSetProtocol failed", e)
+            }
+        }
+
+        override fun onVirtualCableUnplug(device: BluetoothDevice?) {
+            super.onVirtualCableUnplug(device)
+            Log.d("BtHidService", "Virtual cable unplugged by host: ${device?.name}")
+            hostDevice = null
+            stopPingTimer()
+            onStateChanged?.invoke("onDisconnected", null, null)
+            updateNotification(null)
+            startBleAdvertising()
+        }
+    }
+
+    private fun schedulePersistentReconnect(mac: String) {
+        cancelAutoReconnect()
+        if (userExplicitlyDisconnected || mac.isEmpty()) return
+        reconnectRunnable = object : Runnable {
+            override fun run() {
+                if (hostDevice == null && !userExplicitlyDisconnected && adapter?.isEnabled == true) {
+                    Log.d("BtHidService", "Attempting background auto-reconnect to $mac")
+                    reconnectLastDevice(mac)
+                    reconnectHandler.postDelayed(this, 8000)
+                }
+            }
+        }
+        reconnectHandler.postDelayed(reconnectRunnable!!, 4000)
+    }
+
+    fun cancelAutoReconnect() {
+        reconnectRunnable?.let { reconnectHandler.removeCallbacks(it) }
+        reconnectRunnable = null
     }
 
     override fun onCreate() {
@@ -145,6 +259,9 @@ class BtHidForegroundService : Service() {
         filter.addAction(Intent.ACTION_USER_PRESENT)
         registerReceiver(screenReceiver, filter)
         
+        val btFilter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        registerReceiver(btStateReceiver, btFilter)
+
         // Intercept pairing requests for Just Works
         val pairingFilter = IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST)
         pairingFilter.priority = IntentFilter.SYSTEM_HIGH_PRIORITY
@@ -286,10 +403,10 @@ class BtHidForegroundService : Service() {
             }
             
             val sdpSettings = BluetoothHidDeviceAppSdpSettings(
-                "Windpad Mouse",
+                "Windpad Controller",
                 "Windpad BT HID",
                 "Windpad",
-                BluetoothHidDevice.SUBCLASS1_MOUSE,
+                BluetoothHidDevice.SUBCLASS1_COMBO,
                 HidReportDescriptor.MOUSE_DESCRIPTOR + HidReportDescriptor.KEYBOARD_DESCRIPTOR + HidReportDescriptor.CONSUMER_DESCRIPTOR
             )
             val qosOut = BluetoothHidDeviceAppQosSettings(
@@ -340,6 +457,9 @@ class BtHidForegroundService : Service() {
 
     @SuppressLint("MissingPermission")
     fun disconnect() {
+        userExplicitlyDisconnected = true
+        cancelAutoReconnect()
+        stopBleAdvertising()
         hostDevice?.let { device ->
             adapter?.getProfileProxy(this, object : BluetoothProfile.ServiceListener {
                  override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
@@ -377,8 +497,9 @@ class BtHidForegroundService : Service() {
     @SuppressLint("MissingPermission")
     fun checkAlreadyConnectedDevices() {
         try {
-            val btManager = getSystemService(Context.BLUETOOTH_SERVICE) as android.bluetooth.BluetoothManager
-            val connected = btManager.getConnectedDevices(BluetoothProfile.HID_DEVICE)
+            val connected = hidDevice?.getDevicesMatchingConnectionStates(
+                intArrayOf(BluetoothProfile.STATE_CONNECTED)
+            ) ?: emptyList()
             if (connected.isNotEmpty()) {
                 val device = connected[0]
                 hostDevice = device
@@ -443,10 +564,91 @@ class BtHidForegroundService : Service() {
         }
     }
 
+    @SuppressLint("MissingPermission")
+    fun startBleAdvertising() {
+        if (isAdvertising) return
+        if (adapter == null || !adapter.isEnabled) return
+        cancelAutoReconnect()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_ADVERTISE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                Log.w("BtHidService", "BLUETOOTH_ADVERTISE permission not granted")
+                return
+            }
+        }
+
+        try {
+            bleAdvertiser = adapter.bluetoothLeAdvertiser
+            if (bleAdvertiser == null) {
+                Log.w("BtHidService", "BluetoothLeAdvertiser not available on this device")
+                return
+            }
+
+            val settings = AdvertiseSettings.Builder()
+                .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
+                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
+                .setConnectable(true)
+                .setTimeout(0)
+                .build()
+
+            // Primary advert: ONLY Service UUID 0x1812 (BLE HID) - fits cleanly within 31-byte legacy BLE limit
+            val data = AdvertiseData.Builder()
+                .setIncludeDeviceName(false)
+                .setIncludeTxPowerLevel(false)
+                .addServiceUuid(ParcelUuid.fromString("00001812-0000-1000-8000-00805f9b34fb"))
+                .build()
+
+            // Scan response: contains full device name so TV UI displays device name
+            val scanResponse = AdvertiseData.Builder()
+                .setIncludeDeviceName(true)
+                .build()
+
+            advertiseCallback = object : AdvertiseCallback() {
+                override fun onStartSuccess(settingsInEffect: AdvertiseSettings?) {
+                    super.onStartSuccess(settingsInEffect)
+                    isAdvertising = true
+                    Log.d("BtHidService", "BLE HID Advertising active (UUID: 0x1812) - Smart TV discoverable")
+                }
+
+                override fun onStartFailure(errorCode: Int) {
+                    super.onStartFailure(errorCode)
+                    isAdvertising = false
+                    Log.e("BtHidService", "BLE HID Advertising failed with code: $errorCode")
+                }
+            }
+
+            bleAdvertiser?.startAdvertising(settings, data, scanResponse, advertiseCallback)
+        } catch (e: Exception) {
+            Log.e("BtHidService", "startBleAdvertising error", e)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun stopBleAdvertising() {
+        if (!isAdvertising && advertiseCallback == null) return
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.BLUETOOTH_ADVERTISE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    return
+                }
+            }
+            advertiseCallback?.let {
+                bleAdvertiser?.stopAdvertising(it)
+            }
+            isAdvertising = false
+            advertiseCallback = null
+            Log.d("BtHidService", "BLE HID Advertising stopped")
+        } catch (e: Exception) {
+            Log.e("BtHidService", "stopBleAdvertising error", e)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(screenReceiver)
+        unregisterReceiver(btStateReceiver)
         unregisterReceiver(pairingReceiver)
+        cancelAutoReconnect()
+        stopBleAdvertising()
         hidDevice?.unregisterApp()
         stopWakeLock()
         stopPingTimer()

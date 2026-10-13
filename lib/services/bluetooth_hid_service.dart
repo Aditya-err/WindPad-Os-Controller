@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:network_info_plus/network_info_plus.dart';
-import 'package:multicast_dns/multicast_dns.dart';
 import 'platform_channel.dart';
 
 enum BluetoothState { disconnected, scanning, pairing, connected }
@@ -17,6 +13,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   BluetoothState _state = BluetoothState.disconnected;
   DeviceType _deviceType = DeviceType.pc;
   String _connectedDeviceName = "";
+  String? _errorMessage;
   int _dpi = 1200;
   final List<int> _dpiSteps = [400, 800, 1200, 1600, 2400];
   String? _activeGesture;
@@ -42,16 +39,14 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
 
   VoidCallback? onConnectionTimeout;
 
-  // WiFi TCP
-  ServerSocket? _tcpServer;
-  Socket? _tcpClient;
-  String _localIp = "";
-  final int _tcpPort = 8765;
-  MDnsClient? _mdnsClient;
+  // Connection tracking
+  bool _isBluetoothConnected = false;
 
   DeviceType get deviceType => _deviceType;
   BluetoothState get state => _state;
+  bool get isBluetoothConnected => _isBluetoothConnected;
   String get connectedDeviceName => _connectedDeviceName;
+  String? get errorMessage => _errorMessage;
   int get dpi => _dpi;
   List<int> get dpiSteps => _dpiSteps;
   String? get activeGesture => _activeGesture;
@@ -71,19 +66,32 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   double get movementScale => _dpi / 800.0;
   List<Map<String, String>> get bondedDevices => _bondedDevices;
   String? get lastConnectedMac => _lastConnectedMac;
-  String get localIp => _localIp;
+  bool _isTyping = false;
+  bool get isTyping => _isTyping;
+  int _typingCurrent = 0;
+  int _typingTotal = 0;
+  int get typingCurrent => _typingCurrent;
+  int get typingTotal => _typingTotal;
+
+  void stopTyping() {
+    _isTyping = false;
+    _typingCurrent = 0;
+    _typingTotal = 0;
+    try {
+      PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+    } catch (_) {}
+    notifyListeners();
+  }
 
   static const List<Color> trackpadColors = [
-    Color(0xFFE8F1FF),
-    Color(0xFFE8F5E9),
-    Color(0xFFFFF3E0),
-    Color(0xFFF3E5F5),
-    Color(0xFFECEFF1),
-    Color(0xFFFFEBEE),
-    Color(0xFF1A1A2E), // Dark Navy
-    Color(0xFF212121), // Charcoal
-    Color(0xFF000000), // Pure Black (AMOLED)
-    Color(0xFF121212), // Deep Grey
+    Color(0xFFF0F4F8), // 0: White
+    Color(0xFFE8F5E9), // 1: Mint
+    Color(0xFFFFF8E1), // 2: Cream
+    Color(0xFFF3E5F5), // 3: Lavender
+    Color(0xFFE0F2F1), // 4: Ice Blue
+    Color(0xFFFFEBEE), // 5: Peach Pink (Default in assets/Dark theme/home page.jpg)
+    Color(0xFF1E2235), // 6: Navy
+    Color(0xFF2C2F3C), // 7: Charcoal
   ];
 
   Color get trackpadColor => trackpadColors[_trackpadColorIndex.clamp(0, trackpadColors.length - 1)];
@@ -97,11 +105,11 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     await _loadSettings();
     PlatformChannel.setMethodCallHandler(_handleMethodCall);
     await _requestPermissions();
+    // Initialize Bluetooth HID universally across all device profiles
+    await PlatformChannel.initHid();
+    await _autoConnect();
     if (_deviceType == DeviceType.tv) {
-      await PlatformChannel.initHid();
-      await _autoConnect();
-    } else {
-      await _startWifiServer();
+      _startGyro();
     }
   }
 
@@ -127,27 +135,33 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
 
   void _startGyro() {
     _gyroSub?.cancel();
-    _gyroSub = gyroscopeEventStream().listen((event) {
-      if (_state != BluetoothState.connected || _deviceType != DeviceType.tv || _trackpadLocked || !_isAirMouse) return;
-      
-      double yaw = -event.z;
-      double pitch = -event.x;
-      
-      if (yaw.abs() < 0.02) yaw = 0;
-      if (pitch.abs() < 0.02) pitch = 0;
+    try {
+      _gyroSub = gyroscopeEventStream().listen((event) {
+        if (_state != BluetoothState.connected || _deviceType != DeviceType.tv || _trackpadLocked || !_isAirMouse) return;
+        
+        double yaw = -event.z;
+        double pitch = -event.x;
+        
+        if (yaw.abs() < 0.02) yaw = 0;
+        if (pitch.abs() < 0.02) pitch = 0;
 
-      _smoothX = _smoothX * 0.4 + yaw * 0.6;
-      _smoothY = _smoothY * 0.4 + pitch * 0.6;
+        _smoothX = _smoothX * 0.4 + yaw * 0.6;
+        _smoothY = _smoothY * 0.4 + pitch * 0.6;
 
-      if (_smoothX.abs() > 0.01 || _smoothY.abs() > 0.01) {
-        final mult = movementScale * 35.0;
-        int dx = (_smoothX * mult).round();
-        int dy = (_smoothY * mult).round();
-        if (dx != 0 || dy != 0) {
-          sendMouseMove(dx, dy);
+        if (_smoothX.abs() > 0.01 || _smoothY.abs() > 0.01) {
+          final mult = movementScale * 35.0;
+          int dx = (_smoothX * mult).round();
+          int dy = (_smoothY * mult).round();
+          if (dx != 0 || dy != 0) {
+            sendMouseMove(dx, dy);
+          }
         }
-      }
-    });
+      }, onError: (e) {
+        debugPrint("Gyroscope stream error: $e");
+      });
+    } catch (e) {
+      debugPrint("Failed to initialize gyroscope: $e");
+    }
   }
 
   void _stopGyro() {
@@ -155,15 +169,22 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     _gyroSub = null;
   }
 
-  Future<void> _requestPermissions() async {
-    if (await Permission.bluetoothConnect.isDenied) {
-      await [
+  Future<bool> _requestPermissions() async {
+    try {
+      final status = await Permission.bluetoothConnect.status;
+      if (status.isGranted) return true;
+      final statuses = await [
         Permission.bluetoothConnect,
         Permission.bluetoothAdvertise,
         Permission.bluetoothScan,
         Permission.bluetooth,
         Permission.location,
       ].request();
+      final connectStatus = statuses[Permission.bluetoothConnect] ?? await Permission.bluetoothConnect.status;
+      return connectStatus.isGranted;
+    } catch (e) {
+      debugPrint("Bluetooth permission request error: $e");
+      return false;
     }
   }
 
@@ -178,7 +199,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     _threeFingerSwipe = prefs.getBool('threeFingerSwipe') ?? true;
     _quickKeysVisible = prefs.getBool('quickKeys') ?? true;
     _hapticFeedback = prefs.getBool('haptic') ?? true;
-    _trackpadColorIndex = prefs.getInt('trackpadColor') ?? 0;
+    _trackpadColorIndex = prefs.getInt('trackpadColor') ?? 5;
     _useWindowsEmoji = prefs.getBool('useWindowsEmoji') ?? true;
     _lastConnectedMac = prefs.getString('lastMac');
     final dtStr = prefs.getString('savedDeviceType');
@@ -234,37 +255,25 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     await prefs.setString('savedDeviceType', val.toString());
 
     if (_deviceType == DeviceType.tv) {
-      _stopWifiServer();
-      
-      // Smart TV: Try WiFi (ADB) first, fallback to BT HID
-      bool adbConnected = await _tryWifiAdbConnect();
-      if (!adbConnected) {
-        debugPrint("WiFi ADB failed/not found, falling back to Bluetooth HID");
-        await PlatformChannel.initHid();
-        await _autoConnect();
-      }
       _startGyro();
+      if (_state == BluetoothState.disconnected) {
+        await PlatformChannel.startAdvertising();
+      }
     } else {
       _stopGyro();
       _isAirMouse = false;
-      await PlatformChannel.disconnect(); // Disconnect BT
-      await _startWifiServer();
     }
     notifyListeners();
-  }
-
-  Future<bool> _tryWifiAdbConnect() async {
-    // Scaffold for ADB over WiFi (Port 5555) connection.
-    // Full ADB RSA/TLS handshake requires native/external ADB client.
-    // For now, quickly return false to trigger Bluetooth HID fallback reliably.
-    await Future.delayed(const Duration(milliseconds: 500));
-    return false; // Force fallback to BT HID as requested "Agar nahi hua -> Bluetooth HID fallback"
   }
 
   void toggleAirMouse() {
     if (_deviceType == DeviceType.tv) {
       _isAirMouse = !_isAirMouse;
-      if (_isAirMouse) _startGyro(); else _stopGyro();
+      if (_isAirMouse) {
+        _startGyro();
+      } else {
+        _stopGyro();
+      }
       notifyListeners();
     }
   }
@@ -272,7 +281,11 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   void setAirMouseEnabled(bool enabled) {
     if (_deviceType == DeviceType.tv && _isAirMouse != enabled) {
       _isAirMouse = enabled;
-      if (_isAirMouse) _startGyro(); else _stopGyro();
+      if (_isAirMouse) {
+        _startGyro();
+      } else {
+        _stopGyro();
+      }
       notifyListeners();
     }
   }
@@ -324,14 +337,20 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // ── Connection ──
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   Future<void> connect() async {
     if (_state != BluetoothState.disconnected) return;
-    final status = await Permission.bluetoothConnect.status;
-    if (status.isDenied) {
-      await _requestPermissions();
-      final newStatus = await Permission.bluetoothConnect.status;
-      if (newStatus.isDenied) return;
+    final granted = await _requestPermissions();
+    if (!granted) {
+      _errorMessage = "Bluetooth permissions are required to connect.";
+      notifyListeners();
+      return;
     }
+    _errorMessage = null;
     _state = BluetoothState.scanning;
     notifyListeners();
     await PlatformChannel.startAdvertising();
@@ -339,12 +358,13 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> connectToDevice(String mac, String name) async {
     if (_state == BluetoothState.connected) return;
-    final status = await Permission.bluetoothConnect.status;
-    if (status.isDenied) {
-      await _requestPermissions();
-      final newStatus = await Permission.bluetoothConnect.status;
-      if (newStatus.isDenied) return;
+    final granted = await _requestPermissions();
+    if (!granted) {
+      _errorMessage = "Bluetooth permissions are required to connect.";
+      notifyListeners();
+      return;
     }
+    _errorMessage = null;
     _state = BluetoothState.scanning;
     notifyListeners();
     await _saveLastMac(mac);
@@ -354,6 +374,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> disconnect() async {
     _connectingTimer?.cancel();
     await PlatformChannel.disconnect();
+    _isBluetoothConnected = false;
     _state = BluetoothState.disconnected;
     _connectedDeviceName = "";
     notifyListeners();
@@ -365,108 +386,8 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   // ── HID Reports ──
   int _activeButtons = 0;
 
-  // --- WIFI TCP LOGIC ---
-  Future<void> _startWifiServer() async {
-    _state = BluetoothState.disconnected;
-    _localIp = await NetworkInfo().getWifiIP() ?? "";
-    notifyListeners();
-    
-    bool connected = await _tryAutoWifiConnect();
-    if (!connected) {
-      debugPrint("Auto-connect failed, waiting for user to scan QR...");
-    }
-  }
-
-  Future<bool> _tryAutoWifiConnect() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? savedIp = prefs.getString('saved_wifi_ip');
-    int? savedPort = prefs.getInt('saved_wifi_port');
-    
-    if (savedIp != null && savedPort != null) {
-      if (await connectToWifiTcp(savedIp, savedPort)) return true;
-    }
-
-    try {
-      final MDnsClient client = MDnsClient();
-      await client.start();
-      await for (final PtrResourceRecord ptr in client.lookup<PtrResourceRecord>(
-          ResourceRecordQuery.serverPointer('_windpad._tcp.local.'))) {
-        await for (final SrvResourceRecord srv in client.lookup<SrvResourceRecord>(
-            ResourceRecordQuery.service(ptr.domainName))) {
-          await for (final IPAddressResourceRecord ip in client.lookup<IPAddressResourceRecord>(
-              ResourceRecordQuery.addressIPv4(srv.target))) {
-             if (await connectToWifiTcp(ip.address.address, srv.port)) {
-               client.stop();
-               return true;
-             }
-          }
-        }
-      }
-      client.stop();
-    } catch(e) {
-      debugPrint("mDNS discover error: $e");
-    }
-    return false;
-  }
-
-  Future<bool> connectToWifiTcp(String ip, int port) async {
-    try {
-      _tcpClient?.close();
-      _tcpClient = await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
-      
-      _state = BluetoothState.connected;
-      _connectedDeviceName = "PC Companion";
-      notifyListeners();
-      
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('saved_wifi_ip', ip);
-      await prefs.setInt('saved_wifi_port', port);
-
-      _tcpClient!.listen(
-        (data) {}, 
-        onDone: () {
-          _tcpClient = null;
-          if (_deviceType != DeviceType.tv) _state = BluetoothState.disconnected;
-          notifyListeners();
-        }, 
-        onError: (_) {
-          _tcpClient = null;
-          if (_deviceType != DeviceType.tv) _state = BluetoothState.disconnected;
-          notifyListeners();
-        }
-      );
-      return true;
-    } catch(e) {
-      debugPrint("TCP Connect error: $e");
-      return false;
-    }
-  }
-
-  void _stopWifiServer() {
-    _tcpClient?.close();
-    _tcpClient = null;
-    _tcpServer?.close();
-    _tcpServer = null;
-    if (_deviceType != DeviceType.tv) {
-      _state = BluetoothState.disconnected;
-      notifyListeners();
-    }
-  }
-
-  void _sendTcp(String type, Map<String, dynamic> payload) {
-    if (_deviceType == DeviceType.tv) return;
-    if (_tcpClient != null) {
-      payload['type'] = type;
-      _tcpClient!.write('${jsonEncode(payload)}\n');
-    }
-  }
-
   Future<void> _sendMouseReport({required int buttons, required int dx, required int dy, required int scroll}) async {
-    if (_deviceType == DeviceType.tv) {
-      await PlatformChannel.sendMouseReport(buttons: buttons, dx: dx, dy: dy, scroll: scroll);
-    } else {
-      _sendTcp('mouse', {'buttons': buttons, 'dx': dx, 'dy': dy, 'scroll': scroll});
-    }
+    await PlatformChannel.sendMouseReport(buttons: buttons, dx: dx, dy: dy, scroll: scroll);
   }
 
   Future<void> sendMouseMove(int dx, int dy) async {
@@ -501,23 +422,15 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> sendKey(int modifier, List<int> keys) async {
     if (_state != BluetoothState.connected) return;
     if (_hapticFeedback) HapticFeedback.lightImpact();
-    if (_deviceType == DeviceType.tv) {
-      await PlatformChannel.sendKeyReport(modifier: modifier, keys: keys);
-      await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
-    } else {
-      _sendTcp('key', {'modifier': modifier, 'keys': keys});
-    }
+    await PlatformChannel.sendKeyReport(modifier: modifier, keys: keys);
+    await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
   }
 
   Future<void> sendMedia(int hid) async {
     if (_state != BluetoothState.connected) return;
     if (_hapticFeedback) HapticFeedback.lightImpact();
-    if (_deviceType == DeviceType.tv) {
-      await PlatformChannel.sendMediaReport(keys: [hid & 0xFF, (hid >> 8) & 0xFF]);
-      await PlatformChannel.sendMediaReport(keys: [0, 0]);
-    } else {
-      _sendTcp('media', {'hid': hid});
-    }
+    await PlatformChannel.sendMediaReport(keys: [hid & 0xFF, (hid >> 8) & 0xFF]);
+    await PlatformChannel.sendMediaReport(keys: [0, 0]);
   }
 
   Future<void> sendEnter() async {
@@ -546,50 +459,74 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
-  /// Paste clipboard text char-by-char preserving formatting
+  /// Paste clipboard text char-by-char preserving formatting with instant abort support
   Future<void> pasteClipboard() async {
     if (_state != BluetoothState.connected) return;
     final data = await Clipboard.getData(Clipboard.kTextPlain);
     if (data == null || data.text == null || data.text!.isEmpty) return;
-    final text = data.text!;
-    for (int i = 0; i < text.length; i++) {
-      final char = text[i];
-      if (char == '\n') {
-        if (_deviceType == DeviceType.tv) {
-          await PlatformChannel.sendKeyReport(modifier: 0, keys: [0x28]);
-          await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
-        } else {
-          _sendTcp('key', {'modifier': 0, 'keys': [0x28]});
-        }
-      } else if (char == '\t') {
-        if (_deviceType == DeviceType.tv) {
-          await PlatformChannel.sendKeyReport(modifier: 0, keys: [0x2B]);
-          await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
-        } else {
-          _sendTcp('key', {'modifier': 0, 'keys': [0x2B]});
-        }
-      } else {
-        final keycode = _mapCharCodeToHid(char);
-        final modifier = _getModifierForChar(char);
-        if (keycode != 0) {
-          if (_deviceType == DeviceType.tv) {
-            await PlatformChannel.sendKeyReport(modifier: modifier, keys: [keycode]);
-            await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
-          } else {
-            _sendTcp('key', {'modifier': modifier, 'keys': [keycode]});
-          }
-        }
-      }
-      await Future.delayed(const Duration(milliseconds: 8));
-    }
+    await sendText(data.text!);
   }
 
   Future<void> sendText(String text) async {
-    if (text.isEmpty) return;
-    final char = text[0];
-    final keycode = _mapCharCodeToHid(char);
-    final modifier = _getModifierForChar(char);
-    if (keycode != 0) await sendKey(modifier, [keycode]);
+    if (text.isEmpty || _state != BluetoothState.connected) return;
+    _isTyping = true;
+    _typingTotal = text.length;
+    _typingCurrent = 0;
+    notifyListeners();
+
+    try {
+      for (int i = 0; i < text.length; i++) {
+        if (!_isTyping || _state != BluetoothState.connected) {
+          await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+          break;
+        }
+        _typingCurrent = i + 1;
+        if (i % 5 == 0 || i == text.length - 1) notifyListeners();
+
+        final char = text[i];
+        if (char == '\n') {
+          await PlatformChannel.sendKeyReport(modifier: 0, keys: [0x28]);
+          await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+        } else if (char == '\t') {
+          await PlatformChannel.sendKeyReport(modifier: 0, keys: [0x2B]);
+          await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+        } else {
+          final keycode = _mapCharCodeToHid(char);
+          final modifier = _getModifierForChar(char);
+          if (keycode != 0) {
+            await PlatformChannel.sendKeyReport(modifier: modifier, keys: [keycode]);
+            await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+          }
+        }
+        await Future.delayed(const Duration(milliseconds: 8));
+      }
+    } finally {
+      _isTyping = false;
+      _typingCurrent = 0;
+      _typingTotal = 0;
+      try {
+        await PlatformChannel.sendKeyReport(modifier: 0, keys: []);
+      } catch (_) {}
+      notifyListeners();
+    }
+  }
+
+  Future<void> zoomIn() async {
+    if (_state != BluetoothState.connected) return;
+    if (_deviceType == DeviceType.mac) {
+      await sendKey(0x08, [0x2E]); // Cmd + =
+    } else {
+      await sendKey(0x01, [0x2E]); // Ctrl + =
+    }
+  }
+
+  Future<void> zoomOut() async {
+    if (_state != BluetoothState.connected) return;
+    if (_deviceType == DeviceType.mac) {
+      await sendKey(0x08, [0x2D]); // Cmd + -
+    } else {
+      await sendKey(0x01, [0x2D]); // Ctrl + -
+    }
   }
 
   int _mapCharCodeToHid(String char) {
@@ -655,7 +592,9 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
         break;
       case 'onConnected':
         _connectingTimer?.cancel();
+        _isBluetoothConnected = true;
         _state = BluetoothState.connected;
+        _errorMessage = null;
         if (call.arguments is Map) {
           final map = call.arguments as Map;
           _connectedDeviceName = map['name'] as String? ?? "Unknown Device";
@@ -699,6 +638,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
         _connectingTimer = Timer(const Duration(seconds: 8), () {
           if (_state == BluetoothState.scanning || _state == BluetoothState.pairing) {
             disconnect();
+            _errorMessage = "Connection timed out. Ensure target device Bluetooth is discoverable.";
             onConnectionTimeout?.call();
           }
         });
@@ -706,6 +646,7 @@ class BluetoothHidService extends ChangeNotifier with WidgetsBindingObserver {
         break;
       case 'onDisconnected':
         _connectingTimer?.cancel();
+        _isBluetoothConnected = false;
         _state = BluetoothState.disconnected;
         _connectedDeviceName = "";
         _stopGyro();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -15,56 +16,82 @@ class SettingsScreen extends StatelessWidget {
     final btService = Provider.of<BluetoothHidService>(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final headerColor = isDark ? const Color(0xFF58A6FF) : cs.primary;
+    final dividerColor = isDark ? Colors.white.withValues(alpha: 0.07) : cs.outlineVariant.withValues(alpha: 0.5);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Settings'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
       body: ListView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 40),
         children: [
-          _sectionHeader("WINDPAD SETTINGS", cs),
+          // ── WINDPAD SETTINGS ──
+          _buildSectionHeader("WINDPAD SETTINGS", headerColor),
 
-          // Disconnect all
+          // Disconnect connected device
           ListTile(
-            leading: const Icon(Icons.phonelink_off, color: Colors.deepOrange),
-            title: const Text("Disconnect connected device"),
-            subtitle: const Text("Clear active Bluetooth connection"),
-            onTap: () async {
-              await btService.disconnect();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Device disconnected.")));
-              }
-            },
+            leading: const Icon(Icons.link_off, color: Color(0xFFFF6F00)),
+            title: const Text("Disconnect connected device", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            subtitle: Text(
+              btService.state == BluetoothState.connected
+                  ? (btService.connectedDeviceName.isNotEmpty
+                      ? "Connected to ${btService.connectedDeviceName} • Tap to disconnect"
+                      : "Active connection • Tap to disconnect")
+                  : "Clear active Bluetooth connection",
+              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+            ),
+            onTap: () => _confirmDisconnect(context, btService),
           ),
-          
-          // Theme toggle
+
+          // Theme
           ListTile(
             leading: const Icon(Icons.palette_outlined),
-            title: const Text("Theme"),
-            subtitle: Text(_themeModeLabel(themeNotifier.themeMode)),
-            trailing: SegmentedButton<ThemeMode>(
-              segments: const [
-                ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode, size: 16)),
-                ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode, size: 16)),
-                ButtonSegment(value: ThemeMode.system, icon: Icon(Icons.settings_suggest, size: 16)),
-              ],
-              selected: {themeNotifier.themeMode},
-              showSelectedIcon: false,
-              onSelectionChanged: (val) => themeNotifier.setThemeMode(val.first),
-              style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact, padding: EdgeInsets.zero),
+            title: const Text("Theme", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            subtitle: Text(_themeModeLabel(themeNotifier.themeMode), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+            trailing: CupertinoSlidingSegmentedControl<ThemeMode>(
+              groupValue: themeNotifier.themeMode,
+              backgroundColor: isDark ? const Color(0xFF1E212A) : cs.surfaceContainerHighest,
+              thumbColor: isDark ? const Color(0xFF333846) : Colors.white,
+              children: {
+                ThemeMode.light: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Icon(Icons.light_mode_outlined, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                ),
+                ThemeMode.dark: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Icon(Icons.dark_mode_outlined, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                ),
+                ThemeMode.system: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: Icon(Icons.settings_brightness_outlined, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+                ),
+              },
+              onValueChanged: (val) {
+                if (val != null) themeNotifier.setThemeMode(val);
+              },
             ),
           ),
 
           // Trackpad surface color
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Trackpad surface color", style: TextStyle(fontSize: 16)),
-                const SizedBox(height: 8),
+                const Text("Trackpad surface color", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+                const SizedBox(height: 12),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: BluetoothHidService.trackpadColors.asMap().entries.map((e) {
                       final isSelected = btService.trackpadColorIndex == e.key;
                       return Padding(
@@ -72,13 +99,26 @@ class SettingsScreen extends StatelessWidget {
                         child: GestureDetector(
                           onTap: () => btService.setTrackpadColorIndex(e.key),
                           child: Container(
-                            width: 36, height: 36,
+                            width: 34,
+                            height: 34,
                             decoration: BoxDecoration(
                               color: e.value,
                               shape: BoxShape.circle,
-                              border: Border.all(color: isSelected ? cs.primary : cs.outlineVariant.withValues(alpha: 0.5), width: isSelected ? 3 : 1),
+                              border: Border.all(
+                                color: isSelected ? const Color(0xFF2196F3) : (isDark ? Colors.white24 : Colors.black26),
+                                width: isSelected ? 2.5 : 1.0,
+                              ),
+                              boxShadow: [
+                                if (isSelected)
+                                  BoxShadow(
+                                    color: const Color(0xFF2196F3).withValues(alpha: 0.35),
+                                    blurRadius: 6,
+                                  ),
+                              ],
                             ),
-                            child: isSelected ? Icon(Icons.check, size: 16, color: cs.primary) : null,
+                            child: isSelected
+                                ? const Icon(Icons.check, size: 16, color: Color(0xFF2196F3))
+                                : null,
                           ),
                         ),
                       );
@@ -90,111 +130,206 @@ class SettingsScreen extends StatelessWidget {
           ),
 
           // Spreadsheet Mode
-          SwitchListTile(title: const Text("Spreadsheet Mode"), subtitle: const Text("Enter → Tab, Shift+Enter → Down"), value: btService.isSpreadsheetMode, onChanged: (_) => btService.toggleSpreadsheetMode()),
-
-          // Emoji OS toggle
           ListTile(
-            leading: const Icon(Icons.emoji_emotions_outlined),
-            title: const Text("Emoji shortcut OS"),
-            subtitle: Text(btService.useWindowsEmoji ? "Windows (Win + .)" : "macOS (Ctrl+Cmd+Space)"),
-            trailing: SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: true, label: Text("Win", style: TextStyle(fontSize: 12))),
-                ButtonSegment(value: false, label: Text("Mac", style: TextStyle(fontSize: 12))),
-              ],
-              selected: {btService.useWindowsEmoji},
-              showSelectedIcon: false,
-              onSelectionChanged: (val) => btService.setUseWindowsEmoji(val.first),
-              style: SegmentedButton.styleFrom(visualDensity: VisualDensity.compact, padding: EdgeInsets.zero),
+            title: const Text("Spreadsheet Mode", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            subtitle: Text("Enter → Tab, Shift+Enter → Down", style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+            trailing: _buildCompactSwitch(
+              value: btService.isSpreadsheetMode,
+              onChanged: (_) => btService.toggleSpreadsheetMode(),
+              isDark: isDark,
             ),
           ),
 
-          const Divider(height: 32),
-          _sectionHeader("TRACKPAD", cs),
+          // Emoji shortcut OS
+          ListTile(
+            leading: const Icon(Icons.sentiment_satisfied_alt_outlined),
+            title: const Text("Emoji shortcut OS", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            subtitle: Text(
+              btService.useWindowsEmoji ? "Windows (Win + .)" : "macOS (Ctrl + Cmd + Space)",
+              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+            ),
+            trailing: CupertinoSlidingSegmentedControl<bool>(
+              groupValue: btService.useWindowsEmoji,
+              backgroundColor: isDark ? const Color(0xFF1E212A) : cs.surfaceContainerHighest,
+              thumbColor: isDark ? const Color(0xFF333846) : Colors.white,
+              children: {
+                true: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  child: Text("Win", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black)),
+                ),
+                false: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  child: Text("Mac", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black)),
+                ),
+              },
+              onValueChanged: (val) {
+                if (val != null) btService.setUseWindowsEmoji(val);
+              },
+            ),
+          ),
 
-          // Pointer Speed
+          Divider(height: 24, thickness: 1, color: dividerColor),
+
+          // ── TRACKPAD ──
+          _buildSectionHeader("TRACKPAD", headerColor),
+
+          // Pointer speed
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Pointer speed", style: TextStyle(fontSize: 16)),
+                    const Text("Pointer speed", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: cs.primaryContainer, borderRadius: BorderRadius.circular(6)),
-                      child: Text("${btService.dpi} DPI", style: TextStyle(color: cs.onPrimaryContainer, fontWeight: FontWeight.bold, fontSize: 13)),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF093E66),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        "${btService.dpi} DPI",
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF8AB4F8)),
+                      ),
                     ),
                   ],
                 ),
-                Slider(
-                  value: btService.dpiSteps.indexOf(btService.dpi).toDouble().clamp(0, (btService.dpiSteps.length - 1).toDouble()),
-                  min: 0, max: (btService.dpiSteps.length - 1).toDouble(),
-                  divisions: btService.dpiSteps.length - 1,
-                  label: "${btService.dpi}",
-                  onChanged: (v) => btService.setDpi(btService.dpiSteps[v.toInt()]),
+                SliderTheme(
+                  data: SliderTheme.of(context).copyWith(
+                    trackHeight: 2.5,
+                    activeTrackColor: const Color(0xFF8AB4F8),
+                    inactiveTrackColor: isDark ? const Color(0xFF2E323D) : const Color(0xFFD6DAE3),
+                    thumbColor: const Color(0xFF8AB4F8),
+                    overlayColor: const Color(0xFF8AB4F8).withValues(alpha: 0.15),
+                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  ),
+                  child: Slider(
+                    value: btService.dpiSteps.indexOf(btService.dpi).clamp(0, btService.dpiSteps.length - 1).toDouble(),
+                    min: 0,
+                    max: (btService.dpiSteps.length - 1).toDouble(),
+                    divisions: btService.dpiSteps.length - 1,
+                    onChanged: (val) {
+                      btService.setDpi(btService.dpiSteps[val.round()]);
+                    },
+                  ),
                 ),
               ],
             ),
           ),
 
-          SwitchListTile(title: const Text("Tap to click"), subtitle: const Text("Single tap to left click"), value: btService.tapToClick, onChanged: (v) => btService.setTapToClick(v)),
-          SwitchListTile(title: const Text("Two-finger right click"), value: btService.twoFingerRightClick, onChanged: (v) => btService.setTwoFingerRightClick(v)),
-          SwitchListTile(title: const Text("Three-finger swipe"), value: btService.threeFingerSwipe, onChanged: (v) => btService.setThreeFingerSwipe(v)),
+          // Tap to click
+          ListTile(
+            title: const Text("Tap to click", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            subtitle: Text("Single tap to left click", style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+            trailing: _buildCompactSwitch(
+              value: btService.tapToClick,
+              onChanged: (v) => btService.setTapToClick(v),
+              isDark: isDark,
+            ),
+          ),
 
-          const Divider(height: 32),
-          _sectionHeader("KEYBOARD", cs),
-          SwitchListTile(title: const Text("Quick Keys visible"), subtitle: const Text("Action ribbon above keyboard"), value: btService.quickKeysVisible, onChanged: (v) => btService.setQuickKeysVisible(v)),
-          SwitchListTile(title: const Text("Haptic feedback"), subtitle: const Text("Vibrate on key press"), value: btService.hapticFeedback, onChanged: (v) => btService.setHapticFeedback(v)),
+          // Two-finger right click
+          ListTile(
+            title: const Text("Two-finger right click", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            trailing: _buildCompactSwitch(
+              value: btService.twoFingerRightClick,
+              onChanged: (v) => btService.setTwoFingerRightClick(v),
+              isDark: isDark,
+            ),
+          ),
 
-          const Divider(height: 32),
-          _sectionHeader("GBOARD SETTINGS", cs, subtitle: "Open Gboard settings directly"),
+          // Three-finger swipe
+          ListTile(
+            title: const Text("Three-finger swipe", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            trailing: _buildCompactSwitch(
+              value: btService.threeFingerSwipe,
+              onChanged: (v) => btService.setThreeFingerSwipe(v),
+              isDark: isDark,
+            ),
+          ),
+
+          Divider(height: 24, thickness: 1, color: dividerColor),
+
+          // ── KEYBOARD ──
+          _buildSectionHeader("KEYBOARD", headerColor),
+
+          // Quick Keys visible
+          ListTile(
+            title: const Text("Quick Keys visible", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            subtitle: Text("Action ribbon above keyboard", style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+            trailing: _buildCompactSwitch(
+              value: btService.quickKeysVisible,
+              onChanged: (v) => btService.setQuickKeysVisible(v),
+              isDark: isDark,
+            ),
+          ),
+
+          // Haptic feedback
+          ListTile(
+            title: const Text("Haptic feedback", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            subtitle: Text("Vibrate on key press", style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+            trailing: _buildCompactSwitch(
+              value: btService.hapticFeedback,
+              onChanged: (v) => btService.setHapticFeedback(v),
+              isDark: isDark,
+            ),
+          ),
+
+          Divider(height: 24, thickness: 1, color: dividerColor),
+
+          // ── GBOARD SETTINGS ──
+          _buildSectionHeader("GBOARD SETTINGS", headerColor, subtitle: "Open Gboard settings directly"),
+
           ..._gboardItems.map((item) => ListTile(
-            leading: Icon(item['icon'] as IconData, size: 20),
-            title: Text(item['label'] as String),
-            trailing: const Icon(Icons.open_in_new, size: 18),
-            dense: true,
-            onTap: () => _openGboardSettings(),
-          )),
+                leading: Icon(item['icon'] as IconData, size: 22, color: cs.onSurfaceVariant),
+                title: Text(item['label'] as String, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                trailing: Icon(Icons.open_in_new, size: 18, color: cs.onSurfaceVariant),
+                onTap: _openGboardSettings,
+              )),
 
-          const Divider(height: 32),
-          _sectionHeader("MORE", cs),
+          Divider(height: 24, thickness: 1, color: dividerColor),
+
+          // ── MORE ──
+          _buildSectionHeader("MORE", headerColor),
 
           ListTile(
-            leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text("Privacy Policy"),
+            leading: const Icon(Icons.shield_outlined, size: 22),
+            title: const Text("Privacy Policy", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _PrivacyPolicyScreen())),
           ),
+
           ListTile(
-            leading: const Icon(Icons.star_rate_outlined),
-            title: const Text("Rate us"),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _RatingScreen())),
+            leading: const Icon(Icons.star_outline_rounded, size: 22),
+            title: const Text("Rate us", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _RateAppScreen())),
           ),
+
           ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text("About"),
+            leading: const Icon(Icons.info_outline, size: 22),
+            title: const Text("About", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
             onTap: () => _showAbout(context),
           ),
+
           ListTile(
-            leading: const Icon(Icons.help_outline),
-            title: const Text("Help & Feedback"),
+            leading: const Icon(Icons.help_outline, size: 22),
+            title: const Text("Help & Feedback", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _HelpFeedbackScreen())),
           ),
 
-          // Footer
           const SizedBox(height: 32),
-          Center(
+
+          // Footer
+          const Center(
             child: Column(
               children: [
-                Text("🇮🇳  Made in India", style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant, fontWeight: FontWeight.w500)),
-                const SizedBox(height: 4),
-                Text("Developed by Aditya 🎓", style: TextStyle(fontSize: 12, color: cs.outline)),
+                Text("🇮🇳 Made in India", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                SizedBox(height: 4),
+                Text("Developed by Aditya 🎓", style: TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
         ],
       ),
     );
@@ -203,23 +338,54 @@ class SettingsScreen extends StatelessWidget {
   static const _gboardItems = [
     {'icon': Icons.language, 'label': 'Languages'},
     {'icon': Icons.tune, 'label': 'Preferences'},
-    {'icon': Icons.palette, 'label': 'Theme'},
+    {'icon': Icons.palette_outlined, 'label': 'Theme'},
     {'icon': Icons.spellcheck, 'label': 'Corrections and suggestions'},
     {'icon': Icons.gesture, 'label': 'Glide typing'},
-    {'icon': Icons.mic, 'label': 'Voice typing'},
+    {'icon': Icons.mic_none, 'label': 'Voice typing'},
     {'icon': Icons.content_paste, 'label': 'Clipboard'},
-    {'icon': Icons.book_outlined, 'label': 'Dictionary'},
-    {'icon': Icons.emoji_emotions_outlined, 'label': 'Emojis stickers and GIFs'},
+    {'icon': Icons.menu_book_outlined, 'label': 'Dictionary'},
+    {'icon': Icons.sentiment_satisfied_outlined, 'label': 'Emojis stickers and GIFs'},
   ];
 
-  Widget _sectionHeader(String title, ColorScheme cs, {String? subtitle}) {
+  Widget _buildCompactSwitch({
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    required bool isDark,
+  }) {
+    return Transform.scale(
+      scale: 0.68,
+      child: Switch(
+        value: value,
+        activeThumbColor: const Color(0xFF0F2C4C),
+        activeTrackColor: const Color(0xFF8AB4F8),
+        inactiveThumbColor: const Color(0xFF8E929E),
+        inactiveTrackColor: isDark ? const Color(0xFF2E323D) : const Color(0xFFD6DAE3),
+        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, Color color, {String? subtitle}) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 20, bottom: 4),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(color: cs.primary, fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 1.2)),
-          if (subtitle != null) Text(subtitle, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
+          Text(
+            title,
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.0,
+            ),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 2),
+            Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          ],
         ],
       ),
     );
@@ -227,10 +393,48 @@ class SettingsScreen extends StatelessWidget {
 
   String _themeModeLabel(ThemeMode m) {
     switch (m) {
-      case ThemeMode.light: return "Light";
-      case ThemeMode.dark: return "Dark";
-      case ThemeMode.system: return "System Default";
+      case ThemeMode.light:
+        return "Light";
+      case ThemeMode.dark:
+        return "Dark";
+      case ThemeMode.system:
+        return "System Default";
     }
+  }
+
+  void _confirmDisconnect(BuildContext context, BluetoothHidService btService) {
+    if (btService.state != BluetoothState.connected) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No device is currently connected")),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Disconnect Device?"),
+        content: Text(
+          "Are you sure you want to disconnect from ${btService.connectedDeviceName.isNotEmpty ? btService.connectedDeviceName : 'the connected device'}?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              btService.disconnect();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Disconnected")),
+              );
+            },
+            child: const Text("Disconnect", style: TextStyle(color: Color(0xFFFF3B30), fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _openGboardSettings() {
@@ -248,7 +452,7 @@ class SettingsScreen extends StatelessWidget {
     if (!context.mounted) return;
     showAboutDialog(
       context: context,
-      applicationName: 'Windpad',
+      applicationName: 'WindPad',
       applicationVersion: 'v${info.version} (${info.buildNumber})',
       applicationIcon: ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -264,16 +468,16 @@ class SettingsScreen extends StatelessWidget {
 }
 
 // ═══════════════════════════════
-// In-App Rating Screen
+// Rate App Screen
 // ═══════════════════════════════
-class _RatingScreen extends StatefulWidget {
-  const _RatingScreen();
+class _RateAppScreen extends StatefulWidget {
+  const _RateAppScreen();
 
   @override
-  State<_RatingScreen> createState() => _RatingScreenState();
+  State<_RateAppScreen> createState() => _RateAppScreenState();
 }
 
-class _RatingScreenState extends State<_RatingScreen> {
+class _RateAppScreenState extends State<_RateAppScreen> {
   double _rating = 0;
   final _feedbackController = TextEditingController();
   bool _submitted = false;
@@ -287,14 +491,11 @@ class _RatingScreenState extends State<_RatingScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Rate Windpad')),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: _submitted ? _buildThankYou(cs) : _buildForm(cs),
-        ),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: _submitted ? _buildThankYou(cs) : _buildForm(cs),
       ),
     );
   }
@@ -303,7 +504,7 @@ class _RatingScreenState extends State<_RatingScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.star_rounded, size: 64, color: cs.primary),
+        const Icon(Icons.star_rounded, size: 64, color: Color(0xFFFFCC00)),
         const SizedBox(height: 16),
         Text("How's your experience?", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600, color: cs.onSurface)),
         const SizedBox(height: 8),
@@ -317,7 +518,7 @@ class _RatingScreenState extends State<_RatingScreen> {
           itemCount: 5,
           itemSize: 48,
           unratedColor: cs.outlineVariant,
-          itemBuilder: (context, _) => Icon(Icons.star_rounded, color: cs.primary),
+          itemBuilder: (context, _) => const Icon(Icons.star_rounded, color: Color(0xFFFFCC00)),
           onRatingUpdate: (rating) => setState(() => _rating = rating),
         ),
         const SizedBox(height: 24),
@@ -346,7 +547,7 @@ class _RatingScreenState extends State<_RatingScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.favorite, size: 64, color: cs.primary),
+        const Icon(Icons.favorite, size: 64, color: Color(0xFFFF2D55)),
         const SizedBox(height: 16),
         Text("Thank you! 🎉", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600, color: cs.onSurface)),
         const SizedBox(height: 8),
@@ -362,7 +563,6 @@ class _RatingScreenState extends State<_RatingScreen> {
 
   void _submitRating() async {
     setState(() => _submitted = true);
-    // Send email with rating
     final body = "Rating: ${_rating.toInt()}/5\n\nFeedback: ${_feedbackController.text}";
     final uri = Uri(
       scheme: 'mailto',
@@ -381,9 +581,12 @@ class _PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Privacy Policy')),
-      body: const SingleChildScrollView(
+    return const Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: _PrivacyAppBar(),
+      ),
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -410,27 +613,34 @@ class _PrivacyPolicyScreen extends StatelessWidget {
   }
 }
 
+class _PrivacyAppBar extends StatelessWidget {
+  const _PrivacyAppBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(title: const Text('Privacy Policy'));
+  }
+}
+
 // ═══════════════════════════════
-// Help & Feedback Screen
+// Help & FAQ Screen
 // ═══════════════════════════════
 class _HelpFeedbackScreen extends StatelessWidget {
   const _HelpFeedbackScreen();
 
   static const _faqs = [
-    {'q': 'How do I connect my phone to a computer?', 'a': 'Tap "Connect" on the home screen, select your paired device from the list, and it will connect automatically. Ensure your phone is visible in Bluetooth settings.'},
-    {'q': 'Why does Bluetooth disconnect in the background?', 'a': 'Go to Battery settings and disable battery optimization for Windpad. The app uses a foreground service to stay alive.'},
+    {'q': 'How do I connect my phone to a computer?', 'a': 'Tap "Connect" on the home screen, select your paired device from the list, and it will connect automatically.'},
+    {'q': 'Why does Bluetooth stay connected in the background?', 'a': 'Windpad uses a persistent Android foreground service so you can switch apps without losing your mouse and keyboard connection.'},
+    {'q': 'How do I disconnect?', 'a': 'Tap "Disconnect connected device" in Settings, or turn off Bluetooth on your phone.'},
     {'q': 'What is Spreadsheet Mode?', 'a': 'When enabled, the Enter key sends Tab (to move right in Excel/Sheets), and Shift+Enter sends Down arrow.'},
-    {'q': 'How do I change the cursor speed?', 'a': 'Tap the DPI badge in the top bar, or adjust the Pointer Speed slider in Settings > Trackpad.'},
-    {'q': 'Does this work with macOS?', 'a': 'Yes! Windpad works with Windows, macOS, Linux, and ChromeOS via standard Bluetooth HID.'},
-    {'q': 'Can I use this app without internet?', 'a': 'Absolutely. Windpad works entirely offline via Bluetooth.'},
-    {'q': 'How do I open the emoji picker?', 'a': 'Tap the Emoji button in Quick Keys. Set your OS (Win/Mac) in Settings for the correct shortcut.'},
-    {'q': 'What are sticky modifier keys?', 'a': 'In the Special Keys sheet, tap Ctrl/Shift/Alt/Win to activate them. The modifier sticks until you press the next key, then auto-releases.'},
+    {'q': 'How do I change cursor speed?', 'a': 'Adjust the Pointer Speed slider in Settings > Trackpad.'},
+    {'q': 'Does this work with macOS & Smart TVs?', 'a': 'Yes! Windpad works seamlessly with Windows, macOS, Linux, Android TV, and Smart TVs via standard Bluetooth HID.'},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Help & Feedback')),
+      appBar: AppBar(title: const Text('Help & FAQ')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -443,7 +653,7 @@ class _HelpFeedbackScreen extends StatelessWidget {
           const Divider(height: 32),
           Text("Send Feedback", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.primary)),
           const SizedBox(height: 12),
-          const Text("Have a bug report, feature request, or general feedback? We'd love to hear from you.", style: TextStyle(height: 1.5)),
+          const Text("Have a bug report or feature request? We'd love to hear from you.", style: TextStyle(height: 1.5)),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () async {

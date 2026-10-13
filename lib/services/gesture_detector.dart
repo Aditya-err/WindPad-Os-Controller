@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'bluetooth_hid_service.dart';
 
 enum GestureType {
@@ -13,15 +13,15 @@ enum GestureType {
 class WindpadGestureDetector {
   final BluetoothHidService btService;
 
-  static const int kTapMaxMs = 200;
-  static const double kTapMaxDist = 10.0;
-  static const double kPinchThreshold = 14.0;
-  static const double kSwipeThreshold = 10.0;
+  static const int kTapMaxMs = 250;
+  static const double kTapMaxDist = 12.0;
+  static const double kPinchThreshold = 16.0;
+  static const double kSwipeThreshold = 12.0;
 
   DateTime? _touchStartTime;
   Offset? _touchStartPos;
-  int _fingerCount = 0;
-  double? _initialPinchDist;
+  final Map<int, Offset> _activePointers = {};
+  double? _lastPinchDistance;
 
   // Smooth cursor — low-pass filter state
   double _smoothX = 0.0;
@@ -33,22 +33,30 @@ class WindpadGestureDetector {
   DateTime? _lastTapTime;
 
   void handlePointerDown(PointerDownEvent event) {
-    _fingerCount++;
-    if (_fingerCount == 1) {
+    _activePointers[event.pointer] = event.position;
+    final count = _activePointers.length;
+
+    if (count == 1) {
       _touchStartTime = DateTime.now();
       _touchStartPos = event.position;
       _smoothX = 0.0;
       _smoothY = 0.0;
+    } else if (count == 2) {
+      final p1 = _activePointers.values.elementAt(0);
+      final p2 = _activePointers.values.elementAt(1);
+      _lastPinchDistance = (p1 - p2).distance;
     }
   }
 
   void handlePointerMove(PointerMoveEvent event) {
+    _activePointers[event.pointer] = event.position;
     if (_touchStartPos == null) return;
     if (btService.trackpadLocked) return;
 
+    final count = _activePointers.length;
     final delta = event.localDelta;
 
-    if (_fingerCount == 1) {
+    if (count == 1) {
       final rawDx = delta.dx * btService.movementScale * 2.5;
       final rawDy = delta.dy * btService.movementScale * 2.5;
 
@@ -77,29 +85,36 @@ class WindpadGestureDetector {
 
       btService.sendMouseMove(outX, outY);
       btService.setActiveGesture(_isDragging ? "dragHold" : "drag");
-    } else if (_fingerCount == 2) {
-      if (_initialPinchDist == null) {
-        _initialPinchDist = (event.position - _touchStartPos!).distance;
-      } else {
-        final currentDist = (event.position - _touchStartPos!).distance;
-        final distDelta = currentDist - _initialPinchDist!;
+    } else if (count == 2) {
+      final p1 = _activePointers.values.elementAt(0);
+      final p2 = _activePointers.values.elementAt(1);
+      final currentDist = (p1 - p2).distance;
+
+      if (_lastPinchDistance != null) {
+        final distDelta = currentDist - _lastPinchDistance!;
 
         if (distDelta.abs() > kPinchThreshold) {
           final zoomIn = distDelta > 0;
-          _handlePinch(zoomIn);
-          _initialPinchDist = currentDist;
-          btService.setActiveGesture("pinch");
-          btService.setPinchPop(zoomIn ? "🔍 Zoom In" : "🔎 Zoom Out");
-        } else {
-          final scrollY = delta.dy.toInt();
-          final scrollX = delta.dx.toInt();
-          if (scrollY.abs() >= scrollX.abs()) {
-            btService.sendScroll(-scrollY);
+          if (zoomIn) {
+            btService.zoomIn();
+            btService.setPinchPop("🔍 Zoom In");
+          } else {
+            btService.zoomOut();
+            btService.setPinchPop("🔎 Zoom Out");
           }
-          btService.setActiveGesture("scroll");
+          _lastPinchDistance = currentDist;
+          btService.setActiveGesture("pinch");
+          return;
         }
       }
-    } else if (_fingerCount >= 3) {
+
+      // Two-finger scroll
+      final scrollY = delta.dy.toInt();
+      if (scrollY.abs() > 0) {
+        btService.sendScroll(-scrollY);
+        btService.setActiveGesture("twoScroll");
+      }
+    } else if (count >= 3) {
       if (delta.dx.abs() > kSwipeThreshold || delta.dy.abs() > kSwipeThreshold) {
         _handleThreeFingerSwipe(delta);
         btService.setActiveGesture("threeSwipe");
@@ -108,6 +123,9 @@ class WindpadGestureDetector {
   }
 
   void handlePointerUp(PointerUpEvent event) {
+    final prevCount = _activePointers.length;
+    _activePointers.remove(event.pointer);
+
     if (_isDragging) {
       btService.sendMouseButtonUp();
       _isDragging = false;
@@ -117,15 +135,15 @@ class WindpadGestureDetector {
       final totalDist = (event.position - _touchStartPos!).distance;
 
       if (duration < kTapMaxMs && totalDist < 24.0) {
-        if (_fingerCount == 1) {
+        if (prevCount == 1) {
           btService.sendMouseClick(1);
           btService.setActiveGesture("singleTap");
           _lastTapTime = DateTime.now();
-        } else if (_fingerCount == 2) {
+        } else if (prevCount == 2) {
           btService.sendMouseClick(2);
           btService.setActiveGesture("twoTap");
           _lastTapTime = null;
-        } else if (_fingerCount == 3) {
+        } else if (prevCount == 3) {
           btService.sendMouseClick(4); // Middle click
           _lastTapTime = null;
         }
@@ -135,12 +153,10 @@ class WindpadGestureDetector {
       }
     }
 
-    _fingerCount--;
-    if (_fingerCount <= 0) {
-      _fingerCount = 0;
+    if (_activePointers.isEmpty) {
       _touchStartTime = null;
       _touchStartPos = null;
-      _initialPinchDist = null;
+      _lastPinchDistance = null;
       _isDragging = false;
       _smoothX = 0.0;
       _smoothY = 0.0;
@@ -148,25 +164,19 @@ class WindpadGestureDetector {
   }
 
   void handlePointerCancel(PointerCancelEvent event) {
+    _activePointers.remove(event.pointer);
     if (_isDragging) {
       btService.sendMouseButtonUp();
       _isDragging = false;
     }
-    _fingerCount--;
-    if (_fingerCount <= 0) {
-      _fingerCount = 0;
+    if (_activePointers.isEmpty) {
       _touchStartTime = null;
       _touchStartPos = null;
-      _initialPinchDist = null;
+      _lastPinchDistance = null;
       _isDragging = false;
       _smoothX = 0.0;
       _smoothY = 0.0;
     }
-  }
-
-  void _handlePinch(bool zoomIn) {
-    btService.sendKey(0x01, []);
-    btService.sendScroll(zoomIn ? 1 : -1);
   }
 
   void _handleThreeFingerSwipe(Offset delta) {
